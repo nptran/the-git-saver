@@ -5,10 +5,11 @@ import shlex
 import subprocess
 import sys
 import traceback
+import random
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Any, Union
 
 # ============================================================
 # I18N - Hệ thống ngôn ngữ & Emoji Mode 😏🔥
@@ -37,6 +38,7 @@ EMOJI_MAP = {
     "no_commits_to_squash": "🫙", "create_backup_q": "🛡️", "created_backup": "💾",
     "final_commit_msg": "📝", "auto_push_q": "🚀", "continue_steps_q": "🏁",
     "flow_done": "🏆", "goodbye": "👋😏", "choose_history_type": "🗂️",
+    "dash_title": "📊",
     
     # Error Emojis
     "err_network": "🔌", "err_conflict": "⚔️💥", "err_overwrite": "🛑📝", 
@@ -47,13 +49,25 @@ EMOJI_MAP = {
     "fetching_remote": "☁️🔄", "branch_search_found": "🎯", "branch_search_single": "✨",
     "branch_count_few": "🌱", "branch_count_many": "🌳💀",
 
-    # Easter Eggs Emojis
-    "ee_night_owl": "🦉🌙", "ee_massive_stash": "🦝📦", "ee_spam_commit": "🤡🗑️"
+    # Easter Eggs & Verify Emojis
+    "ee_night_owl": "🦉🌙", "ee_massive_stash": "🦝📦", "ee_spam_commit": "🤡🗑️",
+    "ee_rage_quit": "😤︵ ┻━┻",
+    "verify_title": "🔍", "verify_ahead_ok": "✅", "verify_ahead_fail": "❌",
+    "verify_patch_ok": "🛡️", "verify_patch_diff": "⚠️", "verify_no_ref": "🚨"
 }
 
 LANGUAGES = {
     "press_exit": {
-        "vn_pro": "\nNhấn Enter để thoát...", "vn_joke": "\nNhấn Enter để sủi bọt...", "vn_toxic": "\nĐập Enter để cút nhanh...", "en_pro": "\nPress Enter to exit..."
+        "vn_pro": "\nNhấn Enter để thoát...", 
+        "vn_joke": ["\nNhấn Enter để sủi bọt...", "\nĐập Enter để chìm vào lãng quên...", "\nBấm Enter để cút... à nhầm, để thoát..."], 
+        "vn_toxic": ["\nĐập Enter để cút nhanh...", "\nBấm cmn Enter đi còn đợi gì?", "\nCút lẹ, ấn Enter!"], 
+        "en_pro": "\nPress Enter to exit..."
+    },
+    "press_continue": {
+        "vn_pro": "Nhấn Enter để tiếp tục...", 
+        "vn_joke": ["Gõ Enter để đi tiếp nha...", "Enter cái cho đời nó trôi sếp ơi..."], 
+        "vn_toxic": ["Đập Enter để thử lại!", "Bấm mẹ Enter đi lề mề thế?"], 
+        "en_pro": "Press Enter to continue..."
     },
     "no_git_err": {
         "vn_pro": "Không tìm thấy Git trong PATH.", "vn_joke": "Sếp ơi, máy sếp chưa cài Git à? Kì cục vậy.", "vn_toxic": "Đéo thấy Git đâu trong PATH! Mày dev bằng niềm tin à?", "en_pro": "Git not found in PATH."
@@ -62,16 +76,25 @@ LANGUAGES = {
         "vn_pro": "Hãy cài Git for Windows và đảm bảo lệnh 'git' chạy được trong terminal.", "vn_joke": "Lên Google tải Git về cài dùm tui nha sếp.", "vn_toxic": "Vác mặt đi tải Git for Windows cài vào ngay. Đếch hiểu kiểu gì.", "en_pro": "Please install Git and ensure 'git' command works in your terminal."
     },
     "invalid_yn": {
-        "vn_pro": "Vui lòng nhập y hoặc n.", "vn_joke": "Gõ y hoặc n thôi ní ơi, đừng làm khó nhau.", "vn_toxic": "Mù à? Gõ y hoặc n thôi!", "en_pro": "Please enter y or n."
+        "vn_pro": "Vui lòng nhập y hoặc n.", 
+        "vn_joke": ["Gõ y hoặc n thôi ní ơi, đừng làm khó nhau.", "Sếp gõ gì trớt quớt vậy? y hoặc n thôi.", "Nhập sai gòi, y hay n nè?"], 
+        "vn_toxic": ["Mù à? Gõ y hoặc n thôi!", "Bấm phím liệt à? Có y với n cũng gõ đéo xong.", "Gõ chữ y hoặc n, đéo biết chữ à?"], 
+        "en_pro": "Please enter y or n."
     },
     "not_empty": {
-        "vn_pro": "Không được để trống.", "vn_joke": "Nhập gì đó vào đi sếp, để trống sao chạy.", "vn_toxic": "Bỏ trống thế đéo nào được? Gõ vào!", "en_pro": "Cannot be empty."
+        "vn_pro": "Không được để trống.", 
+        "vn_joke": ["Nhập gì đó vào đi sếp, để trống sao chạy.", "Đừng có Enter suông thế chứ.", "Gõ phím đi sếp, đừng lười."], 
+        "vn_toxic": ["Bỏ trống thế đéo nào được? Gõ vào!", "Mù à? Kêu nhập mà đéo nhập?", "Gõ cái gì vào giùm tao cái!"], 
+        "en_pro": "Cannot be empty."
     },
     "choose_num": {
         "vn_pro": "Chọn số:", "vn_joke": "Bấm số đi sếp:", "vn_toxic": "Bấm cmn số vào:", "en_pro": "Choose number:"
     },
     "invalid_choice": {
-        "vn_pro": "Lựa chọn không hợp lệ.", "vn_joke": "Bấm sai rồi kìa, chọn lại đi.", "vn_toxic": "Lác à? Chọn sai bét, chọn lại!", "en_pro": "Invalid choice."
+        "vn_pro": "Lựa chọn không hợp lệ.", 
+        "vn_joke": ["Bấm sai rồi kìa, chọn lại đi.", "Ui da chọc mù mắt tui rồi, chọn đúng số đi má.", "Lựa lộn rồi sếp ơi."], 
+        "vn_toxic": ["Lác à? Chọn sai bét, chọn lại!", "Có mấy cái số cũng chọn đéo xong?", "Bấm linh tinh cái đéo gì đấy?"], 
+        "en_pro": "Invalid choice."
     },
     "default_marker": {
         "vn_pro": "(mặc định)", "vn_joke": "(cái này auto nè)", "vn_toxic": "(mặc định rồi, lười thì ấn enter)", "en_pro": "(default)"
@@ -129,6 +152,78 @@ LANGUAGES = {
         "vn_pro": "Vui lòng chọn Git repo muốn thao tác.", "vn_joke": "Chọn thư mục đi rồi tui làm cho.", "vn_toxic": "Chọn cái repo nào cần xử đi, mệt ghê.", "en_pro": "Please select the Git repo to operate on."
     },
 
+    # Dashboard & Flow controls
+    "dash_title": {"vn_pro": "BẢNG ĐIỀU KHIỂN REBASE", "en_pro": "REBASE WIZARD DASHBOARD"},
+    "dash_base_branch": {"vn_pro": "1. Nhánh gốc", "vn_joke": "1. Nhánh cội nguồn", "vn_toxic": "1. Nhánh làm gốc", "en_pro": "1. Base branch"},
+    "dash_fetch": {"vn_pro": "2. Tải mới (Fetch)", "vn_joke": "2. Kéo code mới", "vn_toxic": "2. Fetch origin", "en_pro": "2. Fetch origin"},
+    "dash_history": {"vn_pro": "3. Loại lịch sử", "vn_joke": "3. Độ nát nhánh", "vn_toxic": "3. Hệ lịch sử", "en_pro": "3. History type"},
+    "dash_backup": {"vn_pro": "4. Tạo Backup", "vn_joke": "4. Mua bảo hiểm", "vn_toxic": "4. Backup nhánh", "en_pro": "4. Backup branch"},
+    "dash_msg": {"vn_pro": "5. Lời nhắn (Msg)", "vn_joke": "5. Lời trăng trối", "vn_toxic": "5. Commit rác", "en_pro": "5. Commit Msg"},
+    "dash_push": {"vn_pro": "6. Auto Push", "vn_joke": "6. Push tự động", "vn_toxic": "6. Force push", "en_pro": "6. Auto Push"},
+    "opt_back": {
+        "vn_pro": "Quay lại bước trước", "vn_joke": "De xe lại (Quay về)", "vn_toxic": "Ấn nhầm, cho tao quay lại", "en_pro": "Go back to previous step"
+    },
+    "type_back": {
+        "vn_pro": " (< Quay lại)", "vn_joke": " (gõ '<' để de xe)", "vn_toxic": " (gõ '<' để lùi bước)", "en_pro": " (< Back)"
+    },
+
+    # Verify I18N
+    "verify_title": {"vn_pro": "XÁC MINH KẾT QUẢ REBASE (VERIFY)", "en_pro": "POST-REBASE VERIFICATION"},
+    "verify_ahead_ok": {
+        "vn_pro": "Nhánh hiện tại đã đi trước (ahead) {base} {ahead} commit.",
+        "vn_joke": ["Ngon lành, nhánh đã vượt lên trên {base} {ahead} bước.", "Chuẩn cmnr, đang dẫn trước {base} {ahead} commit."],
+        "vn_toxic": ["Thấy chưa? Đã ahead {base} {ahead} commit rồi kìa.", "Check ahead OK, đéo bị tụt hậu so với {base}."],
+        "en_pro": "Current branch is ahead of {base} by {ahead} commit(s)."
+    },
+    "verify_ahead_fail": {
+        "vn_pro": "Cảnh báo: Nhánh hiện tại đang BEHIND {base} {behind} commit! Rebase có vẻ chưa chuẩn.",
+        "vn_joke": ["Ối giời ơi, rebase xong sao lại tụt hậu {behind} bước so với {base} thế này?", "Lỗi cmnr, xe chạy lùi à? BEHIND {behind} commit kìa sếp."],
+        "vn_toxic": ["Ngu học chưa? Rebase kiểu l` gì mà lại BEHIND {base} tận {behind} commit?", "Mở mắt to ra! Nhánh bị tụt hậu {behind} commit so với gốc rồi!"],
+        "en_pro": "Warning: Current branch is BEHIND {base} by {behind} commit(s)! Rebase might have failed conceptually."
+    },
+    "verify_patch_ok": {
+        "vn_pro": "Toàn vẹn code (Patch-ID): 100%. Code trước và sau rebase khớp nhau hoàn toàn!",
+        "vn_joke": ["Tuyệt đối không rớt miếng thịt nào. Mã Patch-ID khớp 100% nha sếp!", "Xác minh Patch-ID thành công: Code an toàn 100%."],
+        "vn_toxic": ["Test Patch-ID qua rồi, đéo rớt một dòng code nào hết.", "Check Patch-ID khớp 100%. Yên tâm đéo mất code đâu."],
+        "en_pro": "Code integrity (Patch-ID): 100%. Pre and post rebase patches match perfectly!"
+    },
+    "verify_patch_diff": {
+        "vn_pro": "Toàn vẹn code: Phát hiện CHÊNH LỆCH (diff) giữa code gốc và sau khi rebase.",
+        "vn_joke": ["Á đù, dò Patch-ID thấy lệch xíu code rồi nha. Có ai đụng chạm gì không?", "Còi báo động: Có thay đổi logic code sau rebase sếp ơi!"],
+        "vn_toxic": ["ĐM CẢNH BÁO! Lệch code mẹ rồi! Patch-ID đéo khớp!", "Chết dở, code sau rebase đéo giống code cũ! Mất code hay gì?"],
+        "en_pro": "Code integrity: Detected DIFFERENCES between original and rebased patches."
+    },
+    "verify_conflict_reason": {
+        "vn_pro": "-> Điều này là BÌNH THƯỜNG vì bạn đã giải quyết conflict thủ công. Hãy tự review lại nhé.",
+        "vn_joke": "-> Dĩ nhiên rồi, nãy sếp tự gỡ conflict bằng tay mà. Nhớ review lại bằng mắt cho chắc ăn nha.",
+        "vn_toxic": "-> Khác là đúng cmnr, nãy mày ngồi sửa conflict bằng tay mà. Mở mắt ra review lại đi!",
+        "en_pro": "-> This is EXPECTED since you manually resolved conflicts. Please review manually."
+    },
+    "verify_missing_reason": {
+        "vn_pro": "-> NGUY HIỂM: Rebase tự động nhưng code bị thay đổi. Có thể đã bị mất hoặc ghi đè code rác!",
+        "vn_joke": "-> CĂNG NHA: Nãy rebase mượt mà tự nhiên rớt code là sao? Sếp check lại gấp!",
+        "vn_toxic": "-> ĐM NGUY HIỂM VCL! Tự động rebase mà bị lệch code? Chắc chắn mất code mẹ rồi, check gấp!",
+        "en_pro": "-> DANGER: Automated rebase altered the patch logic. Code might be lost or silently overwritten!"
+    },
+    "verify_no_ref": {
+        "vn_pro": "CẢNH BÁO: Không có nhánh backup hay remote tracking branch để đối chiếu toàn vẹn code!",
+        "vn_joke": ["Liều quá sếp, không có backup lấy gì mà so sánh check code bị rớt hay không?", "Chịu chết, không có nhánh gốc lấy gì mà verify sếp ơi."],
+        "vn_toxic": ["Đéo tạo backup thì lấy cái cc gì ra để đối chiếu xem có rớt code không? Ngu thì chịu!", "Chịu! Đéo có backup thì tự cầu nguyện là không rớt code đi."],
+        "en_pro": "WARNING: No backup branch or remote tracking branch to verify code integrity against!"
+    },
+    "verify_diff_cmd": {
+        "vn_pro": "Gõ lệnh này để kiểm tra tay sự khác biệt:",
+        "vn_joke": "Copy paste lệnh này xem code chênh lệch ở đâu nè:",
+        "vn_toxic": "Cóp lệnh l` này ném vào terminal mà soi:",
+        "en_pro": "Run this command to check differences manually:"
+    },
+    "verify_push_q": {
+        "vn_pro": "Xác minh (Verify) bị cảnh báo. BẠN CÓ MUỐN BỎ QUA VÀ TIẾP TỤC PUSH FORCE KHÔNG?",
+        "vn_joke": ["Cảnh báo đỏ lòm kìa sếp, vẫn nhắm mắt nhắm mũi Push Force lên luôn chứ?", "Verify xịt rồi, liều mạng Push đè lên server không?"],
+        "vn_toxic": ["ĐM đang báo lỗi rớt code kìa, CÓ ĐUI MÙ MUỐN CỐ TÌNH PUSH FORCE GHI ĐÈ LÊN SERVER KHÔNG?", "Cảnh báo rõ to rành rành đấy, MÀY VẪN MUỐN PUSH À?"],
+        "en_pro": "Verification raised warnings. DO YOU STILL WANT TO PROCEED WITH FORCE PUSH?"
+    },
+
     # Worktree changes
     "no_local_changes": {
         "vn_pro": "(Không có thay đổi local)", "vn_joke": "(Gọn gàng sạch sẽ không tì vết)", "vn_toxic": "(Đéo có file nào bị sửa)", "en_pro": "(No local changes)"
@@ -146,7 +241,7 @@ LANGUAGES = {
         "vn_pro": "Vẫn chạy tiếp, không stash", "vn_joke": "Kệ nó, chơi khô máu luôn (không stash)", "vn_toxic": "Đéo cần stash, liều thì ăn nhiều", "en_pro": "Continue without stashing"
     },
     "opt_cancel": {
-        "vn_pro": "Hủy và quay về menu", "vn_joke": "Quay xe sếp ơi, về menu", "vn_toxic": "Chim cút về menu", "en_pro": "Cancel and return"
+        "vn_pro": "Hủy và quay về", "vn_joke": "Quay xe sếp ơi", "vn_toxic": "Cút về chỗ cũ", "en_pro": "Cancel and return"
     },
     "stashed_ok": {
         "vn_pro": "Đã stash local changes.", "vn_joke": "Giấu code xong rồi nha, yên tâm.", "vn_toxic": "Đã stash cái đống rác của mày lại rồi.", "en_pro": "Stashed local changes successfully."
@@ -158,7 +253,10 @@ LANGUAGES = {
         "vn_pro": "Bạn chắc chắn muốn tiếp tục mà không stash?", "vn_joke": "Chắc kèo là không giấu code (stash) không?", "vn_toxic": "Vẫn cố chấp đéo stash đúng không?", "en_pro": "Are you sure you want to continue without stashing?"
     },
     "canceled_return": {
-        "vn_pro": "Đã hủy thao tác hiện tại. Quay về menu chính.", "vn_joke": "Đã quay xe thành công, về menu.", "vn_toxic": "Hủy cmnr. Quay về menu.", "en_pro": "Operation canceled. Returning to main menu."
+        "vn_pro": "Đã hủy thao tác hiện tại.", 
+        "vn_joke": ["Đã quay xe thành công.", "Hủy lệnh! Sếp lật mặt nhanh quá.", "Đã thắng gấp hất văng mọi thao tác."], 
+        "vn_toxic": ["Hủy cmnr.", "Lắm trò vãi, đã hủy!", "Chơi hệ lật lọng à? Hủy rồi đấy!"], 
+        "en_pro": "Operation canceled."
     },
     "restore_stash_q": {
         "vn_pro": "Có restore lại local changes từ stash không?", "vn_joke": "Xong xuôi, có bứng code từ stash ra lại không?", "vn_toxic": "Có muốn pop lại đống stash ban nãy ra không?", "en_pro": "Restore local changes from stash?"
@@ -205,7 +303,10 @@ LANGUAGES = {
         "vn_pro": "Rebase vẫn chưa xong. Có thể còn conflict hoặc bạn chưa git add đủ file.", "vn_joke": "Chưa xong sếp ơi, check kĩ xem gỡ hết conflict chưa, nhớ git add nữa.", "vn_toxic": "Rebase đéo xong! Gỡ conflict ngu chưa git add à?", "en_pro": "Rebase is not done. Conflicts might remain or you missed git add."
     },
     "rebase_success": {
-        "vn_pro": "Rebase completed successfully.", "vn_joke": "Tuyệt vời, rebase mượt mà như Sunsilk.", "vn_toxic": "Rebase xong cmnr, ngon lành.", "en_pro": "Rebase completed successfully."
+        "vn_pro": "Rebase completed successfully.", 
+        "vn_joke": ["Tuyệt vời, rebase mượt mà như Sunsilk.", "Ngon lành cành đào, không vấp miếng conflict nào luôn.", "Đỉnh chóp, rebase cái một xong luôn."], 
+        "vn_toxic": ["Rebase xong cmnr, may đéo conflict.", "Xong rồi đấy, phúc tổ 70 đời đéo bị lỗi.", "Êm xui cmnr."], 
+        "en_pro": "Rebase completed successfully."
     },
     "on_base_branch": {
         "vn_pro": "Bạn đang đứng trên base branch '{base}'.", "vn_joke": "Ủa sếp, đang đứng ở {base} múa may gì rứa?", "vn_toxic": "Đang đứng trên {base} thì squash cái đéo gì? Nháo à?", "en_pro": "You are currently on the base branch '{base}'."
@@ -214,16 +315,16 @@ LANGUAGES = {
         "vn_pro": "Hãy checkout sang feature branch trước rồi chạy lại.", "vn_joke": "Bay qua feature branch đi rồi quay lại tui làm cho.", "vn_toxic": "Checkout sang nhánh feature ngay rồi hẵng xài tool!", "en_pro": "Please checkout your feature branch first, then retry."
     },
     "base_branch_name": {
-        "vn_pro": "Base branch name", "vn_joke": "Nhập tên branch gốc (VD: develop)", "vn_toxic": "Nhập tên branch gốc vào đây", "en_pro": "Base branch name"
+        "vn_pro": "Nhập tên branch gốc (vd: develop)", "vn_joke": "Nhập tên branch gốc (VD: develop)", "vn_toxic": "Nhập tên branch gốc vào đây", "en_pro": "Base branch name"
     },
     "fetch_origin_q": {
-        "vn_pro": "Fetch latest từ origin trước khi phân tích và chạy flow?", "vn_joke": "Fetch mới nhất từ server về múa cho chuẩn không sếp?", "vn_toxic": "Có fetch mẹ code mới nhất từ origin về không?", "en_pro": "Fetch latest from origin before analyzing?"
+        "vn_pro": "Fetch latest từ origin trước khi phân tích?", "vn_joke": "Fetch mới nhất từ server về múa cho chuẩn không sếp?", "vn_toxic": "Có fetch mẹ code mới nhất từ origin về không?", "en_pro": "Fetch latest from origin before analyzing?"
     },
     "merged_reason": {
-        "vn_pro": "Phát hiện {count} merge commit kể từ merge-base {base}. Branch có vẻ không clean.", "vn_joke": "Thấy tận {count} cục merge kể từ base {base}. Nhánh nát quá sếp ơi.", "vn_toxic": "Đm có {count} cục merge rác kể từ {base}. Nhánh đéo clean tí nào.", "en_pro": "Detected {count} merge commits since merge-base {base}. Branch seems merged."
+        "vn_pro": "Phát hiện {count} merge commit kể từ {base}. Branch có vẻ không clean.", "vn_joke": "Thấy tận {count} cục merge kể từ {base}. Nhánh nát quá sếp ơi.", "vn_toxic": "Đm có {count} cục merge rác kể từ {base}. Nhánh đéo clean tí nào.", "en_pro": "Detected {count} merge commits since {base}. Branch seems merged."
     },
     "clean_reason": {
-        "vn_pro": "Không phát hiện merge commit kể từ merge-base {base}. Branch có vẻ clean.", "vn_joke": "Ngon lành, nhánh sạch sẽ không có merge rác nào từ base {base}.", "vn_toxic": "Nhánh có vẻ sạch, đéo có cục merge nào từ base {base}.", "en_pro": "No merge commits found since merge-base {base}. Branch seems clean."
+        "vn_pro": "Không phát hiện merge commit kể từ {base}. Branch có vẻ clean.", "vn_joke": "Ngon lành, nhánh sạch sẽ không có merge rác nào từ {base}.", "vn_toxic": "Nhánh có vẻ sạch, đéo có cục merge nào từ {base}.", "en_pro": "No merge commits found since {base}. Branch seems clean."
     },
     "use_detected_history_q": {
         "vn_pro": "Dùng loại history auto-detect là '{type}'?", "vn_joke": "Tool bắt mạch là '{type}', quất luôn không sếp?", "vn_toxic": "Tự nhận diện history là '{type}', quất luôn không lằng nhằng?", "en_pro": "Use auto-detected history type '{type}'?"
@@ -238,63 +339,40 @@ LANGUAGES = {
         "vn_pro": "merged - đã từng merge develop vào feature / history không sạch", "vn_joke": "merged - đã từng lỡ tay merge develop vào / nát bét", "vn_toxic": "merged - history nát vcl do merge bậy bạ", "en_pro": "merged - develop was merged into feature / unclean history"
     },
     "no_commits_to_squash": {
-        "vn_pro": "Không có commit nào để squash. Quay về menu chính.", "vn_joke": "Chưa code gì mà đòi squash ba? Về menu nha.", "vn_toxic": "Đéo có commit nào mà cũng đòi squash. Về menu!", "en_pro": "No commits to squash. Returning to main menu."
+        "vn_pro": "Không có commit nào để squash.", "vn_joke": "Chưa code gì mà đòi squash ba?", "vn_toxic": "Đéo có commit nào mà cũng đòi squash.", "en_pro": "No commits to squash."
     },
     "create_backup_q": {
-        "vn_pro": "Có tạo backup branch trước khi rewrite history không?", "vn_joke": "Làm cái branch backup cất tủ cho an tâm không sếp?", "vn_toxic": "Có backup lại nhánh không? Lỡ nát còn có cái mà bú.", "en_pro": "Create a backup branch before rewriting history?"
+        "vn_pro": "Có tạo backup branch không? (Khuyến nghị: Dùng để Verify sự toàn vẹn của code)", 
+        "vn_joke": "Làm cái branch backup cất tủ không? Tí dùng đối chiếu cho chắc kèo.", 
+        "vn_toxic": "Có backup nhánh đéo? Lát có cái mà soi xem rớt code hay không?", 
+        "en_pro": "Create a backup branch? (Recommended for verifying code integrity later)"
     },
     "created_backup": {
         "vn_pro": "Đã tạo backup branch: ", "vn_joke": "Đã sao lưu an toàn ra nhánh: ", "vn_toxic": "Tạo backup xong cmnr ở nhánh: ", "en_pro": "Created backup branch: "
     },
     "final_commit_msg": {
-        "vn_pro": "Final commit message", "vn_joke": "Chốt câu commit cuối cùng xem nào", "vn_toxic": "Ghi cái commit message vào (ghi cho đàng hoàng)", "en_pro": "Final commit message"
+        "vn_pro": "Commit message cuối cùng", "vn_joke": "Chốt câu commit cuối cùng xem nào", "vn_toxic": "Ghi cái commit message vào (ghi cho đàng hoàng)", "en_pro": "Final commit message"
     },
     "auto_push_q": {
-        "vn_pro": "Sau khi rebase xong có push luôn bằng --force-with-lease không?", "vn_joke": "Làm xong auto push đè lên remote luôn không sếp (an toàn)?", "vn_toxic": "Rebase xong có push force đè luôn remote không?", "en_pro": "Auto push using --force-with-lease after successful rebase?"
+        "vn_pro": "Sau khi rebase & verify xong có push luôn bằng --force-with-lease không?", "vn_joke": "Làm xong auto push đè lên remote luôn không sếp (an toàn)?", "vn_toxic": "Xong xuôi check chuẩn rồi có push force đè luôn remote không?", "en_pro": "Auto push using --force-with-lease after successful rebase & verify?"
     },
     "continue_steps_q": {
-        "vn_pro": "Tiếp tục thực hiện các bước trên?", "vn_joke": "Chốt đơn, bắt đầu chạy dây chuyền nha sếp?", "vn_toxic": "Duyệt chưa? Để tao bắt đầu chạy?", "en_pro": "Continue executing the above steps?"
+        "vn_pro": "Bắt đầu thực thi các bước trên?", "vn_joke": "Chốt đơn, bắt đầu chạy dây chuyền nha sếp?", "vn_toxic": "Duyệt chưa? Để tao bắt đầu chạy?", "en_pro": "Execute the above steps?"
     },
     "flow_done": {
-        "vn_pro": "Hoàn tất. Feature branch đã được squash và rebase xong.", "vn_joke": "Xong cmnr sếp ơi. Nhánh sạch bóng, rebase mượt mà.", "vn_toxic": "Ngon lành cành đào. Squash và rebase xong cmnr.", "en_pro": "Done. Feature branch has been successfully squashed and rebased."
+        "vn_pro": "Hoàn tất. Feature branch đã được squash và rebase xong.", 
+        "vn_joke": ["Xong cmnr sếp ơi. Nhánh sạch bóng, rebase mượt mà.", "Tất cả đã hoàn tất. Quá đẳng cấp!", "Done! Chiều đi nhậu thôi sếp."], 
+        "vn_toxic": ["Ngon lành cành đào. Squash và rebase xong cmnr.", "Xong mẹ rồi, check lại xem còn lác không.", "Đã hoàn tất, khỏi cám ơn tao."], 
+        "en_pro": "Done. Feature branch has been successfully squashed and rebased."
     },
     "goodbye": {
-        "vn_pro": "Tạm biệt.", "vn_joke": "Bái bai sếp, múa code vui vẻ.", "vn_toxic": "Cút đi code tiếp đi.", "en_pro": "Goodbye."
+        "vn_pro": "Tạm biệt.", 
+        "vn_joke": ["Bái bai sếp, múa code vui vẻ.", "Hẹn gặp lại sếp sau nha.", "Sủi đây, chúc sếp fix bug mượt mà."], 
+        "vn_toxic": ["Cút đi code tiếp đi.", "Biến cmn đi cho khuất mắt.", "Cuối cùng cũng lượn. Bái bai đéo hẹn gặp lại!"], 
+        "en_pro": "Goodbye."
     },
     
-    # Error Dictionary
-    "err_network": {
-        "vn_pro": "Lỗi mạng hoặc xác thực. Vui lòng kiểm tra lại kết nối internet, VPN hoặc quyền truy cập repo.",
-        "vn_joke": "Rớt mạng rồi sếp ơi, hoặc repo private mà sếp quên xin quyền kìa.",
-        "vn_toxic": "Mù hay sao đéo thấy lỗi mạng? Check lại Wifi, VPN với quyền access đi cái!",
-        "en_pro": "Network or authentication error. Please check your internet connection, VPN, or repo permissions."
-    },
-    "err_conflict": {
-        "vn_pro": "Xung đột (conflict) mã nguồn. Git không thể tự gộp, bạn cần mở IDE để giải quyết thủ công.",
-        "vn_joke": "Choảng nhau rồi! Code sếp với code thiên hạ đang uýnh nhau, mở IDE lên can đi.",
-        "vn_toxic": "Conflict banh xác cmnr! Bấm vào IDE mà gỡ tay đi chứ tool đéo cứu được vụ này.",
-        "en_pro": "Merge conflict detected. Git cannot automatically merge, manual resolution required."
-    },
-    "err_overwrite": {
-        "vn_pro": "Lệnh bị chặn do bạn có thay đổi chưa lưu có thể bị ghi đè. Hãy giấu code (stash) hoặc commit trước.",
-        "vn_joke": "Tính ghi đè mất code đang viết dở à? May mà Git nó cản. Giấu code (stash) đi đã.",
-        "vn_toxic": "Ngu à? Chuyển nhánh/Rebase lúc file đang sửa dở nó đè mất code thì khóc. Stash mẹ nó lại!",
-        "en_pro": "Operation aborted to prevent overwriting uncommitted changes. Please stash or commit first."
-    },
-    "err_push_rejected": {
-        "vn_pro": "Push bị từ chối. Thường do nhánh trên remote có code mới hơn local, hoặc do rule bảo vệ nhánh.",
-        "vn_joke": "Bị server sút ra rồi! Chắc ai đó đã push code mới hơn, sếp phải pull về trước nha.",
-        "vn_toxic": "Server nó đéo cho push! Một là do code mày cũ hơn remote, hai là nhánh bị khóa cmnr. Tự check đi!",
-        "en_pro": "Push rejected. Usually because the remote branch is ahead of your local branch, or due to branch protection rules."
-    },
-    "err_unknown": {
-        "vn_pro": "Gặp lỗi Git không xác định. Vui lòng đọc kỹ thông báo lỗi màu đỏ ở trên.",
-        "vn_joke": "Lỗi này lạ quá tool chưa được học. Sếp chịu khó tự ngâm cứu log tiếng Anh bên trên nha.",
-        "vn_toxic": "Lỗi củ lìn gì đây? Tao chịu, tự căng mắt ra mà đọc cái dòng đỏ lòm bên trên đi!",
-        "en_pro": "An unknown Git error occurred. Please read the standard error message above carefully."
-    },
-
-    # Checkout features
+    # Checkout features & Easter Eggs that were missing
     "ask_checkout_now": {
         "vn_pro": "Bạn có muốn checkout sang nhánh khác ngay bây giờ không?",
         "vn_joke": "Muốn bay qua nhánh khác luôn không sếp?",
@@ -351,7 +429,7 @@ LANGUAGES = {
     },
     "branch_count_few": {
         "vn_pro": "Repo rất gọn gàng với {count} nhánh.",
-        "vn_joke": "Có lèo tèo {count} nhánh. Dăm ba cái nhánh này tính ra còn ít hơn số logic phải vặn vẹo lúc dùng Pyspark bóc tách ba cái file Excel gộp dòng bữa nọ nữa.",
+        "vn_joke": "Có lèo tèo {count} nhánh. Số nhánh này khéo còn ít hơn số logic Pyspark phải viết để xử lý mấy cái file Excel lồng ghép bữa nọ á sếp.",
         "vn_toxic": "Đéo mẹ cả repo có đúng {count} cái nhánh rách? Có làm việc không hay bú fame?",
         "en_pro": "Repository is very clean with only {count} branches."
     },
@@ -362,17 +440,49 @@ LANGUAGES = {
         "en_pro": "Notice: Repository has {count} branches. Consider cleaning up stale branches."
     },
     
+    # Error Dictionary
+    "err_network": {
+        "vn_pro": "Lỗi mạng hoặc xác thực. Vui lòng kiểm tra lại kết nối internet, VPN hoặc quyền truy cập repo.",
+        "vn_joke": "Rớt mạng rồi sếp ơi, hoặc repo private mà sếp quên xin quyền kìa.",
+        "vn_toxic": "Mù hay sao đéo thấy lỗi mạng? Check lại Wifi, VPN với quyền access đi cái!",
+        "en_pro": "Network or authentication error. Please check your internet connection, VPN, or repo permissions."
+    },
+    "err_conflict": {
+        "vn_pro": "Xung đột (conflict) mã nguồn. Git không thể tự gộp, bạn cần mở IDE để giải quyết thủ công.",
+        "vn_joke": "Choảng nhau rồi! Code sếp với code thiên hạ đang uýnh nhau, mở IDE lên can đi.",
+        "vn_toxic": "Conflict banh xác cmnr! Bấm vào IDE mà gỡ tay đi chứ tool đéo cứu được vụ này.",
+        "en_pro": "Merge conflict detected. Git cannot automatically merge, manual resolution required."
+    },
+    "err_overwrite": {
+        "vn_pro": "Lệnh bị chặn do bạn có thay đổi chưa lưu có thể bị ghi đè. Hãy giấu code (stash) hoặc commit trước.",
+        "vn_joke": "Tính ghi đè mất code đang viết dở à? May mà Git nó cản. Giấu code (stash) đi đã.",
+        "vn_toxic": "Ngu à? Chuyển nhánh/Rebase lúc file đang sửa dở nó đè mất code thì khóc. Stash mẹ nó lại!",
+        "en_pro": "Operation aborted to prevent overwriting uncommitted changes. Please stash or commit first."
+    },
+    "err_push_rejected": {
+        "vn_pro": "Push bị từ chối. Thường do nhánh trên remote có code mới hơn local, hoặc do rule bảo vệ nhánh.",
+        "vn_joke": "Bị server sút ra rồi! Chắc ai đó đã push code mới hơn, sếp phải pull về trước nha.",
+        "vn_toxic": "Server nó đéo cho push! Một là do code mày cũ hơn remote, hai là nhánh bị khóa cmnr. Tự check đi!",
+        "en_pro": "Push rejected. Usually because the remote branch is ahead of your local branch, or due to branch protection rules."
+    },
+    "err_unknown": {
+        "vn_pro": "Gặp lỗi Git không xác định. Vui lòng đọc kỹ thông báo lỗi màu đỏ ở trên.",
+        "vn_joke": "Lỗi này lạ quá tool chưa được học. Sếp chịu khó tự ngâm cứu log tiếng Anh bên trên nha.",
+        "vn_toxic": "Lỗi củ lìn gì đây? Tao chịu, tự căng mắt ra mà đọc cái dòng đỏ lòm bên trên đi!",
+        "en_pro": "An unknown Git error occurred. Please read the standard error message above carefully."
+    },
+
     # Easter Eggs Dictionary
     "ee_night_owl": {
         "vn_pro": "Ghi chú: Đã khuya, hãy chú ý giữ gìn sức khỏe nhé.",
-        "vn_joke": "Trời đánh tránh giờ ngủ. Cú đêm cày code cẩn thận rụng tóc nha sếp!",
-        "vn_toxic": "Đêm hôm đéo đi ngủ đi ngồi múa Git? Tính bán mạng cho tư bản à?",
+        "vn_joke": ["Trời đánh tránh giờ ngủ. Cú đêm cày code cẩn thận rụng tóc nha sếp!", "Cú đêm à? Giữ sức khỏe nha, rụng tóc không ai đền đâu."],
+        "vn_toxic": ["Đêm hôm đéo đi ngủ đi ngồi múa Git? Tính bán mạng cho tư bản à?", "Giờ này đéo ngủ lôi code ra chọc ngoáy, rảnh háng à?"],
         "en_pro": "Notice: It's late night. Please take some rest."
     },
     "ee_spam_commit": {
         "vn_pro": "Ghi chú: Số lượng commit khá lớn ({count} commits).",
-        "vn_joke": "Mẹ ơi {count} commits! Sếp gõ phím dạo hay sao mà rác kinh thế?",
-        "vn_toxic": "Tận {count} commits? Mày commit từng dòng code một hay gì mà rác vcl thế?",
+        "vn_joke": ["Mẹ ơi {count} commits! Sếp gõ phím dạo hay sao mà rác kinh thế?", "Tạo tận {count} commits luôn? Sếp rảnh ghê á.", "Kỷ lục mới: {count} commits dẻ rách!"],
+        "vn_toxic": ["Tận {count} commits? Mày commit từng dòng code một hay gì mà rác vcl thế?", "Nhìn {count} cái commits của mày tao muốn tăng xông!"],
         "en_pro": "Notice: Detected a large number of commits ({count})."
     },
     "ee_massive_stash": {
@@ -380,15 +490,33 @@ LANGUAGES = {
         "vn_joke": "Ối giời thay đổi tận {count} files! Sếp đập đi xây lại cả cái project à?",
         "vn_toxic": "Sửa tận {count} files đéo chịu commit? Thích ôm bom cảm tử đúng không?",
         "en_pro": "Detected a massive amount of uncommitted changes ({count} files)."
+    },
+    "ee_rage_quit": {
+        "vn_pro": "Bạn hủy vào phút chót sao? Tool đã cất công tính toán xong xuôi rồi mà... Thôi được, thao tác đã hủy.",
+        "vn_joke": ["Trời ơi đùa tui á?? Bày mâm bát ra hết rồi sếp lại lật bàn 😭. Tổn thương sâu sắc nha...", "Chơi ác vậy sếp? Hủy phút 89 luôn..."],
+        "vn_toxic": ["Mày đùa tao à??? Chạy cả buổi phân tích xong giờ bấm hủy? Rảnh quá thì đi dọn rác đi, lượn!", "Cái đm tới phút cuối thì kêu mệt đéo làm nữa? Lôi thôi vcl!"],
+        "en_pro": "Canceled at the last minute? All preparations were done... Operation aborted."
     }
 }
 
 def _t(key: str, **kwargs) -> str:
-    msg = LANGUAGES.get(key, {}).get(CURRENT_LANG, key)
+    # Lấy data (có thể là chuỗi hoặc list)
+    msg_data = LANGUAGES.get(key, {}).get(CURRENT_LANG, key)
+    
+    # Random nếu là mảng
+    if isinstance(msg_data, list):
+        msg = random.choice(msg_data)
+    else:
+        msg = msg_data
+        
+    # Format chuỗi
     if kwargs:
         msg = msg.format(**kwargs)
+        
+    # Thêm Emoji
     if EMOJI_MODE and key in EMOJI_MAP:
         msg = f"{msg} {EMOJI_MAP[key]}"
+        
     return msg
 
 # ============================================================
@@ -419,6 +547,12 @@ def pause_exit(code: int = 0) -> None:
         except Exception:
             pass
     sys.exit(code)
+
+def pause_continue() -> None:
+    try:
+        input(f"\n{THEME.dim(_t('press_continue'))}")
+    except Exception:
+        pass
 
 def clear_screen() -> None:
     os.system("cls" if os.name == "nt" else "clear")
@@ -521,7 +655,7 @@ def print_box(title: str, lines: List[str]) -> None:
     print(THEME.branch(bottom))
 
 # ============================================================
-# Git Error Decoder (Tự động giải mã lỗi)
+# Git Error Decoder
 # ============================================================
 def get_friendly_git_error(stderr_str: str) -> str:
     stderr_lower = stderr_str.lower()
@@ -540,6 +674,16 @@ def get_friendly_git_error(stderr_str: str) -> str:
 # ============================================================
 # Shell / Git helpers
 # ============================================================
+def safe_quote(text: str) -> str:
+    """
+    Sửa lỗi shlex.quote bọc dấu nháy đơn làm Windows cmd.exe không hiểu 
+    khiến các command có chứa dấu cách (như commit message) bị gãy.
+    """
+    if os.name == 'nt':
+        escaped = text.replace('"', '\\"')
+        return f'"{escaped}"'
+    return shlex.quote(text)
+
 def run(cmd: str, cwd: Optional[str] = None, check: bool = True, capture: bool = False) -> str:
     print(f"\n{THEME.cmd('> ' + cmd)}")
     
@@ -580,28 +724,33 @@ def ensure_git_installed() -> None:
         pause_exit(1)
 
 # ============================================================
-# Prompt helpers
+# Prompt helpers (Có hỗ trợ Back '<')
 # ============================================================
-def ask_yes_no(question_key: str, default: bool = True, **kwargs) -> bool:
+def ask_yes_no(question_key: str, default: bool = True, allow_back: bool = False, **kwargs) -> Any:
     suffix = THEME.ok("[Y/n]") if default else THEME.warn("[y/N]")
+    back_hint = THEME.dim(_t("type_back")) if allow_back else ""
     while True:
-        answer = input(f"{THEME.info('?')} {_t(question_key, **kwargs)} {suffix}: ").strip().lower()
+        answer = input(f"{THEME.info('?')} {_t(question_key, **kwargs)} {suffix}{back_hint}: ").strip().lower()
+        if allow_back and answer == "<": return "<BACK>"
         if not answer: return default
         if answer in ("y", "yes"): return True
         if answer in ("n", "no"): return False
         print(THEME.warn(_t("invalid_yn")))
 
-def ask_non_empty(question_key: str, default: Optional[str] = None) -> str:
+def ask_non_empty(question_key: str, default: Optional[str] = None, allow_back: bool = False) -> Any:
+    back_hint = THEME.dim(_t("type_back")) if allow_back else ""
     while True:
         if default is None:
-            answer = input(f"{THEME.info('?')} {_t(question_key)}: ").strip()
+            answer = input(f"{THEME.info('?')} {_t(question_key)}{back_hint}: ").strip()
         else:
-            answer = input(f"{THEME.info('?')} {_t(question_key)} {THEME.dim('[' + default + ']')}: ").strip()
+            answer = input(f"{THEME.info('?')} {_t(question_key)} {THEME.dim('[' + default + ']')}{back_hint}: ").strip()
             if not answer: return default
+            
+        if allow_back and answer == "<": return "<BACK>"
         if answer: return answer
         print(THEME.warn(_t("not_empty")))
 
-def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0) -> str:
+def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0, allow_back: bool = False) -> str:
     print(f"\n{THEME.info('?')} {_t(question_key)}")
     for i, opt_key in enumerate(option_keys, start=1):
         marker = f" {THEME.ok(_t('default_marker'))}" if i - 1 == default_index else ""
@@ -613,8 +762,12 @@ def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0
             
         print(f"  {THEME.choice(str(i) + '.')} {display}{marker}")
         
+    if allow_back:
+        print(f"  {THEME.choice('<.')} {_t('opt_back')}")
+        
     while True:
         answer = input(f"{THEME.info('?')} {_t('choose_num')} ").strip()
+        if allow_back and answer == "<": return "<BACK>"
         if not answer: return option_keys[default_index]
         if answer.isdigit():
             idx = int(answer) - 1
@@ -711,7 +864,7 @@ def maybe_restore_auto_stash(repo_dir: str, auto_stashed: bool) -> None:
     print(THEME.ok(_t("restored_stash")))
 
 # ============================================================
-# Git branch logic & Advanced Checkout Flow
+# Git branch logic & Checkout
 # ============================================================
 def current_branch(repo_dir: str) -> str:
     return git_output("git rev-parse --abbrev-ref HEAD", cwd=repo_dir)
@@ -724,36 +877,27 @@ def ensure_not_on_base(base_branch: str, current: str) -> bool:
     return True
 
 def clean_branch_name(b: str) -> str:
-    # Xử lý triệt để dấu nháy đơn do Windows CMD tự chèn vào
     return b.strip().strip("'").strip('"')
 
 def highlight_b(b_name: str, kw: str, is_loc: bool) -> str:
-    # Logic nhả màu an toàn với nền Vàng nổi bật
     if not THEME.use_color: 
         return b_name
-        
     base_ansi = (THEME.BRIGHT_BLUE + THEME.BOLD) if is_loc else THEME.DIM
     if not kw: 
         return base_ansi + b_name + THEME.RESET
-        
     hl_ansi = THEME.BG_YELLOW + THEME.BLACK + THEME.BOLD
     pattern = re.compile(re.escape(kw), re.IGNORECASE)
     colored = pattern.sub(lambda m: hl_ansi + m.group(0) + THEME.RESET + base_ansi, b_name)
     return base_ansi + colored + THEME.RESET
 
 def handle_checkout(repo_dir: str) -> bool:
-    # Lấy danh sách local
     local_branches_str = git_output("git branch --format=%(refname:short)", cwd=repo_dir)
     local_branches = [clean_branch_name(b) for b in local_branches_str.splitlines() if b.strip()]
     
-    # Lấy danh sách remote 
     remote_branches_str = git_output("git branch -r --format=%(refname:short)", cwd=repo_dir)
     remote_branches_raw = [clean_branch_name(b) for b in remote_branches_str.splitlines() if b.strip()]
-    
-    # Lọc bỏ origin/HEAD và cái tên remote rác
     remote_branches = [b for b in remote_branches_raw if "origin/HEAD" not in b and b != "origin"]
     
-    # Lọc bỏ nhánh remote đã có tracking local
     local_set = set(local_branches)
     remote_only = []
     for rb in remote_branches:
@@ -762,7 +906,6 @@ def handle_checkout(repo_dir: str) -> bool:
             remote_only.append(rb)
             
     all_branches = local_branches + remote_only
-    
     if not all_branches:
         return False
 
@@ -771,12 +914,9 @@ def handle_checkout(repo_dir: str) -> bool:
     search_kw = ""
     alert_msg = ""
     
-    # Phân tích số lượng nhánh để chèn bình luận vui nhộn
     total_count = len(all_branches)
-    if total_count >= 50:
-        alert_msg = THEME.warn(_t("branch_count_many", count=total_count))
-    elif total_count <= 5:
-        alert_msg = THEME.ok(_t("branch_count_few", count=total_count))
+    if total_count >= 50: alert_msg = THEME.warn(_t("branch_count_many", count=total_count))
+    elif total_count <= 5: alert_msg = THEME.ok(_t("branch_count_few", count=total_count))
     
     while True:
         clear_screen()
@@ -795,8 +935,7 @@ def handle_checkout(repo_dir: str) -> bool:
 
         ans = input(f"\n{THEME.info('?')} {_t('choose_branch_checkout')} ").strip()
         
-        if not ans: 
-            return False
+        if not ans: return False
             
         if ans.lower() == 'f':
             alert_msg = THEME.info(_t("fetching_remote"))
@@ -805,16 +944,11 @@ def handle_checkout(repo_dir: str) -> bool:
             return handle_checkout(repo_dir)
             
         target = None
-        
-        # Check nếu là số index
         if ans.isdigit():
             idx = int(ans) - 1
-            if 0 <= idx < len(current_list):
-                target = current_list[idx]
-        # Check nếu nhập trúng tên
+            if 0 <= idx < len(current_list): target = current_list[idx]
         elif ans in current_list:
             target = ans
-        # Search keyword
         else:
             matches = [b for b in all_branches if ans.lower() in b.lower()]
             if not matches:
@@ -829,15 +963,14 @@ def handle_checkout(repo_dir: str) -> bool:
                 current_list = matches
                 continue
                 
-        # Thực hiện checkout
         if target:
             try:
                 if target.startswith("origin/"):
                     clean_name = target.replace("origin/", "", 1)
-                    run(f"git checkout -t {shlex.quote(target)}", cwd=repo_dir)
+                    run(f"git checkout -t {safe_quote(target)}", cwd=repo_dir)
                     print(THEME.ok(_t("checkout_success", branch=clean_name)))
                 else:
-                    run(f"git checkout {shlex.quote(target)}", cwd=repo_dir)
+                    run(f"git checkout {safe_quote(target)}", cwd=repo_dir)
                     print(THEME.ok(_t("checkout_success", branch=target)))
                 return True
             except RuntimeError:
@@ -845,7 +978,7 @@ def handle_checkout(repo_dir: str) -> bool:
                 return False
 
 # ============================================================
-# Rebase state helpers
+# Rebase state & VERIFICATION helpers
 # ============================================================
 def get_git_dir(repo_dir: str) -> Path:
     git_dir = git_output("git rev-parse --git-dir", cwd=repo_dir)
@@ -926,7 +1059,7 @@ def handle_rebase_recovery(repo_dir: str) -> str:
 def create_backup(repo_dir: str, branch: str) -> str:
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     backup_branch = f"backup/{branch.replace('/', '-')}-{ts}"
-    run(f"git branch {shlex.quote(backup_branch)}", cwd=repo_dir)
+    run(f"git branch {safe_quote(backup_branch)}", cwd=repo_dir)
     return backup_branch
 
 def get_effective_base_point(repo_dir: str, base_branch: str, history_type: str) -> Optional[str]:
@@ -954,6 +1087,79 @@ def get_commit_preview(repo_dir: str, base_point: str, limit: int = 50) -> List[
     return output.splitlines() if output else []
 
 # ============================================================
+# Post-Rebase Verification Engine (Sử dụng git patch-id)
+# ============================================================
+def get_diff_patch_id(repo_dir: str, base_ref: str, target_ref: str) -> str:
+    # Lấy diff gom chung của toàn bộ thay đổi
+    diff_output = git_output(f"git diff {base_ref}...{target_ref}", cwd=repo_dir, check=False)
+    if not diff_output.strip():
+        return "empty"
+    
+    # Truyền qua git patch-id (Băm mã thay đổi nội tại, bỏ qua context lines)
+    try:
+        p = subprocess.Popen(["git", "patch-id", "--stable"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=repo_dir)
+        out, err = p.communicate(input=diff_output.encode('utf-8'))
+        if p.returncode == 0 and out:
+            return out.decode('utf-8').split()[0]
+    except Exception:
+        pass
+        
+    # Fallback if patch-id fails (e.g. older git) - remove @@ lines and whitespace
+    cleaned = re.sub(r'@@.*?@@', '', diff_output)
+    cleaned = re.sub(r'\s+', '', cleaned)
+    return cleaned
+
+def run_verification(repo_dir: str, state: dict, branch: str, backup_branch: Optional[str], conflict_occurred: bool) -> bool:
+    print(f"\n{THEME.branch(BOX['tl'] + BOX['h']*80)}")
+    print(f"{THEME.branch(BOX['v'])} {THEME.info(_t('verify_title'))}")
+    
+    passed = True
+    behind = 0
+    
+    # 1. Fetch lại base mới nhất
+    run(f"git fetch origin {state['base_branch']}", cwd=repo_dir, capture=True)
+    
+    # 2. Check ahead/behind
+    try:
+        rev_count = git_output(f"git rev-list --left-right --count origin/{state['base_branch']}...HEAD", cwd=repo_dir)
+        behind, ahead = map(int, rev_count.split())
+        if behind > 0:
+            print(f"{THEME.branch(BOX['v'])} {THEME.err(_t('verify_ahead_fail', base=state['base_branch'], behind=behind))}")
+            passed = False
+        else:
+            print(f"{THEME.branch(BOX['v'])} {THEME.ok(_t('verify_ahead_ok', base=state['base_branch'], ahead=ahead))}")
+    except Exception:
+        print(f"{THEME.branch(BOX['v'])} {THEME.warn('Không thể kiểm tra Ahead/Behind.')}")
+        
+    # 3. Check Changes (Sử dụng Patch-ID)
+    reference_ref = backup_branch if backup_branch else f"origin/{branch}"
+    if not git_output(f"git rev-parse --verify {reference_ref}", cwd=repo_dir, check=False):
+        reference_ref = None
+        
+    if not reference_ref:
+        print(f"{THEME.branch(BOX['v'])} {THEME.err(_t('verify_no_ref'))}")
+        # Không có ref để test patch-id thì đành cho qua nhưng cảnh báo nặng
+    else:
+        old_patch_id = get_diff_patch_id(repo_dir, state["base_point"], reference_ref)
+        new_patch_id = get_diff_patch_id(repo_dir, f"origin/{state['base_branch']}", "HEAD")
+        
+        if old_patch_id == new_patch_id:
+            print(f"{THEME.branch(BOX['v'])} {THEME.ok(_t('verify_patch_ok'))}")
+        else:
+            passed = False
+            print(f"{THEME.branch(BOX['v'])} {THEME.warn(_t('verify_patch_diff'))}")
+            if conflict_occurred:
+                print(f"{THEME.branch(BOX['v'])} {THEME.dim(_t('verify_conflict_reason'))}")
+            else:
+                print(f"{THEME.branch(BOX['v'])} {THEME.err(_t('verify_missing_reason'))}")
+            
+            diff_cmd = f"git diff {reference_ref} HEAD"
+            print(f"{THEME.branch(BOX['v'])} {THEME.info(_t('verify_diff_cmd'))} {THEME.cmd(diff_cmd)}")
+            
+    print(f"{THEME.branch(BOX['bl'] + BOX['h']*80)}\n")
+    return passed
+
+# ============================================================
 # Commit line formatting
 # ============================================================
 COMMIT_TYPE_RE = re.compile(r"^(feat|fix|refactor|chore|docs|test)(\(.+?\))?:", re.IGNORECASE)
@@ -974,51 +1180,87 @@ def format_commit_line(line: str) -> str:
     return f"• {THEME.commit(parts[0])} {highlight_commit_message(parts[1])}"
 
 # ============================================================
-# UI blocks
+# UI blocks - WIZARD DASHBOARD
 # ============================================================
 def show_startup(repo_dir: str) -> None:
+    try:
+        branch = current_branch(repo_dir)
+    except Exception:
+        branch = "(unknown / initial)"
+        
+    rebase_state = THEME.warn('🚧 IN PROGRESS') if is_rebase_in_progress(repo_dir) else THEME.ok('idle')
+    
     lines = [
         f"{THEME.key('Platform')} : {os.name}",
         f"{THEME.key('Repo')}     : {repo_dir}",
-        f"{THEME.key('Rebase')}   : {'in progress' if is_rebase_in_progress(repo_dir) else 'idle'}",
+        f"{THEME.key('Branch')}   : {THEME.branch(branch)}",
+        f"{THEME.key('Rebase')}   : {rebase_state}",
     ]
     print_box("Feature Branch Squash + Rebase Assistant", lines)
 
-def show_summary(repo_dir: str, base_branch: str, detected_type: str, detected_reason: str) -> None:
-    lines = [
-        f"{THEME.key('Current branch')} : {THEME.branch(current_branch(repo_dir))}",
-        f"{THEME.key('Base branch')}    : {THEME.branch(base_branch)}",
-        f"{THEME.key('Detected type')}  : {THEME.choice(_t(f'opt_hist_{detected_type}'))}",
-        f"{THEME.key('Detail')}         : {detected_reason}",
-    ]
-    print_box("Git Summary", lines)
+def show_wizard_dashboard(state: dict, current_step: int) -> None:
+    def check(step_idx: int) -> str:
+        if current_step > step_idx: return THEME.ok("[✓]")
+        if current_step == step_idx: return THEME.warn("[►]")
+        return THEME.dim("[ ]")
 
-def show_scope(base_point: str, commit_total: int, commits: List[str], truncated: bool) -> None:
-    lines = [
-        f"{THEME.key('Base point')}       : {THEME.commit(base_point)}",
-        f"{THEME.key('Commits to squash')}: {THEME.count(str(commit_total))}",
-    ]
-    print_box("Base Point & Scope", lines)
+    lines = []
     
-    # Easter Egg: Thánh Xả Rác
-    if commit_total >= 20:
-        print(f"\n{THEME.warn(_t('ee_spam_commit', count=commit_total))}")
-        
-    preview_lines = [format_commit_line(c) for c in commits] if commits else [THEME.dim("(No commits in range)")]
-    if truncated: preview_lines += [THEME.dim("..."), THEME.dim("(Truncated)")]
-    print_box("Preview Commits", preview_lines)
+    v0 = THEME.branch(state.get('base_branch', '')) if current_step > 0 else "..."
+    lines.append(f"{check(0)} {_t('dash_base_branch').ljust(18)} : {v0}")
+    
+    v1 = "Yes" if state.get('do_fetch') else "No"
+    v1 = THEME.choice(v1) if current_step > 1 else "..."
+    lines.append(f"{check(1)} {_t('dash_fetch').ljust(18)} : {v1}")
+    
+    v2 = THEME.choice(state.get('history_type', '')) if current_step > 2 else "..."
+    lines.append(f"{check(2)} {_t('dash_history').ljust(18)} : {v2}")
+    if current_step > 2 and state.get('commit_total', 0) > 0:
+        lines.append(f"       └─ {THEME.dim('Commits to squash:')} {THEME.count(str(state['commit_total']))}")
+    
+    v3 = "Yes" if state.get('do_backup') else "No"
+    v3 = THEME.choice(v3) if current_step > 3 else "..."
+    lines.append(f"{check(3)} {_t('dash_backup').ljust(18)} : {v3}")
+    
+    v4 = THEME.commit(state.get('final_msg', '')) if current_step > 4 else "..."
+    lines.append(f"{check(4)} {_t('dash_msg').ljust(18)} : {v4}")
+    
+    v5 = "Yes" if state.get('auto_push') else "No"
+    v5 = THEME.choice(v5) if current_step > 5 else "..."
+    lines.append(f"{check(5)} {_t('dash_push').ljust(18)} : {v5}")
+    
+    print_box(_t("dash_title"), lines)
+    
+    if current_step > 2 and state.get('commit_total', 0) >= 20:
+        print(f"  {THEME.warn(_t('ee_spam_commit', count=state['commit_total']))}")
 
-def show_action_plan(base_point: str, final_message: str, base_branch: str, auto_push: bool) -> None:
+def show_action_plan(base_point: str, final_message: str, base_branch: str, feature_branch: str, commit_count: int, auto_push: bool) -> None:
+    pad_base = base_branch.ljust(15)
+    pad_feat = feature_branch.ljust(15)
+    
+    sketch = [
+        f"{THEME.dim('[TRƯỚC / BEFORE]')}",
+        f" {THEME.branch(pad_base)} ──○──○──◉──○──○ (origin)",
+        f"                         \\",
+        f" {THEME.branch(pad_feat)}          ○──○──○ ({commit_count} commits)",
+        f"",
+        f"{THEME.dim('[SAU / AFTER]')}",
+        f" {THEME.branch(pad_base)} ──○──○──◉──○──○ (origin)",
+        f"                                     \\",
+        f" {THEME.branch(pad_feat)}                      🌟 (1 squashed)"
+    ]
+    print_box("Rebase Flow Sketch", sketch)
+    
     lines = [
         THEME.cmd(f"1. git reset --soft {base_point}"),
         THEME.cmd(f'2. git commit -m "{final_message}"'),
         THEME.cmd(f"3. git rebase origin/{base_branch}"),
     ]
     if auto_push: lines.append(THEME.cmd("4. git push --force-with-lease"))
-    print_box("Action Plan", lines)
+    print_box("Commands to execute", lines)
 
 # ============================================================
-# Core flow
+# Core flow (STATE MACHINE WIZARD)
 # ============================================================
 def run_feature_flow(repo_dir: str) -> None:
     if is_rebase_in_progress(repo_dir):
@@ -1032,78 +1274,154 @@ def run_feature_flow(repo_dir: str) -> None:
     if auto_stashed_result is None: return
     auto_stashed = auto_stashed_result
 
-    base_branch = ask_non_empty("base_branch_name", "develop")
+    state = {
+        "base_branch": "develop",
+        "do_fetch": True,
+        "detected_type": "",
+        "detected_reason": "",
+        "history_type": "",
+        "base_point": "",
+        "commit_total": 0,
+        "commits": [],
+        "do_backup": True,
+        "final_msg": "feat: update feature",
+        "auto_push": False
+    }
     
-    if not ensure_not_on_base(base_branch, branch):
-        if ask_yes_no("ask_checkout_now", True):
-            handle_checkout(repo_dir)
-        maybe_restore_auto_stash(repo_dir, auto_stashed)
-        return
+    step = 0
+    max_step = 6
+    
+    while step <= max_step:
+        clear_screen()
+        print(f"\n{THEME.ok('Current branch:')} {THEME.branch(branch)}")
+        show_wizard_dashboard(state, current_step=step)
+        
+        if step == 0:
+            ans = ask_non_empty("base_branch_name", state["base_branch"], allow_back=True)
+            if ans == "<BACK>":
+                print(f"\n{THEME.warn(_t('canceled_return'))}")
+                maybe_restore_auto_stash(repo_dir, auto_stashed)
+                return
+            if not ensure_not_on_base(ans, branch):
+                pause_continue()
+                continue
+            state["base_branch"] = ans
+            step += 1
+            
+        elif step == 1:
+            ans = ask_yes_no("fetch_origin_q", default=state["do_fetch"], allow_back=True)
+            if ans == "<BACK>":
+                step -= 1
+                continue
+            state["do_fetch"] = ans
+            if ans: run("git fetch origin", cwd=repo_dir)
+            dt, dr = detect_history_type(repo_dir, state["base_branch"])
+            state["detected_type"] = dt
+            state["detected_reason"] = dr
+            step += 1
+            
+        elif step == 2:
+            print(f"\n{THEME.info('--- Auto Detect ---')}")
+            print(f"{state['detected_reason']}")
+            ans = ask_yes_no("use_detected_history_q", default=True, allow_back=True, type=state["detected_type"])
+            if ans == "<BACK>":
+                step -= 1
+                continue
+            if ans is True: state["history_type"] = state["detected_type"]
+            else:
+                h_ans = ask_choice("choose_history_type", ["opt_hist_clean", "opt_hist_merged"], default_index=0 if state["detected_type"] == "clean" else 1, allow_back=True)
+                if h_ans == "<BACK>": continue
+                state["history_type"] = "clean" if h_ans == "opt_hist_clean" else "merged"
+            bp = get_effective_base_point(repo_dir, state["base_branch"], state["history_type"])
+            if not bp:
+                pause_continue()
+                continue
+            state["base_point"] = bp
+            state["commit_total"] = commit_count_since(repo_dir, bp)
+            state["commits"] = get_commit_preview(repo_dir, bp, limit=50)
+            if state["commit_total"] == 0:
+                print(f"\n{THEME.warn(_t('no_commits_to_squash'))}")
+                pause_continue()
+                step -= 1 
+                continue
+            step += 1
+            
+        elif step == 3:
+            ans = ask_yes_no("create_backup_q", default=state["do_backup"], allow_back=True)
+            if ans == "<BACK>":
+                step -= 1
+                continue
+            state["do_backup"] = ans
+            step += 1
+            
+        elif step == 4:
+            preview_lines = [format_commit_line(c) for c in state["commits"]]
+            if state["commit_total"] > len(state["commits"]):
+                preview_lines += [THEME.dim("..."), THEME.dim("(Truncated)")]
+            print_box("Preview Commits to Squash", preview_lines)
+            ans = ask_non_empty("final_commit_msg", default=state["final_msg"], allow_back=True)
+            if ans == "<BACK>":
+                step -= 1
+                continue
+            state["final_msg"] = ans
+            step += 1
+            
+        elif step == 5:
+            ans = ask_yes_no("auto_push_q", default=state["auto_push"], allow_back=True)
+            if ans == "<BACK>":
+                step -= 1
+                continue
+            state["auto_push"] = ans
+            step += 1
+            
+        elif step == 6:
+            show_action_plan(state["base_point"], state["final_msg"], state["base_branch"], branch, state["commit_total"], state["auto_push"])
+            ans = ask_yes_no("continue_steps_q", default=True, allow_back=True)
+            if ans == "<BACK>":
+                step -= 1
+                continue
+            if not ans:
+                print(f"\n{THEME.err(_t('ee_rage_quit'))}")
+                maybe_restore_auto_stash(repo_dir, auto_stashed)
+                return
+            break
 
-    if ask_yes_no("fetch_origin_q", True): run("git fetch origin", cwd=repo_dir)
+    # --- BẮT ĐẦU CHẠY GIT ---
+    backup_branch_name = None
+    if state["do_backup"]:
+        backup_branch_name = create_backup(repo_dir, branch)
+        print(f"\n{THEME.ok(_t('created_backup'))} {THEME.branch(backup_branch_name)}")
 
-    detected_type, detected_reason = detect_history_type(repo_dir, base_branch)
-    show_summary(repo_dir, base_branch, detected_type, detected_reason)
+    run(f"git reset --soft {state['base_point']}", cwd=repo_dir)
+    run(f"git commit -m {safe_quote(state['final_msg'])}", cwd=repo_dir)
 
-    if ask_yes_no("use_detected_history_q", True, type=detected_type):
-        history_type = detected_type
-    else:
-        history_type_key = ask_choice("choose_history_type", ["opt_hist_clean", "opt_hist_merged", "opt_cancel"], default_index=0 if detected_type == "clean" else 1)
-        if history_type_key == "opt_cancel":
-            print(THEME.warn(_t("canceled_return")))
-            maybe_restore_auto_stash(repo_dir, auto_stashed)
-            return
-        history_type = "clean" if history_type_key == "opt_hist_clean" else "merged"
-
-    base_point = get_effective_base_point(repo_dir, base_branch, history_type)
-    if not base_point:
-        maybe_restore_auto_stash(repo_dir, auto_stashed)
-        return
-
-    commit_total = commit_count_since(repo_dir, base_point)
-    commit_preview = get_commit_preview(repo_dir, base_point, limit=50)
-    show_scope(base_point, commit_total, commit_preview, commit_total > len(commit_preview))
-
-    if commit_total == 0:
-        print(THEME.warn(_t("no_commits_to_squash")))
-        maybe_restore_auto_stash(repo_dir, auto_stashed)
-        return
-
-    if ask_yes_no("create_backup_q", True):
-        backup_branch = create_backup(repo_dir, branch)
-        print(f"{THEME.ok(_t('created_backup'))} {THEME.branch(backup_branch)}")
-
-    final_message = ask_non_empty("final_commit_msg", "feat: update feature")
-    auto_push = ask_yes_no("auto_push_q", False)
-
-    show_action_plan(base_point, final_message, base_branch, auto_push)
-
-    if not ask_yes_no("continue_steps_q", True):
-        print(THEME.warn(_t("canceled_return")))
-        maybe_restore_auto_stash(repo_dir, auto_stashed)
-        return
-
-    run(f"git reset --soft {base_point}", cwd=repo_dir)
-    run(f"git commit -m {shlex.quote(final_message)}", cwd=repo_dir)
-
+    conflict_occurred = False
     try:
-        run(f"git rebase origin/{base_branch}", cwd=repo_dir)
+        run(f"git rebase origin/{state['base_branch']}", cwd=repo_dir)
     except RuntimeError:
         if is_rebase_in_progress(repo_dir):
             print(THEME.warn("Rebase stopped. Switching to recovery mode."))
             result = handle_rebase_recovery(repo_dir)
             if result == "completed":
-                if auto_push: run("git push --force-with-lease", cwd=repo_dir)
-                maybe_restore_auto_stash(repo_dir, auto_stashed)
-                print(f"\n{THEME.ok(_t('flow_done'))}")
-                return
+                conflict_occurred = True
             if result in ("aborted", "menu"):
                 maybe_restore_auto_stash(repo_dir, auto_stashed)
                 return
-        maybe_restore_auto_stash(repo_dir, auto_stashed)
-        raise
+        else:
+            maybe_restore_auto_stash(repo_dir, auto_stashed)
+            raise
 
-    if auto_push: run("git push --force-with-lease", cwd=repo_dir)
+    # --- CHẠY BƯỚC VERIFY POST-REBASE ---
+    verify_passed = run_verification(repo_dir, state, branch, backup_branch_name, conflict_occurred)
+
+    if state["auto_push"]:
+        if not verify_passed:
+            if not ask_yes_no("verify_push_q", False):
+                print(THEME.warn("Đã hủy bước Auto Push theo yêu cầu của bạn."))
+                maybe_restore_auto_stash(repo_dir, auto_stashed)
+                return
+        run("git push --force-with-lease", cwd=repo_dir)
+        
     maybe_restore_auto_stash(repo_dir, auto_stashed)
     print(f"\n{THEME.ok(_t('flow_done'))}")
 
@@ -1137,13 +1455,11 @@ def main() -> None:
     repo_dir = resolve_repo_dir()
     clear_screen()
 
-    # Easter Egg: Cú đêm (Chỉ báo 1 lần lúc mới bật tool)
     hour = datetime.now().hour
     if hour >= 23 or hour <= 4:
         print(f"\n{THEME.warn(_t('ee_night_owl'))}")
 
     while True:
-        # Không clear screen ngay ở đây để thông báo kết quả thao tác cũ vẫn được hiển thị!
         show_startup(repo_dir)
 
         if is_rebase_in_progress(repo_dir):
@@ -1163,7 +1479,6 @@ def main() -> None:
 
         if choice == "m_start":
             clear_screen()
-            show_startup(repo_dir)
             try: run_feature_flow(repo_dir)
             except RuntimeError as e:
                 print(THEME.warn("Operation stopped / Luồng đã dừng."))
@@ -1180,7 +1495,7 @@ def main() -> None:
             clear_screen()
             show_startup(repo_dir)
             repo_dir = ask_repo_path()
-            clear_screen() # Xóa cho sạch rồi quay lại menu
+            clear_screen()
             continue
 
         if choice == "m_refresh":
@@ -1195,7 +1510,7 @@ def main() -> None:
         if choice == "m_emoji":
             global EMOJI_MODE
             EMOJI_MODE = not EMOJI_MODE
-            clear_screen() # Nhảy màn cho mượt
+            clear_screen()
             msg = "Đã BẬT Emoji Mode 😏🔥 (Quẩy thôi!)" if EMOJI_MODE else "Đã TẮT Emoji Mode 😶 (Quay về thực tại)"
             print(THEME.ok(msg))
             continue
