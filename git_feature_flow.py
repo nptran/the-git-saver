@@ -19,7 +19,7 @@ EMOJI_MODE = False
 EMOJI_MAP = {
     "press_exit": "🛑", "no_git_err": "❌", "no_git_warn": "⚠️", "invalid_yn": "🤔",
     "not_empty": "✍️", "choose_num": "🔢", "invalid_choice": "🤦", "default_marker": "✨",
-    "main_menu": "📋", "m_start": "🚀", "m_change": "📂", "m_refresh": "🔄",
+    "main_menu": "📋", "m_start": "🚀", "m_checkout": "🔀", "m_change": "📂", "m_refresh": "🔄",
     "m_lang": "🗣️", "m_emoji": "🤪", "m_exit": "🏃", "m_recover": "🚑",
     "enter_repo": "🔍", "repo_not_exist": "👻", "not_git_repo": "🚫", "cwd_not_git": "🤷",
     "found_closest": "🎯", "use_this": "👉", "pls_choose_repo": "👇",
@@ -40,7 +40,11 @@ EMOJI_MAP = {
     
     # Error Emojis
     "err_network": "🔌", "err_conflict": "⚔️💥", "err_overwrite": "🛑📝", 
-    "err_push_rejected": "⛔", "err_unknown": "👽"
+    "err_push_rejected": "⛔", "err_unknown": "👽",
+
+    # Checkout flow Emojis
+    "ask_checkout_now": "✈️", "list_branches": "🌿", "checkout_success": "✅", "checkout_fail": "💥",
+    "fetching_remote": "☁️🔄", "branch_search_found": "🎯", "branch_search_single": "✨"
 }
 
 LANGUAGES = {
@@ -75,6 +79,9 @@ LANGUAGES = {
     },
     "m_start": {
         "vn_pro": "Bắt đầu luồng squash + rebase", "vn_joke": "Bắt đầu dọn dẹp (squash + rebase)", "vn_toxic": "Chạy squash + rebase dọn rác đi", "en_pro": "Start squash + rebase flow"
+    },
+    "m_checkout": {
+        "vn_pro": "Checkout / Đổi nhánh (Tìm kiếm)", "vn_joke": "Lượn sang nhánh khác (Search nhanh)", "vn_toxic": "Tìm và Cút sang nhánh khác", "en_pro": "Checkout branch (Search)"
     },
     "m_change": {
         "vn_pro": "Đổi repo khác", "vn_joke": "Đổi sang project khác múa", "vn_toxic": "Đổi repo khác nhanh", "en_pro": "Change repo"
@@ -281,6 +288,62 @@ LANGUAGES = {
         "vn_joke": "Lỗi này lạ quá tool chưa được học. Sếp chịu khó tự ngâm cứu log tiếng Anh bên trên nha.",
         "vn_toxic": "Lỗi củ lìn gì đây? Tao chịu, tự căng mắt ra mà đọc cái dòng đỏ lòm bên trên đi!",
         "en_pro": "An unknown Git error occurred. Please read the standard error message above carefully."
+    },
+
+    # Checkout features
+    "ask_checkout_now": {
+        "vn_pro": "Bạn có muốn checkout sang nhánh khác ngay bây giờ không?",
+        "vn_joke": "Muốn bay qua nhánh khác luôn không sếp?",
+        "vn_toxic": "Có nhảy sang nhánh khác luôn không hay đứng đây rặn?",
+        "en_pro": "Do you want to checkout to another branch now?"
+    },
+    "list_branches": {
+        "vn_pro": "Danh sách các nhánh (local & remote):",
+        "vn_joke": "Mấy nhánh hiện có (cả trên server) nè sếp:",
+        "vn_toxic": "Nhìn cmn list nhánh (local + remote) này đi:",
+        "en_pro": "Available branches (local & remote):"
+    },
+    "choose_branch_checkout": {
+        "vn_pro": "Nhập số, tên, hoặc TỪ KHÓA để lọc nhánh (nhập 'f' để tải nhánh mới, Enter để hủy):",
+        "vn_joke": "Bấm số, tên, hoặc keyword (gõ 'f' để kéo nhánh mới, Enter quay xe):",
+        "vn_toxic": "Gõ số, tên, hoặc keyword (gõ 'f' fetch ngay, Enter thì cút):",
+        "en_pro": "Enter number, name, or keyword (type 'f' to fetch remote, Enter to cancel):"
+    },
+    "branch_not_found": {
+        "vn_pro": "Không tìm thấy nhánh hợp lệ với từ khóa này.",
+        "vn_joke": "Tìm hụt rồi, không có nhánh nào chữ này đâu sếp.",
+        "vn_toxic": "Đéo có nhánh nào khớp cái từ khóa lố lăng này! Lác à?",
+        "en_pro": "No matching branches found."
+    },
+    "checkout_success": {
+        "vn_pro": "Đã chuyển sang nhánh '{branch}'.",
+        "vn_joke": "Đã hạ cánh an toàn xuống '{branch}'.",
+        "vn_toxic": "Đã nhảy sang '{branch}' cmnr.",
+        "en_pro": "Checked out to '{branch}'."
+    },
+    "checkout_fail": {
+        "vn_pro": "Lỗi khi checkout. Có thể do có file thay đổi chưa commit gây xung đột.",
+        "vn_joke": "Kẹt rồi sếp, dọn đống code đang sửa dở đi đã rồi mới bay được.",
+        "vn_toxic": "Đéo sang được! Dọn cái đống file đang gõ dở đi đã!",
+        "en_pro": "Checkout failed. You might have local changes that would be overwritten."
+    },
+    "fetching_remote": {
+        "vn_pro": "Đang tải dữ liệu nhánh mới nhất từ server...",
+        "vn_joke": "Đang gọi điện lên server kéo nhánh mới về nè sếp...",
+        "vn_toxic": "Đang kéo mẹ đống nhánh rác trên server về, đợi xíu...",
+        "en_pro": "Fetching latest branches from remote..."
+    },
+    "branch_search_found": {
+        "vn_pro": "Tìm thấy {count} nhánh khớp với '{kw}'. Vui lòng chọn lại:",
+        "vn_joke": "Lọc ra được {count} mống có chữ '{kw}' nè sếp, chọn số đi:",
+        "vn_toxic": "Tìm được {count} cái nhánh rác chứa '{kw}'. Bấm số chọn lẹ:",
+        "en_pro": "Found {count} branches matching '{kw}'. Please select:"
+    },
+    "branch_search_single": {
+        "vn_pro": "Tìm thấy 1 nhánh duy nhất khớp từ khóa, tự động chọn: {target}",
+        "vn_joke": "Có đúng 1 mống khớp, auto nhảy luôn nha: {target}",
+        "vn_toxic": "Có mỗi 1 nhánh khớp, nhắm mắt quất luôn: {target}",
+        "en_pro": "Found exactly 1 matching branch, auto-selecting: {target}"
     }
 }
 
@@ -321,6 +384,9 @@ def pause_exit(code: int = 0) -> None:
             pass
     sys.exit(code)
 
+def clear_screen() -> None:
+    os.system("cls" if os.name == "nt" else "clear")
+
 # ============================================================
 # Terminal / color capability
 # ============================================================
@@ -351,12 +417,14 @@ class Theme:
     RESET: str = "\033[0m"
     BOLD: str = "\033[1m"
     DIM: str = "\033[2m"
+    BLACK: str = "\033[30m"
     RED: str = "\033[31m"
     GREEN: str = "\033[32m"
     YELLOW: str = "\033[33m"
     BLUE: str = "\033[34m"
     MAGENTA: str = "\033[35m"
     CYAN: str = "\033[36m"
+    BG_YELLOW: str = "\033[43m"
     BRIGHT_RED: str = "\033[91m"
     BRIGHT_GREEN: str = "\033[92m"
     BRIGHT_YELLOW: str = "\033[93m"
@@ -440,25 +508,21 @@ def run(cmd: str, cwd: Optional[str] = None, check: bool = True, capture: bool =
     print(f"\n{THEME.cmd('> ' + cmd)}")
     
     if capture:
-        # Chế độ bắt ngầm (không in ra màn hình ngay)
         result = subprocess.run(cmd, shell=True, text=True, capture_output=True, cwd=cwd)
         stdout_val = result.stdout or ""
         stderr_val = result.stderr or ""
     else:
-        # Chế độ hiển thị: Vẫn cho in stdout bình thường ra terminal, nhưng giấu stderr đi để xử lý
         result = subprocess.run(cmd, shell=True, text=True, stderr=subprocess.PIPE, cwd=cwd)
         stdout_val = ""
         stderr_val = result.stderr or ""
 
     if check and result.returncode != 0:
-        # In ra log lỗi đỏ gốc
         if stderr_val: 
             print(THEME.err(stderr_val.rstrip()), file=sys.stderr)
             
         if cwd: 
             print(THEME.warn(f"Working directory: {cwd}"))
             
-        # Dịch lỗi ra tiếng người (Decoder)
         friendly_msg = get_friendly_git_error(stderr_val)
         print(f"\n{THEME.branch(BOX['tl'] + BOX['h']*50)}")
         print(f"{THEME.branch(BOX['v'])} {THEME.info('💡 GIẢI MÃ LỖI / ERROR DECODER:')}")
@@ -480,7 +544,7 @@ def ensure_git_installed() -> None:
         pause_exit(1)
 
 # ============================================================
-# Prompt helpers (Refactored to return keys)
+# Prompt helpers
 # ============================================================
 def ask_yes_no(question_key: str, default: bool = True, **kwargs) -> bool:
     suffix = THEME.ok("[Y/n]") if default else THEME.warn("[y/N]")
@@ -507,7 +571,6 @@ def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0
         marker = f" {THEME.ok(_t('default_marker'))}" if i - 1 == default_index else ""
         
         display = _t(opt_key)
-        # Format lại text cho option emoji mode
         if opt_key == "m_emoji":
             state = "ON 🟢" if EMOJI_MODE else "OFF 🔴"
             display = f"{display} [{state}]"
@@ -608,6 +671,133 @@ def maybe_restore_auto_stash(repo_dir: str, auto_stashed: bool) -> None:
     print(THEME.ok(_t("restored_stash")))
 
 # ============================================================
+# Git branch logic & Advanced Checkout Flow
+# ============================================================
+def current_branch(repo_dir: str) -> str:
+    return git_output("git rev-parse --abbrev-ref HEAD", cwd=repo_dir)
+
+def ensure_not_on_base(base_branch: str, current: str) -> bool:
+    if current == base_branch or current == f"origin/{base_branch}":
+        print(THEME.err(_t("on_base_branch", base=base_branch)))
+        print(THEME.warn(_t("checkout_feature_first")))
+        return False
+    return True
+
+def clean_branch_name(b: str) -> str:
+    # Xử lý triệt để dấu nháy đơn do Windows CMD tự chèn vào
+    return b.strip().strip("'").strip('"')
+
+def highlight_b(b_name: str, kw: str, is_loc: bool) -> str:
+    # Logic nhả màu an toàn với nền Vàng nổi bật
+    if not THEME.use_color: 
+        return b_name
+        
+    base_ansi = (THEME.BRIGHT_BLUE + THEME.BOLD) if is_loc else THEME.DIM
+    if not kw: 
+        return base_ansi + b_name + THEME.RESET
+        
+    hl_ansi = THEME.BG_YELLOW + THEME.BLACK + THEME.BOLD
+    pattern = re.compile(re.escape(kw), re.IGNORECASE)
+    colored = pattern.sub(lambda m: hl_ansi + m.group(0) + THEME.RESET + base_ansi, b_name)
+    return base_ansi + colored + THEME.RESET
+
+def handle_checkout(repo_dir: str) -> bool:
+    # Lấy danh sách local
+    local_branches_str = git_output("git branch --format=%(refname:short)", cwd=repo_dir)
+    local_branches = [clean_branch_name(b) for b in local_branches_str.splitlines() if b.strip()]
+    
+    # Lấy danh sách remote 
+    remote_branches_str = git_output("git branch -r --format=%(refname:short)", cwd=repo_dir)
+    remote_branches_raw = [clean_branch_name(b) for b in remote_branches_str.splitlines() if b.strip()]
+    
+    # Lọc bỏ origin/HEAD và cái tên remote rác
+    remote_branches = [b for b in remote_branches_raw if "origin/HEAD" not in b and b != "origin"]
+    
+    # Lọc bỏ nhánh remote đã có tracking local
+    local_set = set(local_branches)
+    remote_only = []
+    for rb in remote_branches:
+        clean_name = rb.replace("origin/", "", 1)
+        if clean_name not in local_set:
+            remote_only.append(rb)
+            
+    all_branches = local_branches + remote_only
+    
+    if not all_branches:
+        return False
+
+    curr = current_branch(repo_dir)
+    current_list = all_branches
+    search_kw = ""
+    alert_msg = ""
+    
+    while True:
+        clear_screen()
+        show_startup(repo_dir)
+        
+        if alert_msg:
+            print(f"\n{alert_msg}")
+            alert_msg = ""
+            
+        print(f"\n{THEME.info(_t('list_branches'))}")
+        for i, b in enumerate(current_list, start=1):
+            marker = f" {THEME.ok('*')}" if b == curr else ""
+            is_loc = b in local_branches
+            display_name = highlight_b(b, search_kw, is_loc)
+            print(f"  {THEME.choice(str(i) + '.')} {display_name}{marker}")
+
+        ans = input(f"\n{THEME.info('?')} {_t('choose_branch_checkout')} ").strip()
+        
+        if not ans: 
+            return False
+            
+        if ans.lower() == 'f':
+            alert_msg = THEME.info(_t("fetching_remote"))
+            print(f"\n{alert_msg}")
+            run("git fetch origin --prune", cwd=repo_dir)
+            return handle_checkout(repo_dir)
+            
+        target = None
+        
+        # Check nếu là số index
+        if ans.isdigit():
+            idx = int(ans) - 1
+            if 0 <= idx < len(current_list):
+                target = current_list[idx]
+        # Check nếu nhập trúng tên
+        elif ans in current_list:
+            target = ans
+        # Search keyword
+        else:
+            matches = [b for b in all_branches if ans.lower() in b.lower()]
+            if not matches:
+                alert_msg = THEME.warn(_t("branch_not_found"))
+                continue
+            elif len(matches) == 1:
+                target = matches[0]
+                print(THEME.info(_t("branch_search_single", target=target)))
+            else:
+                search_kw = ans
+                alert_msg = THEME.info(_t("branch_search_found", count=len(matches), kw=ans))
+                current_list = matches
+                continue
+                
+        # Thực hiện checkout
+        if target:
+            try:
+                if target.startswith("origin/"):
+                    clean_name = target.replace("origin/", "", 1)
+                    run(f"git checkout -t {shlex.quote(target)}", cwd=repo_dir)
+                    print(THEME.ok(_t("checkout_success", branch=clean_name)))
+                else:
+                    run(f"git checkout {shlex.quote(target)}", cwd=repo_dir)
+                    print(THEME.ok(_t("checkout_success", branch=target)))
+                return True
+            except RuntimeError:
+                print(THEME.err(_t("checkout_fail")))
+                return False
+
+# ============================================================
 # Rebase state helpers
 # ============================================================
 def get_git_dir(repo_dir: str) -> Path:
@@ -685,19 +875,6 @@ def handle_rebase_recovery(repo_dir: str) -> str:
         if choice == "opt_return":
             print(THEME.warn("Keeping current rebase state. Returning to menu."))
             return "menu"
-
-# ============================================================
-# Git branch logic
-# ============================================================
-def current_branch(repo_dir: str) -> str:
-    return git_output("git rev-parse --abbrev-ref HEAD", cwd=repo_dir)
-
-def ensure_not_on_base(base_branch: str, current: str) -> bool:
-    if current == base_branch or current == f"origin/{base_branch}":
-        print(THEME.err(_t("on_base_branch", base=base_branch)))
-        print(THEME.warn(_t("checkout_feature_first")))
-        return False
-    return True
 
 def create_backup(repo_dir: str, branch: str) -> str:
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -804,7 +981,10 @@ def run_feature_flow(repo_dir: str) -> None:
     auto_stashed = auto_stashed_result
 
     base_branch = ask_non_empty("base_branch_name", "develop")
+    
     if not ensure_not_on_base(base_branch, branch):
+        if ask_yes_no("ask_checkout_now", True):
+            handle_checkout(repo_dir)
         maybe_restore_auto_stash(repo_dir, auto_stashed)
         return
 
@@ -881,6 +1061,7 @@ def run_feature_flow(repo_dir: str) -> None:
 # ============================================================
 def choose_language() -> None:
     global CURRENT_LANG
+    clear_screen()
     print(f"\n{THEME.info('=== CÀI ĐẶT NGÔN NGỮ / TONE ===')}")
     print(f"  {THEME.choice('1.')} Tiếng Việt (Chuyên nghiệp) - Dành cho dev đứng đắn")
     print(f"  {THEME.choice('2.')} Tiếng Việt (Cợt nhả) - Thích hợp để troll sếp")
@@ -899,19 +1080,24 @@ def choose_language() -> None:
 
 def main() -> None:
     choose_language()
+    clear_screen()
     ensure_git_installed()
     repo_dir = resolve_repo_dir()
+    clear_screen()
 
     while True:
+        # Không clear screen ngay ở đây để thông báo kết quả thao tác cũ vẫn được hiển thị!
         show_startup(repo_dir)
 
         if is_rebase_in_progress(repo_dir):
             print(THEME.warn("Repo in dirty rebase state."))
-            choice = ask_choice("choose_action", ["m_recover", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0)
+            choice = ask_choice("choose_action", ["m_recover", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0)
         else:
-            choice = ask_choice("main_menu", ["m_start", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0)
+            choice = ask_choice("main_menu", ["m_start", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0)
 
         if choice == "m_recover":
+            clear_screen()
+            show_startup(repo_dir)
             try: handle_rebase_recovery(repo_dir)
             except Exception:
                 print(THEME.err("Unexpected error in recovery:"))
@@ -919,29 +1105,41 @@ def main() -> None:
             continue
 
         if choice == "m_start":
+            clear_screen()
+            show_startup(repo_dir)
             try: run_feature_flow(repo_dir)
             except RuntimeError as e:
-                # Đã in chi tiết lỗi bên trong hàm run(), ở đây chỉ cần báo luồng bị dừng
                 print(THEME.warn("Operation stopped / Luồng đã dừng."))
             except Exception:
                 print(THEME.err("Unexpected error in flow:"))
                 traceback.print_exc()
             continue
 
+        if choice == "m_checkout":
+            # Hàm này đã có sẵn loop và clear screen riêng ở bên trong
+            handle_checkout(repo_dir)
+            continue
+
         if choice == "m_change":
-            repo_dir = resolve_repo_dir()
+            clear_screen()
+            show_startup(repo_dir)
+            repo_dir = ask_repo_path()
+            clear_screen() # Xóa cho sạch rồi quay lại menu
             continue
 
         if choice == "m_refresh":
+            clear_screen()
             continue
             
         if choice == "m_lang":
             choose_language()
+            clear_screen()
             continue
             
         if choice == "m_emoji":
             global EMOJI_MODE
             EMOJI_MODE = not EMOJI_MODE
+            clear_screen() # Nhảy màn cho mượt
             msg = "Đã BẬT Emoji Mode 😏🔥 (Quẩy thôi!)" if EMOJI_MODE else "Đã TẮT Emoji Mode 😶 (Quay về thực tại)"
             print(THEME.ok(msg))
             continue
