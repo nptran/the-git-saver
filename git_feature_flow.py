@@ -44,7 +44,11 @@ EMOJI_MAP = {
 
     # Checkout flow Emojis
     "ask_checkout_now": "✈️", "list_branches": "🌿", "checkout_success": "✅", "checkout_fail": "💥",
-    "fetching_remote": "☁️🔄", "branch_search_found": "🎯", "branch_search_single": "✨"
+    "fetching_remote": "☁️🔄", "branch_search_found": "🎯", "branch_search_single": "✨",
+    "branch_count_few": "🌱", "branch_count_many": "🌳💀",
+
+    # Easter Eggs Emojis
+    "ee_night_owl": "🦉🌙", "ee_massive_stash": "🦝📦", "ee_spam_commit": "🤡🗑️"
 }
 
 LANGUAGES = {
@@ -344,6 +348,38 @@ LANGUAGES = {
         "vn_joke": "Có đúng 1 mống khớp, auto nhảy luôn nha: {target}",
         "vn_toxic": "Có mỗi 1 nhánh khớp, nhắm mắt quất luôn: {target}",
         "en_pro": "Found exactly 1 matching branch, auto-selecting: {target}"
+    },
+    "branch_count_few": {
+        "vn_pro": "Repo rất gọn gàng với {count} nhánh.",
+        "vn_joke": "Có lèo tèo {count} nhánh. Dăm ba cái nhánh này tính ra còn ít hơn số logic phải vặn vẹo lúc dùng Pyspark bóc tách ba cái file Excel gộp dòng bữa nọ nữa.",
+        "vn_toxic": "Đéo mẹ cả repo có đúng {count} cái nhánh rách? Có làm việc không hay bú fame?",
+        "en_pro": "Repository is very clean with only {count} branches."
+    },
+    "branch_count_many": {
+        "vn_pro": "Lưu ý: Repo hiện có {count} nhánh. Nên cân nhắc dọn dẹp các nhánh đã cũ.",
+        "vn_joke": "Ối dồi ôi {count} nhánh! Đẻ nhánh đẻ rễ lắm thế này, lúc tìm khéo còn lú hơn cả monitor mấy trăm cái Databricks jobs đang chạy trên production sếp ạ!",
+        "vn_toxic": "Tận {count} cái nhánh rác! Mày tính đẻ nhánh ra để ăn lẩu à? Vô dọn mẹ bớt đi nhìn ngứa cả mắt!",
+        "en_pro": "Notice: Repository has {count} branches. Consider cleaning up stale branches."
+    },
+    
+    # Easter Eggs Dictionary
+    "ee_night_owl": {
+        "vn_pro": "Ghi chú: Đã khuya, hãy chú ý giữ gìn sức khỏe nhé.",
+        "vn_joke": "Trời đánh tránh giờ ngủ. Cú đêm cày code cẩn thận rụng tóc nha sếp!",
+        "vn_toxic": "Đêm hôm đéo đi ngủ đi ngồi múa Git? Tính bán mạng cho tư bản à?",
+        "en_pro": "Notice: It's late night. Please take some rest."
+    },
+    "ee_spam_commit": {
+        "vn_pro": "Ghi chú: Số lượng commit khá lớn ({count} commits).",
+        "vn_joke": "Mẹ ơi {count} commits! Sếp gõ phím dạo hay sao mà rác kinh thế?",
+        "vn_toxic": "Tận {count} commits? Mày commit từng dòng code một hay gì mà rác vcl thế?",
+        "en_pro": "Notice: Detected a large number of commits ({count})."
+    },
+    "ee_massive_stash": {
+        "vn_pro": "Đã phát hiện lượng lớn file thay đổi ({count} files).",
+        "vn_joke": "Ối giời thay đổi tận {count} files! Sếp đập đi xây lại cả cái project à?",
+        "vn_toxic": "Sửa tận {count} files đéo chịu commit? Thích ôm bom cảm tử đúng không?",
+        "en_pro": "Detected a massive amount of uncommitted changes ({count} files)."
     }
 }
 
@@ -647,6 +683,10 @@ def handle_dirty_worktree(repo_dir: str) -> Optional[bool]:
     choice = ask_choice("what_do_changes", ["opt_stash", "opt_no_stash", "opt_cancel"], default_index=0)
 
     if choice == "opt_stash":
+        # Easter Egg: Thánh Ôm Bom
+        if len(changes) >= 30:
+            print(f"\n{THEME.warn(_t('ee_massive_stash', count=len(changes)))}")
+            
         run('git stash push -u -m "git-feature-flow auto-stash"', cwd=repo_dir)
         print(THEME.ok(_t("stashed_ok")))
         return True
@@ -730,6 +770,13 @@ def handle_checkout(repo_dir: str) -> bool:
     current_list = all_branches
     search_kw = ""
     alert_msg = ""
+    
+    # Phân tích số lượng nhánh để chèn bình luận vui nhộn
+    total_count = len(all_branches)
+    if total_count >= 50:
+        alert_msg = THEME.warn(_t("branch_count_many", count=total_count))
+    elif total_count <= 5:
+        alert_msg = THEME.ok(_t("branch_count_few", count=total_count))
     
     while True:
         clear_screen()
@@ -952,6 +999,11 @@ def show_scope(base_point: str, commit_total: int, commits: List[str], truncated
         f"{THEME.key('Commits to squash')}: {THEME.count(str(commit_total))}",
     ]
     print_box("Base Point & Scope", lines)
+    
+    # Easter Egg: Thánh Xả Rác
+    if commit_total >= 20:
+        print(f"\n{THEME.warn(_t('ee_spam_commit', count=commit_total))}")
+        
     preview_lines = [format_commit_line(c) for c in commits] if commits else [THEME.dim("(No commits in range)")]
     if truncated: preview_lines += [THEME.dim("..."), THEME.dim("(Truncated)")]
     print_box("Preview Commits", preview_lines)
@@ -1085,6 +1137,11 @@ def main() -> None:
     repo_dir = resolve_repo_dir()
     clear_screen()
 
+    # Easter Egg: Cú đêm (Chỉ báo 1 lần lúc mới bật tool)
+    hour = datetime.now().hour
+    if hour >= 23 or hour <= 4:
+        print(f"\n{THEME.warn(_t('ee_night_owl'))}")
+
     while True:
         # Không clear screen ngay ở đây để thông báo kết quả thao tác cũ vẫn được hiển thị!
         show_startup(repo_dir)
@@ -1116,7 +1173,6 @@ def main() -> None:
             continue
 
         if choice == "m_checkout":
-            # Hàm này đã có sẵn loop và clear screen riêng ở bên trong
             handle_checkout(repo_dir)
             continue
 
