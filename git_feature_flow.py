@@ -1574,11 +1574,13 @@ def run_feature_flow(repo_dir: str) -> None:
                 print(THEME.warn(_t("warn_cancel_auto_push")))
                 maybe_restore_auto_stash(repo_dir, auto_stashed)
                 return
-        run("git push --force-with-lease", cwd=repo_dir)
         
-    maybe_restore_auto_stash(repo_dir, auto_stashed)
-    print(f"\n{THEME.ok(_t('flow_done'))}")
-
+        # FIX LOGIC GIT: Tự động set upstream an toàn cho nhánh mới
+        try:
+            run(f"git push --force-with-lease -u origin {quote_arg(branch)}", cwd=repo_dir)
+        except RuntimeError:
+            # Fallback nếu force-with-lease bị từ chối do remote branch không tồn tại
+            run(f"git push -f -u origin {quote_arg(branch)}", cwd=repo_dir)
 
 # ============================================================
 # Main loop
