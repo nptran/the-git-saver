@@ -302,25 +302,7 @@ def ensure_git_installed() -> None:
         pause_exit(1)
 
 # ============================================================
-# Predict Conflict (git merge-tree)
-# ============================================================
-def check_potential_conflict(repo_dir: str, base_branch: str) -> Tuple[bool, List[str], bool]:
-    cmd = f"git merge-tree --write-tree origin/{base_branch} HEAD"
-    try:
-        result = subprocess.run(cmd, shell=True, text=True, capture_output=True, cwd=repo_dir)
-        if result.returncode == 0:
-            return False, [], True
-        elif result.returncode == 1:
-            c_lines = [line.strip() for line in result.stdout.splitlines() if "CONFLICT" in line]
-            return True, c_lines, True
-        else:
-            return False, [], False
-    except Exception:
-        return False, [], False
-
-
-# ============================================================
-# Smart Git Command Interceptor
+# Smart Git Command Interceptor (Thiết Quân Luật -C & Check Code)
 # ============================================================
 def handle_smart_git_command(command: str, repo_dir: str) -> bool:
     parts = command.strip().split()
@@ -373,18 +355,21 @@ def handle_smart_git_command(command: str, repo_dir: str) -> bool:
             return True
 
 # ============================================================
-# Prompt helpers (Có hỗ trợ Back '<' và Smart Git Intercept)
+# Prompt helpers (Hỗ trợ <REFRESH> và <GIT_RUN>)
 # ============================================================
 def ask_yes_no(question_key: str, default: bool = True, allow_back: bool = False, repo_dir: Optional[str] = None, **kwargs) -> Any:
     suffix = THEME.ok("[Y/n]") if default else THEME.warn("[y/N]")
     back_hint = THEME.dim(_t("type_back")) if allow_back else ""
+    refresh_hint = THEME.dim(" (r: Refresh)")
     while True:
-        answer = input(f"{THEME.info('?')} {_t(question_key, **kwargs)} {suffix}{back_hint}: ").strip()
+        answer = input(f"{THEME.info('?')} {_t(question_key, **kwargs)} {suffix}{back_hint}{refresh_hint}: ").strip()
+
+        if answer.lower() == 'r': return "<REFRESH>"
 
         if repo_dir and answer.lower().startswith("git "):
             if handle_smart_git_command(answer, repo_dir):
                 clear_screen()
-                continue
+                return "<GIT_RUN>"
 
         ans_lower = answer.lower()
         if allow_back and ans_lower == "<": return "<BACK>"
@@ -393,25 +378,32 @@ def ask_yes_no(question_key: str, default: bool = True, allow_back: bool = False
         if ans_lower in ("n", "no"): return False
         print(THEME.warn(_t("invalid_yn")))
 
-def ask_non_empty(question_key: str, default: Optional[str] = None, allow_back: bool = False, repo_dir: Optional[str] = None) -> Any:
+
+def ask_non_empty(question_key: str, default: Optional[str] = None, allow_back: bool = False,
+                  repo_dir: Optional[str] = None) -> Any:
     back_hint = THEME.dim(_t("type_back")) if allow_back else ""
+    refresh_hint = THEME.dim(" (r: Refresh)")
     while True:
         if default is None:
-            answer = input(f"{THEME.info('?')} {_t(question_key)}{back_hint}: ").strip()
+            answer = input(f"{THEME.info('?')} {_t(question_key)}{back_hint}{refresh_hint}: ").strip()
         else:
-            answer = input(f"{THEME.info('?')} {_t(question_key)} {THEME.dim('[' + default + ']')}{back_hint}: ").strip()
+            answer = input(f"{THEME.info('?')} {_t(question_key)} {THEME.dim('[' + default + ']')}{back_hint}{refresh_hint}: ").strip()
+
+        if answer.lower() == 'r': return "<REFRESH>"
 
         if repo_dir and answer.lower().startswith("git "):
             if handle_smart_git_command(answer, repo_dir):
                 clear_screen()
-                continue
+                return "<GIT_RUN>"
 
         if allow_back and answer == "<": return "<BACK>"
         if not answer and default is not None: return default
         if answer: return answer
         print(THEME.warn(_t("not_empty")))
 
-def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0, allow_back: bool = False, repo_dir: Optional[str] = None) -> str:
+
+def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0, allow_back: bool = False,
+               repo_dir: Optional[str] = None) -> str:
     while True:
         print(f"\n{THEME.info('?')} {_t(question_key)}")
         for i, opt_key in enumerate(option_keys, start=1):
@@ -425,12 +417,14 @@ def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0
         if allow_back:
             print(f"  {THEME.choice('<.')} {_t('opt_back')}")
 
-        answer = input(f"{THEME.info('?')} {_t('choose_num')} ").strip()
+        answer = input(f"{THEME.info('?')} {_t('choose_num')} {THEME.dim('(r: Refresh) ')}").strip()
+
+        if answer.lower() == 'r': return "<REFRESH>"
 
         if repo_dir and answer.lower().startswith("git "):
             if handle_smart_git_command(answer, repo_dir):
                 clear_screen()
-                continue
+                return "<GIT_RUN>"
 
         if allow_back and answer == "<": return "<BACK>"
         if not answer: return option_keys[default_index]
@@ -483,12 +477,12 @@ def resolve_repo_dir() -> str:
     if guessed:
         print(THEME.warn(_t("cwd_not_git")))
         print(THEME.ok(_t("found_closest", guessed=guessed)))
-        if ask_yes_no("use_this", True): return guessed
+        if ask_yes_no("use_this", True) is True: return guessed
     print(THEME.warn(_t("pls_choose_repo")))
     return ask_repo_path()
 
 # ============================================================
-# Working tree helpers
+# Working tree helpers (Tự làm mới vòng lặp)
 # ============================================================
 def get_worktree_status(repo_dir: str) -> List[str]:
     output = git_output("git status --porcelain", cwd=repo_dir)
@@ -502,37 +496,48 @@ def show_worktree_changes(changes: List[str]) -> None:
     print_box("Working Tree Changes", lines)
 
 def handle_dirty_worktree(repo_dir: str) -> Optional[bool]:
-    changes = get_worktree_status(repo_dir)
-    if not changes: return False
+    while True:
+        # Cập nhật liên tục trạng thái thư mục
+        changes = get_worktree_status(repo_dir)
+        if not changes: return False
 
-    print(THEME.warn(_t("wt_dirty_warn")))
-    show_worktree_changes(changes)
+        print(THEME.warn(_t("wt_dirty_warn")))
+        show_worktree_changes(changes)
 
-    choice = ask_choice("what_do_changes", ["opt_stash", "opt_no_stash", "opt_cancel"], default_index=0, repo_dir=repo_dir)
+        choice = ask_choice("what_do_changes", ["opt_stash", "opt_no_stash", "opt_cancel"], default_index=0, repo_dir=repo_dir)
 
-    if choice == "opt_stash":
-        run('git stash push -u -m "git-feature-flow auto-stash"', cwd=repo_dir)
-        print(THEME.ok(_t("stashed_ok")))
-        return True
+        if choice in ("<GIT_RUN>", "<REFRESH>"):
+            clear_screen()
+            continue
 
-    if choice == "opt_no_stash":
-        print(THEME.warn(_t("warn_no_stash")))
-        if not ask_yes_no("sure_no_stash", False, repo_dir=repo_dir):
+        if choice == "opt_stash":
+            run('git stash push -u -m "git-feature-flow auto-stash"', cwd=repo_dir)
+            print(THEME.ok(_t("stashed_ok")))
+            return True
+
+        if choice == "opt_no_stash":
+            print(THEME.warn(_t("warn_no_stash")))
+            ans = ask_yes_no("sure_no_stash", False, repo_dir=repo_dir)
+            if ans in ("<GIT_RUN>", "<REFRESH>"):
+                clear_screen()
+                continue
+            if ans is True:
+                return False
             print(THEME.warn(_t("canceled_return")))
             return None
-        return False
 
-    print(THEME.warn(_t("canceled_return")))
-    return None
+        # opt_cancel hoặc <BACK>
+        print(THEME.warn(_t("canceled_return")))
+        return None
 
 def maybe_restore_auto_stash(repo_dir: str, auto_stashed: bool) -> None:
     if not auto_stashed: return
     restore = ask_yes_no("restore_stash_q", True, repo_dir=repo_dir)
-    if not restore:
-        print(THEME.warn(_t("kept_stash")))
-        return
+    if restore is True:
     run("git stash pop", cwd=repo_dir)
     print(THEME.ok(_t("restored_stash")))
+    else:
+        print(THEME.warn(_t("kept_stash")))
 
 # ============================================================
 # Git branch logic & Checkout
@@ -605,6 +610,8 @@ def handle_checkout(repo_dir: str) -> bool:
             print(f"  {THEME.choice(str(i) + '.')} {display_name}{marker}")
 
         ans = input(f"\n{THEME.info('?')} {_t('choose_branch_checkout')} ").strip()
+
+        if ans.lower() == 'r': continue
 
         if ans.lower().startswith("git "):
             if handle_smart_git_command(ans, repo_dir):
@@ -700,6 +707,10 @@ def handle_rebase_recovery(repo_dir: str) -> str:
 
         choice = ask_choice("choose_action", ["opt_show_status", "opt_show_conflict", "opt_continue", "opt_abort", "opt_return"], 0, repo_dir=repo_dir)
 
+        if choice in ("<GIT_RUN>", "<REFRESH>"):
+            clear_screen()
+            continue
+
         if choice == "opt_show_status":
             show_git_status_box(repo_dir)
             continue
@@ -720,7 +731,9 @@ def handle_rebase_recovery(repo_dir: str) -> str:
                     c_files = get_conflicted_files(repo_dir)
                     wt_changes = get_worktree_status(repo_dir)
                     if len(c_files) == 0 and len(wt_changes) == 0:
-                        if ask_yes_no("rebase_skip_q", True, repo_dir=repo_dir):
+                        ans = ask_yes_no("rebase_skip_q", True, repo_dir=repo_dir)
+                        if ans in ("<GIT_RUN>", "<REFRESH>"): continue
+                        if ans is True:
                             try:
                                 run("git -c core.editor=true rebase --skip", cwd=repo_dir)
                             except RuntimeError:
@@ -739,7 +752,9 @@ def handle_rebase_recovery(repo_dir: str) -> str:
             return "completed"
 
         if choice == "opt_abort":
-            if not ask_yes_no("opt_abort_confirm", False, repo_dir=repo_dir): continue
+            ans = ask_yes_no("opt_abort_confirm", False, repo_dir=repo_dir)
+            if ans in ("<GIT_RUN>", "<REFRESH>"): continue
+            if not ans: continue
             try:
                 run("git rebase --abort", cwd=repo_dir)
                 print(THEME.warn(_t("abort_success")))
@@ -751,6 +766,20 @@ def handle_rebase_recovery(repo_dir: str) -> str:
         if choice == "opt_return":
             print(THEME.warn(_t("rebase_keep_state")))
             return "menu"
+
+def check_potential_conflict(repo_dir: str, base_branch: str) -> Tuple[bool, List[str], bool]:
+    cmd = f"git merge-tree --write-tree origin/{base_branch} HEAD"
+    try:
+        result = subprocess.run(cmd, shell=True, text=True, capture_output=True, cwd=repo_dir)
+        if result.returncode == 0:
+            return False, [], True
+        elif result.returncode == 1:
+            c_lines = [line.strip() for line in result.stdout.splitlines() if "CONFLICT" in line]
+            return True, c_lines, True
+        else:
+            return False, [], False
+    except Exception:
+        return False, [], False
 
 def create_backup(repo_dir: str, branch: str) -> str:
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -847,6 +876,16 @@ def run_verification(repo_dir: str, state: dict, branch: str, backup_branch: Opt
 
     print(f"{THEME.branch(BOX['bl'] + BOX['h']*80)}\n")
     return passed
+
+# ============================================================
+# Rollback Engine
+# ============================================================
+def perform_rollback(repo_dir: str, original_commit: str) -> None:
+    print(f"\n{THEME.warn(_t('rollback_in_progress'))}")
+    if is_rebase_in_progress(repo_dir):
+        run("git rebase --abort", cwd=repo_dir, check=False)
+    run(f"git reset --hard {original_commit}", cwd=repo_dir)
+    print(THEME.ok(_t('rollback_success')))
 
 # ============================================================
 # Commit line formatting
@@ -958,20 +997,6 @@ def show_action_plan(base_point: str, final_message: str, base_branch: str, feat
     if auto_push: lines.append(THEME.cmd("4. git push --force-with-lease"))
     print_box("Commands to execute", lines)
 
-
-# ============================================================
-# Rollback Engine
-# ============================================================
-def perform_rollback(repo_dir: str, original_commit: str) -> None:
-    print(f"\n{THEME.warn(_t('rollback_in_progress'))}")
-    # Nếu đang dính rebase dở dang, abort nó trước
-    if is_rebase_in_progress(repo_dir):
-        run("git rebase --abort", cwd=repo_dir, check=False)
-    # Hard reset về chính xác commit lúc chưa chạy tool
-    run(f"git reset --hard {original_commit}", cwd=repo_dir)
-    print(THEME.ok(_t('rollback_success')))
-
-
 # ============================================================
 # Core flow (STATE MACHINE WIZARD)
 # ============================================================
@@ -1014,6 +1039,7 @@ def run_feature_flow(repo_dir: str) -> None:
         if step == 0:
             state["conflict_status"] = None
             ans = ask_non_empty("base_branch_name", state["base_branch"], allow_back=True, repo_dir=repo_dir)
+            if ans in ("<GIT_RUN>", "<REFRESH>"): continue
             if ans == "<BACK>":
                 print(f"\n{THEME.warn(_t('canceled_return'))}")
                 maybe_restore_auto_stash(repo_dir, auto_stashed)
@@ -1026,6 +1052,7 @@ def run_feature_flow(repo_dir: str) -> None:
 
         elif step == 1:
             ans = ask_yes_no("fetch_origin_q", default=state["do_fetch"], allow_back=True, repo_dir=repo_dir)
+            if ans in ("<GIT_RUN>", "<REFRESH>"): continue
             if ans == "<BACK>":
                 step -= 1
                 continue
@@ -1059,12 +1086,14 @@ def run_feature_flow(repo_dir: str) -> None:
             print(f"\n{THEME.info('--- Auto Detect ---')}")
             print(f"{state['detected_reason']}")
             ans = ask_yes_no("use_detected_history_q", default=True, allow_back=True, repo_dir=repo_dir, type=state["detected_type"])
+            if ans in ("<GIT_RUN>", "<REFRESH>"): continue
             if ans == "<BACK>":
                 step -= 1
                 continue
             if ans is True: state["history_type"] = state["detected_type"]
             else:
                 h_ans = ask_choice("choose_history_type", ["opt_hist_clean", "opt_hist_merged"], default_index=0 if state["detected_type"] == "clean" else 1, allow_back=True, repo_dir=repo_dir)
+                if h_ans in ("<GIT_RUN>", "<REFRESH>"): continue
                 if h_ans == "<BACK>": continue
                 state["history_type"] = "clean" if h_ans == "opt_hist_clean" else "merged"
             bp = get_effective_base_point(repo_dir, state["base_branch"], state["history_type"])
@@ -1083,6 +1112,7 @@ def run_feature_flow(repo_dir: str) -> None:
 
         elif step == 3:
             ans = ask_yes_no("create_backup_q", default=state["do_backup"], allow_back=True, repo_dir=repo_dir)
+            if ans in ("<GIT_RUN>", "<REFRESH>"): continue
             if ans == "<BACK>":
                 step -= 1
                 continue
@@ -1095,6 +1125,7 @@ def run_feature_flow(repo_dir: str) -> None:
                 preview_lines += [THEME.dim("..."), THEME.dim("(Truncated)")]
             print_box("Preview Commits to Squash", preview_lines)
             ans = ask_non_empty("final_commit_msg", default=state["final_msg"], allow_back=True, repo_dir=repo_dir)
+            if ans in ("<GIT_RUN>", "<REFRESH>"): continue
             if ans == "<BACK>":
                 step -= 1
                 continue
@@ -1103,6 +1134,7 @@ def run_feature_flow(repo_dir: str) -> None:
 
         elif step == 5:
             ans = ask_yes_no("auto_push_q", default=state["auto_push"], allow_back=True, repo_dir=repo_dir)
+            if ans in ("<GIT_RUN>", "<REFRESH>"): continue
             if ans == "<BACK>":
                 step -= 1
                 continue
@@ -1112,6 +1144,7 @@ def run_feature_flow(repo_dir: str) -> None:
         elif step == 6:
             show_action_plan(state["base_point"], state["final_msg"], state["base_branch"], branch, state["commit_total"], state["auto_push"])
             ans = ask_yes_no("continue_steps_q", default=True, allow_back=True, repo_dir=repo_dir)
+            if ans in ("<GIT_RUN>", "<REFRESH>"): continue
             if ans == "<BACK>":
                 step -= 1
                 continue
@@ -1122,6 +1155,15 @@ def run_feature_flow(repo_dir: str) -> None:
             break
 
         # --- BẮT ĐẦU CHẠY GIT ---
+
+    # Just-In-Time (JIT) Check: Quét chặn phút chót tránh xung đột IDE
+    current_changes = get_worktree_status(repo_dir)
+    if len(current_changes) > 0 and not auto_stashed:
+        print(f"\n{THEME.err(_t('jit_warning'))}")
+        print(THEME.warn(_t('jit_abort')))
+        pause_continue()
+        return
+
         # LƯU TRẠNG THÁI GỐC ĐỂ ROLLBACK
         original_commit = git_output("git rev-parse HEAD", cwd=repo_dir)
 
@@ -1143,16 +1185,16 @@ def run_feature_flow(repo_dir: str) -> None:
                 if result == "completed":
                     conflict_occurred = True
                 elif result in ("aborted", "menu"):
-                    # Gợi ý Rollback nếu user chủ động hủy rebase
-                    if ask_yes_no("rollback_q", default=True, repo_dir=repo_dir):
+                ans = ask_yes_no("rollback_q", default=True, repo_dir=repo_dir)
+                if ans is True or ans in ("<GIT_RUN>", "<REFRESH>"):
                         perform_rollback(repo_dir, original_commit)
                     else:
                         print(THEME.warn(_t("rollback_abort")))
                     maybe_restore_auto_stash(repo_dir, auto_stashed)
                     return
             else:
-                # Gợi ý Rollback nếu dính lỗi runtime Git không mong muốn
-                if ask_yes_no("rollback_q", default=True, repo_dir=repo_dir):
+            ans = ask_yes_no("rollback_q", default=True, repo_dir=repo_dir)
+            if ans is True or ans in ("<GIT_RUN>", "<REFRESH>"):
                     perform_rollback(repo_dir, original_commit)
                 else:
                     print(THEME.warn(_t("rollback_abort")))
@@ -1165,8 +1207,8 @@ def run_feature_flow(repo_dir: str) -> None:
         if not verify_passed:
             # Nếu Verify thất bại và user có bật Auto Push
             if state["auto_push"]:
-                if ask_yes_no("verify_push_q", False, repo_dir=repo_dir):
-                    # User quyết định khô máu Push Force
+            ans = ask_yes_no("verify_push_q", False, repo_dir=repo_dir)
+            if ans is True: # Force push
                     try:
                         run(f"git push --force-with-lease -u origin {quote_arg(branch)}", cwd=repo_dir)
                     except RuntimeError:
@@ -1177,8 +1219,8 @@ def run_feature_flow(repo_dir: str) -> None:
                 else:
                     print(THEME.warn(_t("warn_cancel_auto_push")))
 
-            # Nếu Verify thất bại, hỏi user có muốn Rollback cứu cánh không
-            if ask_yes_no("rollback_q", default=True, repo_dir=repo_dir):
+        rb_ans = ask_yes_no("rollback_q", default=True, repo_dir=repo_dir)
+        if rb_ans is True or rb_ans in ("<GIT_RUN>", "<REFRESH>"):
                 perform_rollback(repo_dir, original_commit)
             else:
                 print(THEME.warn(_t("rollback_abort")))
@@ -1237,6 +1279,10 @@ def main() -> None:
         else:
             choice = ask_choice("main_menu", ["m_start", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0, repo_dir=repo_dir)
 
+        if choice in ("<GIT_RUN>", "<REFRESH>", "m_refresh"):
+            clear_screen()
+            continue
+
         if choice == "m_recover":
             clear_screen()
             show_startup(repo_dir)
@@ -1264,10 +1310,6 @@ def main() -> None:
             clear_screen()
             show_startup(repo_dir)
             repo_dir = ask_repo_path()
-            clear_screen()
-            continue
-
-        if choice == "m_refresh":
             clear_screen()
             continue
 

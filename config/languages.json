@@ -478,5 +478,17 @@
         "vn_joke": "Chơi khô máu, không thèm lùi bước! Trạng thái giữ nguyên.",
         "vn_toxic": "Đéo thèm rollback. Tự ôm đống nát này mà giải quyết nhé!",
         "en_pro": "ROLLBACK skipped. Branch state kept as is."
+    },
+    "jit_warning": {
+        "vn_pro": "CẢNH BÁO JIT: Phát hiện repo vừa bị thay đổi ngầm từ bên ngoài (IDE/Tool khác).",
+        "vn_joke": "Ối dồi ôi! Vừa có ai (hay app nào) chọc ngoáy vào file trong repo kìa sếp!",
+        "vn_toxic": "ĐM CẢNH BÁO! Thằng l*n nào vừa sửa file sau lưng tao? Repo bị bẩn rồiii!",
+        "en_pro": "JIT WARNING: Detected external background changes to the repo (IDE/Other Tools)."
+    },
+    "jit_abort": {
+        "vn_pro": "Để đảm bảo an toàn, luồng thao tác đã bị hủy. Hãy kiểm tra lại Repo.",
+        "vn_joke": "Tool rén rồi, tự động hủy luồng bảo toàn tính mạng nha sếp.",
+        "vn_toxic": "Dẹp dẹp dẹp! Hủy luồng! Tự ra mà dọn rác đi rồi chạy lại!",
+        "en_pro": "For safety, the flow has been aborted. Please check your Repo."
     }
 }
