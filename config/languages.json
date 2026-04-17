@@ -1,92 +1,192 @@
 {
     "press_exit": {
         "vn_pro": "\nNhấn Enter để thoát...",
-        "vn_joke": ["\nNhấn Enter để sủi bọt...", "\nĐập Enter để chìm vào lãng quên...", "\nBấm Enter để cút... à nhầm, để thoát..."],
-        "vn_toxic": ["\nĐập Enter để cút nhanh...", "\nBấm cmn Enter đi còn đợi gì?", "\nCút lẹ, ấn Enter!"],
+        "vn_joke": [
+            "\nNhấn Enter để sủi bọt...",
+            "\nĐập Enter để chìm vào lãng quên...",
+            "\nBấm Enter để cút... à nhầm, để thoát...",
+            "\nNhấn Enter để tắt máy đi ngủ sếp ơi...",
+            "\nGame over! Bấm Enter để đóng cửa sổ nào."
+        ],
+        "vn_toxic": [
+            "\nĐập Enter để cút nhanh...",
+            "\nBấm cmn Enter đi còn đợi gì?",
+            "\nCút lẹ, ấn Enter!",
+            "\nCòn nhìn gì nữa? Bấm Enter rồi lượn!",
+            "\nBấm phím Enter rồi tắt máy giùm tao."
+        ],
         "en_pro": "\nPress Enter to exit..."
     },
     "press_continue": {
         "vn_pro": "Nhấn Enter để tiếp tục...",
-        "vn_joke": ["Gõ Enter để đi tiếp nha...", "Enter cái cho đời nó trôi sếp ơi..."],
-        "vn_toxic": ["Đập Enter để thử lại!", "Bấm mẹ Enter đi lề mề thế?"],
+        "vn_joke": [
+            "Gõ Enter để đi tiếp nha...",
+            "Enter cái cho đời nó trôi sếp ơi...",
+            "Mời sếp xơi phím Enter để qua ải...",
+            "Nhấn Enter đi, tool đang hóng...",
+            "Bấm Enter để xem ảo thuật nào..."
+        ],
+        "vn_toxic": [
+            "Đập Enter để chạy tiếp!",
+            "Bấm mẹ Enter đi lề mề thế?",
+            "Nhìn clg? Bấm Enter!",
+            "Ngón tay bị liệt à? Bấm Enter mau!",
+            "Ấn phím Enter rồi để tao làm việc tiếp!"
+        ],
         "en_pro": "Press Enter to continue..."
     },
     "no_git_err": {
-        "vn_pro": "Không tìm thấy Git trong PATH.", "vn_joke": "Sếp ơi, máy sếp chưa cài Git à? Kì cục vậy.", "vn_toxic": "Đéo thấy Git đâu trong PATH! Mày dev bằng niềm tin à?", "en_pro": "Git not found in PATH."
+        "vn_pro": "Không tìm thấy Git trong PATH.",
+        "vn_joke": [
+            "Sếp ơi, máy sếp chưa cài Git à? Kì cục vậy.",
+            "Máy dev mà đéo có Git, sếp định code bằng Word hở?",
+            "Ủa Git đâu? Em tìm mỏi mắt không thấy Git trong máy sếp.",
+            "Radar không quét được tín hiệu của Git. Sếp check lại coi."
+        ],
+        "vn_toxic": [
+            "Đéo thấy Git đâu trong PATH! Mày dev bằng niềm tin à?",
+            "Máy l*n gì đéo có Git? Mày dùng Notepad code à?",
+            "Cút đi cài Git ngay! Không có Git gọi tool làm đéo gì?",
+            "Đui à? Git đéo có trong máy mà đòi múa tool!"
+        ],
+        "en_pro": "Git not found in PATH."
     },
     "no_git_warn": {
-        "vn_pro": "Hãy cài Git for Windows và đảm bảo lệnh 'git' chạy được trong terminal.", "vn_joke": "Lên Google tải Git về cài dùm tui nha sếp.", "vn_toxic": "Vác mặt đi tải Git for Windows cài vào ngay. Đếch hiểu kiểu gì.", "en_pro": "Please install Git and ensure 'git' command works in your terminal."
+        "vn_pro": "Hãy cài Git for Windows và đảm bảo lệnh 'git' chạy được trong terminal.",
+        "vn_joke": [
+            "Lên Google tải Git về cài dùm tui nha sếp.",
+            "Google 'Tải Git' đi sếp, lẹ lẹ em đợi.",
+            "Sếp lên mạng down Git về setup phát rồi quay lại đây nhé."
+        ],
+        "vn_toxic": [
+            "Vác mặt đi tải Git for Windows cài vào ngay. Đếch hiểu kiểu gì.",
+            "Mở Google lên, gõ 'Download Git' rồi cài vào con máy cùi của mày đi!",
+            "Đéo biết cài Git thì nghỉ mẹ code đi cho xong!"
+        ],
+        "en_pro": "Please install Git and ensure 'git' command works in your terminal."
     },
     "invalid_yn": {
         "vn_pro": "Vui lòng nhập y hoặc n.",
-        "vn_joke": ["Gõ y hoặc n thôi ní ơi, đừng làm khó nhau.", "Sếp gõ gì trớt quớt vậy? y hoặc n thôi.", "Nhập sai gòi, y hay n nè?"],
-        "vn_toxic": ["Mù à? Gõ y hoặc n thôi!", "Bấm phím liệt à? Có y với n cũng gõ đéo xong.", "Gõ chữ y hoặc n, đéo biết chữ à?"],
+        "vn_joke": [
+            "Gõ y hoặc n thôi ní ơi, đừng làm khó nhau.",
+            "Sếp gõ gì trớt quớt vậy? y hoặc n thôi.",
+            "Nhập sai gòi, y hay n nè?",
+            "Chữ y với n nó nằm rành rành trên bàn phím kìa sếp.",
+            "Làm ơn gõ 'y' (Yes) hoặc 'n' (No) dùm con."
+        ],
+        "vn_toxic": [
+            "Mù à? Gõ y hoặc n thôi!",
+            "Bấm phím liệt à? Có y với n cũng gõ đéo xong.",
+            "Gõ chữ y hoặc n, đéo biết chữ à?",
+            "Hỏi Yes/No mà gõ cái l` gì thế?",
+            "Mày bị ngu à? Chữ Y hoặc chữ N, đéo hiểu tiếng người à?"
+        ],
         "en_pro": "Please enter y or n."
     },
     "not_empty": {
         "vn_pro": "Không được để trống.",
-        "vn_joke": ["Nhập gì đó vào đi sếp, để trống sao chạy.", "Đừng có Enter suông thế chứ.", "Gõ phím đi sếp, đừng lười."],
-        "vn_toxic": ["Bỏ trống thế đéo nào được? Gõ vào!", "Mù à? Kêu nhập mà đéo nhập?", "Gõ cái gì vào giùm tao cái!"],
+        "vn_joke": [
+            "Nhập gì đó vào đi sếp, để trống sao chạy.",
+            "Đừng có Enter suông thế chứ.",
+            "Gõ phím đi sếp, đừng lười.",
+            "Sếp quên gõ phím rồi kìa, nhìn trống trơn à.",
+            "Cho xin vài ký tự đi sếp, nghèo nàn thế."
+        ],
+        "vn_toxic": [
+            "Bỏ trống thế đéo nào được? Gõ vào!",
+            "Mù à? Kêu nhập mà đéo nhập?",
+            "Gõ cái gì vào giùm tao cái!",
+            "Nhấn Enter không thì giải quyết được đéo gì? Gõ chữ vào!",
+            "Lười thì cũng phải gõ vào chứ để trống thế này tao làm kiểu đéo gì?"
+        ],
         "en_pro": "Cannot be empty."
     },
     "choose_num": {
-        "vn_pro": "Chọn số:", "vn_joke": "Bấm số đi sếp:", "vn_toxic": "Bấm cmn số vào:", "en_pro": "Choose number:"
+        "vn_pro": "Chọn số:",
+        "vn_joke": ["Bấm số đi sếp:", "Chọn số mấy nè:", "Chốt số đi sếp:"],
+        "vn_toxic": ["Bấm cmn số vào:", "Gõ mẹ số vào đây:", "Chọn lẹ số đi!"],
+        "en_pro": "Choose number:"
     },
     "invalid_choice": {
         "vn_pro": "Lựa chọn không hợp lệ.",
-        "vn_joke": ["Bấm sai rồi kìa, chọn lại đi.", "Ui da chọc mù mắt tui rồi, chọn đúng số đi má.", "Lựa lộn rồi sếp ơi."],
-        "vn_toxic": ["Lác à? Chọn sai bét, chọn lại!", "Có mấy cái số cũng chọn đéo xong?", "Bấm linh tinh cái đéo gì đấy?"],
+        "vn_joke": [
+            "Bấm sai rồi kìa, chọn lại đi.",
+            "Ui da chọc mù mắt tui rồi, chọn đúng số đi má.",
+            "Lựa lộn rồi sếp ơi.",
+            "Số này ngoài vùng phủ sóng rồi nha sếp.",
+            "Nhập sai số rồi, sếp bị lác nhẹ đúng không?"
+        ],
+        "vn_toxic": [
+            "Lác à? Chọn sai bét, chọn lại!",
+            "Có mấy cái số cũng chọn đéo xong?",
+            "Bấm linh tinh cái đéo gì đấy?",
+            "Đui mù à? Nhìn menu có số đấy không mà bấm?",
+            "Bấm phím ngu thế này bảo sao hay sinh ra bug!"
+        ],
         "en_pro": "Invalid choice."
     },
     "default_marker": {
         "vn_pro": "(mặc định)", "vn_joke": "(cái này auto nè)", "vn_toxic": "(mặc định rồi, lười thì ấn enter)", "en_pro": "(default)"
     },
 
-    "main_menu": {
-        "vn_pro": "Menu chính", "vn_joke": "Menu xịn xò", "vn_toxic": "Làm mẹ gì thì chọn đi", "en_pro": "Main menu"
-    },
-    "m_start": {
-        "vn_pro": "Bắt đầu luồng squash + rebase", "vn_joke": "Bắt đầu dọn dẹp (squash + rebase)", "vn_toxic": "Chạy squash + rebase dọn rác đi", "en_pro": "Start squash + rebase flow"
-    },
-    "m_checkout": {
-        "vn_pro": "Checkout / Đổi nhánh (Tìm kiếm)", "vn_joke": "Lượn sang nhánh khác (Search nhanh)", "vn_toxic": "Tìm và Cút sang nhánh khác", "en_pro": "Checkout branch (Search)"
-    },
-    "m_change": {
-        "vn_pro": "Đổi repo khác", "vn_joke": "Đổi sang project khác múa", "vn_toxic": "Đổi repo khác nhanh", "en_pro": "Change repo"
-    },
-    "m_refresh": {
-        "vn_pro": "Làm mới trạng thái repo", "vn_joke": "F5 cho đời tươi mát", "vn_toxic": "Refresh mẹ lại xem nào", "en_pro": "Refresh current repo status"
-    },
-    "m_lang": {
-        "vn_pro": "Đổi Ngôn ngữ / Tone", "vn_joke": "Đổi giọng điệu (Tone)", "vn_toxic": "Đổi giọng chửi", "en_pro": "Change Language / Tone"
-    },
-    "m_emoji": {
-        "vn_pro": "Bật/Tắt Emoji Mode", "vn_joke": "Bật/Tắt múa Emoji", "vn_toxic": "Bật/Tắt cái Emoji rác rưởi", "en_pro": "Toggle Emoji Mode"
-    },
-    "m_exit": {
-        "vn_pro": "Thoát", "vn_joke": "Chuồn thôi", "vn_toxic": "Cút", "en_pro": "Exit"
-    },
-    "m_recover": {
-        "vn_pro": "Mở trình khôi phục rebase", "vn_joke": "Cấp cứu ca rebase lỗi", "vn_toxic": "Vào sửa đống nát rebase", "en_pro": "Open rebase recovery"
-    },
+    "main_menu": {"vn_pro": "Menu chính", "vn_joke": "Menu xịn xò", "vn_toxic": "Làm mẹ gì thì chọn đi", "en_pro": "Main menu"},
+    "m_start": {"vn_pro": "Bắt đầu luồng squash + rebase", "vn_joke": "Bắt đầu dọn dẹp (squash + rebase)", "vn_toxic": "Chạy squash + rebase dọn rác đi", "en_pro": "Start squash + rebase flow"},
+    "m_checkout": {"vn_pro": "Checkout / Đổi nhánh (Tìm kiếm)", "vn_joke": "Lượn sang nhánh khác (Search nhanh)", "vn_toxic": "Tìm và Cút sang nhánh khác", "en_pro": "Checkout branch (Search)"},
+    "m_change": {"vn_pro": "Đổi repo khác", "vn_joke": "Đổi sang project khác múa", "vn_toxic": "Đổi repo khác nhanh", "en_pro": "Change repo"},
+    "m_refresh": {"vn_pro": "Làm mới trạng thái repo", "vn_joke": "F5 cho đời tươi mát", "vn_toxic": "Refresh mẹ lại xem nào", "en_pro": "Refresh current repo status"},
+    "m_lang": {"vn_pro": "Đổi Ngôn ngữ / Tone", "vn_joke": "Đổi giọng điệu (Tone)", "vn_toxic": "Đổi giọng chửi", "en_pro": "Change Language / Tone"},
+    "m_emoji": {"vn_pro": "Bật/Tắt Emoji Mode", "vn_joke": "Bật/Tắt múa Emoji", "vn_toxic": "Bật/Tắt cái Emoji rác rưởi", "en_pro": "Toggle Emoji Mode"},
+    "m_exit": {"vn_pro": "Thoát", "vn_joke": "Chuồn thôi", "vn_toxic": "Cút", "en_pro": "Exit"},
+    "m_recover": {"vn_pro": "Mở trình khôi phục rebase", "vn_joke": "Cấp cứu ca rebase lỗi", "vn_toxic": "Vào sửa đống nát rebase", "en_pro": "Open rebase recovery"},
 
     "enter_repo": {
-        "vn_pro": "Nhập đường dẫn Git repo: ", "vn_joke": "Ném cái link thư mục Git vô đây: ", "vn_toxic": "Paste cái đường dẫn repo vào lẹ lên: ", "en_pro": "Enter Git repo path: "
+        "vn_pro": "Nhập đường dẫn Git repo: ",
+        "vn_joke": ["Ném cái link thư mục Git vô đây: ", "Paste đường dẫn Project vào đây sếp: ", "Đưa tọa độ repo đây em xử: "],
+        "vn_toxic": ["Paste cái đường dẫn repo vào lẹ lên: ", "Vứt cái link thư mục vào đây!", "Gõ đường dẫn vào, lề mề đéo chịu được: "],
+        "en_pro": "Enter Git repo path: "
     },
     "repo_not_exist": {
-        "vn_pro": "Đường dẫn không tồn tại hoặc không phải thư mục.", "vn_joke": "Đường dẫn ma à sếp? Không có thư mục này.", "vn_toxic": "Đường dẫn xạo chó à? Không thấy thư mục này đâu!", "en_pro": "Path does not exist or is not a directory."
+        "vn_pro": "Đường dẫn không tồn tại hoặc không phải thư mục.",
+        "vn_joke": [
+            "Đường dẫn ma à sếp? Không có thư mục này.",
+            "Copy nhầm link rồi sếp, thư mục này làm gì có thật.",
+            "Ổ cứng sếp bị ảo giác à? Thư mục đéo tồn tại."
+        ],
+        "vn_toxic": [
+            "Đường dẫn xạo chó à? Không thấy thư mục này đâu!",
+            "Copy cái link cũng ngu, thư mục này đéo tồn tại!",
+            "Chỉ bậy chỉ bạ, cái thư mục này bị xóa mẹ từ kiếp nào rồi!"
+        ],
+        "en_pro": "Path does not exist or is not a directory."
     },
     "not_git_repo": {
-        "vn_pro": "Thư mục này không phải Git repo.", "vn_joke": "Thư mục này trống không, chả thấy Git đâu sếp ơi.", "vn_toxic": "Chỗ này đéo phải Git repo, nhập sai rồi thằng ngáo!", "en_pro": "This directory is not a Git repo."
+        "vn_pro": "Thư mục này không phải Git repo.",
+        "vn_joke": [
+            "Thư mục này trống không, chả thấy Git đâu sếp ơi.",
+            "Đây là thư mục thường mà, chưa 'git init' kìa.",
+            "Lộn địa chỉ rồi, chỗ này không có mùi Git."
+        ],
+        "vn_toxic": [
+            "Chỗ này đéo phải Git repo, nhập sai rồi thằng ngáo!",
+            "Chỉ vào cái thư mục rác đéo có Git thì tao làm kiểu gì?",
+            "Đui à? Thư mục này đéo phải là Git repo!"
+        ],
+        "en_pro": "This directory is not a Git repo."
     },
     "cwd_not_git": {
-        "vn_pro": "Thư mục hiện tại không phải Git repo.", "vn_joke": "Đang đứng ở chỗ không có Git sếp ạ.", "vn_toxic": "Thư mục hiện tại đéo có Git. Mù đường à?", "en_pro": "Current directory is not a Git repo."
+        "vn_pro": "Thư mục hiện tại không phải Git repo.",
+        "vn_joke": ["Đang đứng ở chỗ không có Git sếp ạ.", "Cái terminal này đang đứng lộn xộn ở đâu đâu á, không phải Repo."],
+        "vn_toxic": ["Thư mục hiện tại đéo có Git. Mù đường à?", "Mày đang mở terminal ở cái xó xỉnh đéo nào vậy? Đéo có Git!"],
+        "en_pro": "Current directory is not a Git repo."
     },
     "found_closest": {
-        "vn_pro": "Phát hiện Git repo gần nhất: {guessed}", "vn_joke": "Mò ra được repo gần đây nè: {guessed}", "vn_toxic": "Thấy cái repo rác ở gần đây: {guessed}", "en_pro": "Detected closest Git repo: {guessed}"
+        "vn_pro": "Phát hiện Git repo gần nhất: {guessed}",
+        "vn_joke": ["Mò ra được repo gần đây nè: {guessed}", "Tui ngửi thấy mùi repo ở ngay đây: {guessed}"],
+        "vn_toxic": ["Thấy cái repo rác ở gần đây: {guessed}", "Tìm thấy repo ở {guessed}. Mù à mà đéo thấy?"],
+        "en_pro": "Detected closest Git repo: {guessed}"
     },
     "use_this": {
-        "vn_pro": "Dùng repo này?", "vn_joke": "Chiến repo này luôn không sếp?", "vn_toxic": "Quất repo này không?", "en_pro": "Use this repo?"
+        "vn_pro": "Dùng repo này?", "vn_joke": ["Chiến repo này luôn không sếp?", "Quất luôn thư mục này nha?"], "vn_toxic": ["Quất repo này không?", "Xài cái này luôn cho nhanh?"], "en_pro": "Use this repo?"
     },
     "pls_choose_repo": {
         "vn_pro": "Vui lòng chọn Git repo muốn thao tác.", "vn_joke": "Chọn thư mục đi rồi tui làm cho.", "vn_toxic": "Chọn cái repo nào cần xử đi, mệt ghê.", "en_pro": "Please select the Git repo to operate on."
@@ -99,191 +199,247 @@
     "dash_backup": {"vn_pro": "4. Tạo Backup", "vn_joke": "4. Mua bảo hiểm", "vn_toxic": "4. Backup nhánh", "en_pro": "4. Backup branch"},
     "dash_msg": {"vn_pro": "5. Lời nhắn (Msg)", "vn_joke": "5. Lời trăng trối", "vn_toxic": "5. Commit rác", "en_pro": "5. Commit Msg"},
     "dash_push": {"vn_pro": "6. Auto Push", "vn_joke": "6. Push tự động", "vn_toxic": "6. Force push", "en_pro": "6. Auto Push"},
-    "opt_back": {
-        "vn_pro": "Quay lại bước trước", "vn_joke": "De xe lại (Quay về)", "vn_toxic": "Ấn nhầm, cho tao quay lại", "en_pro": "Go back to previous step"
-    },
-    "type_back": {
-        "vn_pro": " (< Quay lại)", "vn_joke": " (gõ '<' để de xe)", "vn_toxic": " (gõ '<' để lùi bước)", "en_pro": " (< Back)"
-    },
+    "opt_back": {"vn_pro": "Quay lại bước trước", "vn_joke": "De xe lại (Quay về)", "vn_toxic": "Ấn nhầm, cho tao quay lại", "en_pro": "Go back to previous step"},
+    "type_back": {"vn_pro": " (< Quay lại)", "vn_joke": " (gõ '<' để de xe)", "vn_toxic": " (gõ '<' để lùi bước)", "en_pro": " (< Back)"},
 
     "predict_conflict_warn": {
         "vn_pro": "CẢNH BÁO: Dự đoán sẽ xảy ra CONFLICT khi rebase vào {base}. Bạn có thể sẽ phải giải quyết thủ công.",
-        "vn_joke": ["Báo động đỏ! Tool ngửi thấy mùi conflict nồng nặc với nhánh {base}.", "Tới công chuyện rồi sếp! Check thử thấy conflict chà bá với {base}."],
-        "vn_toxic": ["ĐM CẢNH BÁO! Code mày đang đá nhau chan chát với {base}. Chuẩn bị dọn rác conflict đi!", "Toang cmnr! Dự đoán dính conflict đỏ lòm với {base}. Xem kĩ đi!"],
+        "vn_joke": [
+            "Báo động đỏ! Tool ngửi thấy mùi conflict nồng nặc với nhánh {base}.",
+            "Tới công chuyện rồi sếp! Check thử thấy conflict chà bá với {base}.",
+            "Xui rồi sếp ơi, radar quét thấy file choảng nhau kịch liệt với {base}.",
+            "Chuẩn bị tinh thần nha sếp, dự là sẽ có conflict đỏ lòm với nhánh {base} đấy."
+        ],
+        "vn_toxic": [
+            "ĐM CẢNH BÁO! Code mày đang đá nhau chan chát với {base}. Chuẩn bị dọn rác conflict đi!",
+            "Toang cmnr! Dự đoán dính conflict đỏ lòm với {base}. Xem kĩ đi!",
+            "Sửa code ngu cho lắm vào, giờ dính conflict với nhánh {base} rồi kìa!",
+            "Cảnh báo: Tí nữa mày sẽ ngập mồm trong đống conflict với {base}. Khóc đi!"
+        ],
         "en_pro": "WARNING: Predicted conflicts when rebasing onto {base}. Manual resolution will be required."
     },
     "predict_conflict_clean": {
         "vn_pro": "Tin tốt: Không dự đoán có conflict với nhánh {base}. Đường đã thông hè đã thoáng.",
-        "vn_joke": ["Ngon lành cành đào, radar không quét thấy cục conflict nào với {base} sếp ơi.", "Đường thông hè thoáng, đéo thấy conflict nào với {base} nha sếp."],
-        "vn_toxic": ["Check rồi, đéo có conflict với {base}. Chắc do ăn ở tốt.", "May cho mày là đéo dính conflict nào với nhánh {base} đấy."],
+        "vn_joke": [
+            "Ngon lành cành đào, radar không quét thấy cục conflict nào với {base} sếp ơi.",
+            "Đường thông hè thoáng, đéo thấy conflict nào với {base} nha sếp.",
+            "Tuyệt vời, êm ru luôn, dự là không có cái conflict nào cản đường đâu.",
+            "Nhân phẩm sếp tốt đấy, sạch sẽ không tì vết, không đụng file nào với {base}."
+        ],
+        "vn_toxic": [
+            "Check rồi, đéo có conflict với {base}. Chắc do ăn ở tốt.",
+            "May cho mày là đéo dính conflict nào với nhánh {base} đấy.",
+            "Radar đéo thấy conflict. Chắc rùa thôi, chứ code như mày thì...",
+            "Sạch sẽ! Đéo có conflict. Tự tin mà chạy đi!"
+        ],
         "en_pro": "Good news: No potential conflicts predicted with {base}. Clear path ahead."
     },
-    "dash_predict": {
-        "vn_pro": "Dự báo conflict", "vn_joke": "Bói conflict", "vn_toxic": "Soi conflict", "en_pro": "Conflict predict"
-    },
-    "dash_predict_clean": {
-        "vn_pro": "Sạch sẽ", "vn_joke": "Ngon lành", "vn_toxic": "Đéo có", "en_pro": "Clean"
-    },
-    "dash_predict_conflict": {
-        "vn_pro": "Có xung đột ({count} file)", "vn_joke": "Toang ({count} file choảng nhau)", "vn_toxic": "Nát cmnr ({count} file)", "en_pro": "Conflict ({count} files)"
-    },
+    "dash_predict": {"vn_pro": "Dự báo conflict", "vn_joke": "Bói conflict", "vn_toxic": "Soi conflict", "en_pro": "Conflict predict"},
+    "dash_predict_clean": {"vn_pro": "Sạch sẽ", "vn_joke": "Ngon lành", "vn_toxic": "Đéo có", "en_pro": "Clean"},
+    "dash_predict_conflict": {"vn_pro": "Có xung đột ({count} file)", "vn_joke": "Toang ({count} file choảng nhau)", "vn_toxic": "Nát cmnr ({count} file)", "en_pro": "Conflict ({count} files)"},
 
     "smart_git_detect": {
         "vn_pro": "Chế độ Smart Git: Nhận diện lệnh hợp lệ.",
-        "vn_joke": "Sếp múa raw command à? Kích hoạt Smart Git!",
-        "vn_toxic": "Gõ tay lệnh Git à? Thích thể hiện thì tao chiều!",
+        "vn_joke": [
+            "Sếp múa raw command à? Kích hoạt Smart Git!",
+            "Đang bật mode tay to, chặn lệnh Git lại để check!",
+            "Haha, định tự gõ lệnh Git hả sếp? Tool tóm gọn rồi nhé!"
+        ],
+        "vn_toxic": [
+            "Gõ tay lệnh Git à? Thích thể hiện thì tao chiều!",
+            "Đòi múa múa Git command chứ gì? Tool bắt lại cmnr!",
+            "Đang yên đang lành lại thích gõ lệnh Git? Soát vé đã!"
+        ],
         "en_pro": "Smart Git Mode: Detected valid command."
     },
     "smart_git_confirm": {
         "vn_pro": "Bạn có chắc muốn chạy lệnh này ngay bây giờ không?",
-        "vn_joke": "Chắc kèo là quất lệnh này luôn nha sếp?",
-        "vn_toxic": "Chốt chạy lệnh này chưa? Nát repo đéo đền đâu!",
+        "vn_joke": [
+            "Chắc kèo là quất lệnh này luôn nha sếp?",
+            "Bóp cò lệnh này không sếp ơi?",
+            "Đã kiểm tra kỹ chưa sếp? Chạy lệnh này nhé?"
+        ],
+        "vn_toxic": [
+            "Chốt chạy lệnh này chưa? Nát repo đéo đền đâu!",
+            "Có chắc là lệnh này đúng không? Cố chấp chạy là ôm hận đấy!",
+            "Suy nghĩ kỹ chưa? Gõ láo là đi nguyên cái Repo!"
+        ],
         "en_pro": "Are you sure you want to execute this command now?"
     },
     "smart_git_done": {
         "vn_pro": "Thực thi hoàn tất. Trở lại luồng công việc hiện tại.",
-        "vn_joke": "Quẩy Git xong rồi, quay lại việc chính nha sếp.",
-        "vn_toxic": "Chạy xong cmnr, về lại chỗ cũ mà làm việc tiếp đi.",
+        "vn_joke": [
+            "Quẩy Git xong rồi, quay lại việc chính nha sếp.",
+            "Lệnh chạy ngon lành cành đào. Quay về menu thôi.",
+            "Ngon! Đã chạy xong lệnh ngoài lề, tiếp tục luồng chính nào."
+        ],
+        "vn_toxic": [
+            "Chạy xong cmnr, về lại chỗ cũ mà làm việc tiếp đi.",
+            "Rồi xong! Đéo dính lỗi. Giờ quay về quy trình cho tao.",
+            "Thực thi rồi đấy. Giờ bớt múa phím đi và quay về việc chính!"
+        ],
         "en_pro": "Execution completed. Returning to current flow."
     },
     "smart_git_cancel": {
         "vn_pro": "Đã hủy chạy lệnh Git. Trở lại bình thường.",
-        "vn_joke": "Quay xe! Bỏ lệnh Git, trả lại màn hình cho sếp.",
-        "vn_toxic": "Hủy cmnr. Gõ cho cố rồi sợ à?",
+        "vn_joke": [
+            "Quay xe! Bỏ lệnh Git, trả lại màn hình cho sếp.",
+            "Thắng gấp thành công! Không chạy lệnh Git này nữa.",
+            "Hủy bỏ nhiệm vụ lén lút! Trở về an toàn."
+        ],
+        "vn_toxic": [
+            "Hủy cmnr. Gõ cho cố rồi sợ à?",
+            "Biết ngay là gõ láo mà rén! Đã hủy lệnh!",
+            "Đéo dám chạy thì gõ làm clg? Hủy mẹ rồi!"
+        ],
         "en_pro": "Git command canceled. Returning to normal."
     },
-    "git_cmd_status": {
-        "vn_pro": "Xem trạng thái các file (đã sửa, đã add) và nhánh hiện tại.",
-        "vn_joke": "Coi thử code đang nát tới đâu, có file nào đỏ lòm không.",
-        "vn_toxic": "Xem mẹ cái list file rác mày vừa gõ bậy bạ vào chưa commit.",
-        "en_pro": "Show the working tree status."
+    "smart_git_fail": {
+        "vn_pro": "Lệnh Git thất bại (Mã lỗi: {code}). Hãy đọc kỹ thông báo lỗi của Git ở khung phía trên.",
+        "vn_joke": [
+            "Xịt rồi sếp ơi (Mã: {code}). Đọc cái đống chữ Git nó chửi ở trên kìa.",
+            "Hỏng bét! Lệnh tạch rồi nha sếp (Mã lỗi: {code}).",
+            "Tới công chuyện! Lệnh Git gãy rồi (Mã {code}), check xem nó la làng cái gì ở trên đi."
+        ],
+        "vn_toxic": [
+            "Lệnh chạy thất bại (Lỗi {code})! Tự mở mắt ra mà đọc xem Git nó chửi cái đéo gì ở trên!",
+            "Ngu học chửa? Gõ lệnh lỗi tè le (Mã {code}) rồi kìa!",
+            "ĐM thất bại cmnr! Exit code {code}. Đọc lỗi đi xem mình ngu ở đâu!"
+        ],
+        "en_pro": "Git command failed (Exit code: {code}). Please check the Git error output above."
     },
-    "git_cmd_log": {
-        "vn_pro": "Xem lịch sử các commit đã thực hiện.",
-        "vn_joke": "Lật lại án tích xem ai là người gây ra đống bug này.",
-        "vn_toxic": "Xem gia phả commit xem thằng l` nào code đoạn này.",
-        "en_pro": "Show commit logs."
-    },
-    "git_cmd_branch": {
-        "vn_pro": "Xem, tạo, hoặc xóa các nhánh (branches).",
-        "vn_joke": "Kiểm kê xem repo đang đẻ ra bao nhiêu cái nhánh rồi.",
-        "vn_toxic": "Xem cái list nhánh rác rưởi mà team mày tạo ra.",
-        "en_pro": "List, create, or delete branches."
-    },
-    "git_cmd_checkout": {
-        "vn_pro": "Đổi nhánh hoặc khôi phục file về trạng thái cũ.",
-        "vn_joke": "Dịch chuyển tức thời sang nhánh khác múa code.",
-        "vn_toxic": "Cút sang nhánh khác để code.",
-        "en_pro": "Switch branches or restore working tree files."
-    },
-    "git_cmd_add": {
-        "vn_pro": "Thêm file thay đổi vào Staging Area (chuẩn bị commit).",
-        "vn_joke": "Gom file lại để chuẩn bị đóng gói (commit).",
-        "vn_toxic": "Nhặt rác bỏ vào thùng (staging) chuẩn bị vứt (commit).",
-        "en_pro": "Add file contents to the index."
-    },
-    "git_cmd_commit": {
-        "vn_pro": "Gói các file trong Staging Area thành một phiên bản lưu trữ (commit).",
-        "vn_joke": "Đóng dấu, chốt đơn những file vừa sửa vào lịch sử.",
-        "vn_toxic": "Lưu mẹ cái đống code nhăng cuội này vào lịch sử.",
-        "en_pro": "Record changes to the repository."
-    },
-    "git_cmd_push": {
-        "vn_pro": "Đẩy (upload) các commit từ local lên remote server.",
-        "vn_joke": "Quăng code lên server cho thiên hạ trầm trồ (hoặc ăn chửi).",
-        "vn_toxic": "Đẩy cái đống rác của mày lên server đập vào mặt team.",
-        "en_pro": "Update remote refs along with associated objects."
-    },
-    "git_cmd_pull": {
-        "vn_pro": "Kéo (download) code mới nhất từ server về và gộp vào nhánh hiện tại.",
-        "vn_joke": "Kéo code của mấy đồng nghiệp về xem có bị conflict không.",
-        "vn_toxic": "Bợ code mới trên server về, chuẩn bị tinh thần mà gỡ conflict đi.",
-        "en_pro": "Fetch from and integrate with another repository or a local branch."
-    },
-    "git_cmd_fetch": {
-        "vn_pro": "Tải thông tin nhánh và commit mới từ server (không tự động gộp).",
-        "vn_joke": "Dòm lén xem server có gì mới không chứ chưa thèm kéo về.",
-        "vn_toxic": "Hỏi server xem có thằng nào vừa push code không, đéo ảnh hưởng mẹ gì code mày.",
-        "en_pro": "Download objects and refs from another repository."
-    },
-    "git_cmd_stash": {
-        "vn_pro": "Tạm cất (giấu) các thay đổi chưa commit đi chỗ khác.",
-        "vn_joke": "Giấu đống code đang gõ dở vào xó tủ để đổi nhánh.",
-        "vn_toxic": "Nhét cái đống bùi nhùi chưa xong của mày vào kho, cho đỡ ngứa mắt.",
-        "en_pro": "Stash the changes in a dirty working directory away."
-    },
-    "git_cmd_reset": {
-        "vn_pro": "Reset nhánh hiện tại về một commit cũ (có thể làm mất code tùy tham số).",
-        "vn_joke": "Cỗ máy thời gian, quay ngược quá khứ (xài ngu là bay màu code nha).",
-        "vn_toxic": "Quay lùi lịch sử. Cẩn thận mất mẹ hết đống code vừa gõ đấy!",
-        "en_pro": "Reset current HEAD to the specified state."
-    },
-    "git_cmd_rebase": {
-        "vn_pro": "Bứng các commit của nhánh hiện tại đặt lên đầu một nhánh khác.",
-        "vn_joke": "Đắp thẳng code của mình lên ngọn cây code của người khác cho đẹp.",
-        "vn_toxic": "Viết lại lịch sử dối trá. Lác mắt là dọn conflict ngập mặt cmnl.",
-        "en_pro": "Reapply commits on top of another base tip."
-    },
-    "git_cmd_unknown": {
-        "vn_pro": "Lệnh Git tùy chỉnh. Cẩn thận khi thực thi, tool không nắm rõ lệnh này.",
-        "vn_joke": "Lệnh gì lạ quắc, tool chưa học. Sếp tự chịu trách nhiệm nha.",
-        "vn_toxic": "Gõ cái lệnh l` gì lạ hoắc thế? Nát repo tự chịu trách nhiệm nhé!",
-        "en_pro": "Custom Git command. Be careful."
-    },
+
+    "git_cmd_status": {"vn_pro": "Xem trạng thái các file (đã sửa, đã add) và nhánh hiện tại.", "vn_joke": "Coi thử code đang nát tới đâu, có file nào đỏ lòm không.", "vn_toxic": "Xem mẹ cái list file rác mày vừa gõ bậy bạ vào chưa commit.", "en_pro": "Show the working tree status."},
+    "git_cmd_log": {"vn_pro": "Xem lịch sử các commit đã thực hiện.", "vn_joke": "Lật lại án tích xem ai là người gây ra đống bug này.", "vn_toxic": "Xem gia phả commit xem thằng l` nào code đoạn này.", "en_pro": "Show commit logs."},
+    "git_cmd_branch": {"vn_pro": "Xem, tạo, hoặc xóa các nhánh (branches).", "vn_joke": "Kiểm kê xem repo đang đẻ ra bao nhiêu cái nhánh rồi.", "vn_toxic": "Xem cái list nhánh rác rưởi mà team mày tạo ra.", "en_pro": "List, create, or delete branches."},
+    "git_cmd_checkout": {"vn_pro": "Đổi nhánh hoặc khôi phục file về trạng thái cũ.", "vn_joke": "Dịch chuyển tức thời sang nhánh khác múa code.", "vn_toxic": "Cút sang nhánh khác để code.", "en_pro": "Switch branches or restore working tree files."},
+    "git_cmd_add": {"vn_pro": "Thêm file thay đổi vào Staging Area (chuẩn bị commit).", "vn_joke": "Gom file lại để chuẩn bị đóng gói (commit).", "vn_toxic": "Nhặt rác bỏ vào thùng (staging) chuẩn bị vứt (commit).", "en_pro": "Add file contents to the index."},
+    "git_cmd_commit": {"vn_pro": "Gói các file trong Staging Area thành một phiên bản lưu trữ (commit).", "vn_joke": "Đóng dấu, chốt đơn những file vừa sửa vào lịch sử.", "vn_toxic": "Lưu mẹ cái đống code nhăng cuội này vào lịch sử.", "en_pro": "Record changes to the repository."},
+    "git_cmd_push": {"vn_pro": "Đẩy (upload) các commit từ local lên remote server.", "vn_joke": "Quăng code lên server cho thiên hạ trầm trồ (hoặc ăn chửi).", "vn_toxic": "Đẩy cái đống rác của mày lên server đập vào mặt team.", "en_pro": "Update remote refs along with associated objects."},
+    "git_cmd_pull": {"vn_pro": "Kéo (download) code mới nhất từ server về và gộp vào nhánh hiện tại.", "vn_joke": "Kéo code của mấy đồng nghiệp về xem có bị conflict không.", "vn_toxic": "Bợ code mới trên server về, chuẩn bị tinh thần mà gỡ conflict đi.", "en_pro": "Fetch from and integrate with another repository or a local branch."},
+    "git_cmd_fetch": {"vn_pro": "Tải thông tin nhánh và commit mới từ server (không tự động gộp).", "vn_joke": "Dòm lén xem server có gì mới không chứ chưa thèm kéo về.", "vn_toxic": "Hỏi server xem có thằng nào vừa push code không, đéo ảnh hưởng mẹ gì code mày.", "en_pro": "Download objects and refs from another repository."},
+    "git_cmd_stash": {"vn_pro": "Tạm cất (giấu) các thay đổi chưa commit đi chỗ khác.", "vn_joke": "Giấu đống code đang gõ dở vào xó tủ để đổi nhánh.", "vn_toxic": "Nhét cái đống bùi nhùi chưa xong của mày vào kho, cho đỡ ngứa mắt.", "en_pro": "Stash the changes in a dirty working directory away."},
+    "git_cmd_reset": {"vn_pro": "Reset nhánh hiện tại về một commit cũ (có thể làm mất code tùy tham số).", "vn_joke": "Cỗ máy thời gian, quay ngược quá khứ (xài ngu là bay màu code nha).", "vn_toxic": "Quay lùi lịch sử. Cẩn thận mất mẹ hết đống code vừa gõ đấy!", "en_pro": "Reset current HEAD to the specified state."},
+    "git_cmd_rebase": {"vn_pro": "Bứng các commit của nhánh hiện tại đặt lên đầu một nhánh khác.", "vn_joke": "Đắp thẳng code của mình lên ngọn cây code của người khác cho đẹp.", "vn_toxic": "Viết lại lịch sử dối trá. Lác mắt là dọn conflict ngập mặt cmnl.", "en_pro": "Reapply commits on top of another base tip."},
+    "git_cmd_unknown": {"vn_pro": "Lệnh Git tùy chỉnh. Cẩn thận khi thực thi, tool không nắm rõ lệnh này.", "vn_joke": "Lệnh gì lạ quắc, tool chưa học. Sếp tự chịu trách nhiệm nha.", "vn_toxic": "Gõ cái lệnh l` gì lạ hoắc thế? Nát repo tự chịu trách nhiệm nhé!", "en_pro": "Custom Git command. Be careful."},
 
     "verify_title": {"vn_pro": "XÁC MINH KẾT QUẢ REBASE (VERIFY)", "vn_joke": "KIỂM ĐỊNH CHẤT LƯỢNG KÉM", "vn_toxic": "SOI RỚT CODE", "en_pro": "POST-REBASE VERIFICATION"},
     "verify_ahead_ok": {
         "vn_pro": "Nhánh hiện tại đã đi trước (ahead) {base} {ahead} commit.",
-        "vn_joke": ["Ngon lành, nhánh đã vượt lên trên {base} {ahead} bước.", "Chuẩn cmnr, đang dẫn trước {base} {ahead} commit."],
-        "vn_toxic": ["Thấy chưa? Đã ahead {base} {ahead} commit rồi kìa.", "Check ahead OK, đéo bị tuụt hậu so với {base}."],
+        "vn_joke": [
+            "Ngon lành, nhánh đã vượt lên trên {base} {ahead} bước.",
+            "Chuẩn cmnr, đang dẫn trước {base} {ahead} commit.",
+            "Tuyệt đỉnh! Nhánh sếp đang đứng cao hơn {base} hẳn {ahead} tấc."
+        ],
+        "vn_toxic": [
+            "Thấy chưa? Đã ahead {base} {ahead} commit rồi kìa.",
+            "Check ahead OK, đéo bị tuụt hậu so với {base}.",
+            "Vượt lên mẹ nó {ahead} commit so với gốc rồi, ổn!"
+        ],
         "en_pro": "Current branch is ahead of {base} by {ahead} commit(s)."
     },
     "verify_ahead_fail": {
         "vn_pro": "Cảnh báo: Nhánh hiện tại đang BEHIND {base} {behind} commit! Rebase có vẻ chưa chuẩn.",
-        "vn_joke": ["Ối giời ơi, rebase xong sao lại tụt hậu {behind} bước so với {base} thế này?", "Lỗi cmnr, xe chạy lùi à? BEHIND {behind} commit kìa sếp."],
-        "vn_toxic": ["Ngu học chưa? Rebase kiểu l` gì mà lại BEHIND {base} tận {behind} commit?", "Mở mắt to ra! Nhánh bị tụt hậu {behind} commit so với gốc rồi!"],
+        "vn_joke": [
+            "Ối giời ơi, rebase xong sao lại tụt hậu {behind} bước so với {base} thế này?",
+            "Lỗi cmnr, xe chạy lùi à? BEHIND {behind} commit kìa sếp.",
+            "Chết cười, rebase kiểu gì mà lại bị gốc {base} bỏ xa {behind} dặm vậy?"
+        ],
+        "vn_toxic": [
+            "Ngu học chưa? Rebase kiểu l` gì mà lại BEHIND {base} tận {behind} commit?",
+            "Mở mắt to ra! Nhánh bị tụt hậu {behind} commit so với gốc rồi!",
+            "ĐM toang! Rebase chạy lùi à? BEHIND cmn {behind} commit rồi kìa thằng ngáo!"
+        ],
         "en_pro": "Warning: Current branch is BEHIND {base} by {behind} commit(s)! Rebase might have failed conceptually."
     },
     "verify_patch_ok": {
         "vn_pro": "Toàn vẹn code (Patch-ID): 100%. Code trước và sau rebase khớp nhau hoàn toàn!",
-        "vn_joke": ["Tuyệt đối không rớt miếng thịt nào. Mã Patch-ID khớp 100% nha sếp!", "Xác minh Patch-ID thành công: Code an toàn 100%."],
-        "vn_toxic": ["Test Patch-ID qua rồi, đéo rớt một dòng code nào hết.", "Check Patch-ID khớp 100%. Yên tâm đéo mất code đâu."],
+        "vn_joke": [
+            "Tuyệt đối không rớt miếng thịt nào. Mã Patch-ID khớp 100% nha sếp!",
+            "Xác minh Patch-ID thành công: Code an toàn 100%.",
+            "Nguyên vẹn mười phân vẹn mười. Không mất một dòng code nào."
+        ],
+        "vn_toxic": [
+            "Test Patch-ID qua rồi, đéo rớt một dòng code nào hết.",
+            "Check Patch-ID khớp 100%. Yên tâm đéo mất code đâu.",
+            "Hên cho mày là mã Patch-ID khớp y chang, không là mất code dọn mệt nghỉ."
+        ],
         "en_pro": "Code integrity (Patch-ID): 100%. Pre and post rebase patches match perfectly!"
     },
     "verify_patch_diff": {
         "vn_pro": "Toàn vẹn code: Phát hiện CHÊNH LỆCH (diff) giữa code gốc và sau khi rebase.",
-        "vn_joke": ["Á đù, dò Patch-ID thấy lệch xíu code rồi nha. Có ai đụng chạm gì không?", "Còi báo động: Có thay đổi logic code sau rebase sếp ơi!"],
-        "vn_toxic": ["ĐM CẢNH BÁO! Lệch code mẹ rồi! Patch-ID đéo khớp!", "Chết dở, code sau rebase đéo giống code cũ! Mất code hay gì?"],
+        "vn_joke": [
+            "Á đù, dò Patch-ID thấy lệch xíu code rồi nha. Có ai đụng chạm gì không?",
+            "Còi báo động: Có thay đổi logic code sau rebase sếp ơi!",
+            "Xịt keo cứng ngắc! Code sau khi múa rebase không còn y nguyên như cũ nữa."
+        ],
+        "vn_toxic": [
+            "ĐM CẢNH BÁO! Lệch code mẹ rồi! Patch-ID đéo khớp!",
+            "Chết dở, code sau rebase đéo giống code cũ! Mất code hay gì?",
+            "Báo động đỏ đỏ lòm! Mày vừa làm rơi mất mấy dòng code à? Diff tè le rồi kìa!"
+        ],
         "en_pro": "Code integrity: Detected DIFFERENCES between original and rebased patches."
     },
     "verify_conflict_reason": {
         "vn_pro": "-> Điều này là BÌNH THƯỜNG vì bạn đã giải quyết conflict thủ công. Hãy tự review lại nhé.",
-        "vn_joke": "-> Dĩ nhiên rồi, nãy sếp tự gỡ conflict bằng tay mà. Nhớ review lại bằng mắt cho chắc ăn nha.",
-        "vn_toxic": "-> Khác là đúng cmnr, nãy mày ngồi sửa conflict bằng tay mà. Mở mắt ra review lại đi!",
+        "vn_joke": [
+            "-> Dĩ nhiên rồi, nãy sếp tự gỡ conflict bằng tay mà. Nhớ review lại bằng mắt cho chắc ăn nha.",
+            "-> Do nãy sếp can thiệp sửa conflict thôi, chuyện nhỏ, cơ mà nhớ check lại coi chừng gỡ ngu nha.",
+            "-> Biết ngay là lệch mà, tại nãy có đụng tay vào file conflict chớ sao."
+        ],
+        "vn_toxic": [
+            "-> Khác là đúng cmnr, nãy mày ngồi sửa conflict bằng tay mà. Mở mắt ra review lại đi!",
+            "-> Nãy tự tay gỡ conflict thì diff lệch là cái chắc! Mở code ra soi lại xem có gỡ lỗi đéo đâu không!",
+            "-> Do cái vụ conflict nãy mày tự xử đấy. Đừng có hoảng, nhưng phải tự review lại đống rác đó đi!"
+        ],
         "en_pro": "-> This is EXPECTED since you manually resolved conflicts. Please review manually."
     },
     "verify_missing_reason": {
         "vn_pro": "-> NGUY HIỂM: Rebase tự động nhưng code bị thay đổi. Có thể đã bị mất hoặc ghi đè code rác!",
-        "vn_joke": "-> CĂNG NHA: Nãy rebase mượt mà tự nhiên rớt code là sao? Sếp check lại gấp!",
-        "vn_toxic": "-> ĐM NGUY HIỂM VCL! Tự động rebase mà bị lệnh code? Chắc chắn mất code mẹ rồi, check gấp!",
+        "vn_joke": [
+            "-> CĂNG NHA: Nãy rebase mượt mà tự nhiên rớt code là sao? Sếp check lại gấp!",
+            "-> Ối dồi ôi, rebase auto mà code lại bốc hơi? Xài phép thuật Winx à? Check lẹ sếp ơi!",
+            "-> Tới công chuyện luôn! Không đụng chạm gì mà code lệch, cẩn thận mất sạch code đó."
+        ],
+        "vn_toxic": [
+            "-> ĐM NGUY HIỂM VCL! Tự động rebase mà bị lệnh code? Chắc chắn mất code mẹ rồi, check gấp!",
+            "-> CẢNH BÁO ĐỎ! Rebase suôn sẻ mà đéo hiểu sao Patch-ID sai bét? Bay màu code cmnr thằng ngu!",
+            "-> Rơi rớt code cmnr! Tự động rebase mà diff lệch thì ăn l** rồi, mở mắt ra check ngay!"
+        ],
         "en_pro": "-> DANGER: Automated rebase altered the patch logic. Code might be lost or silently overwritten!"
     },
     "verify_no_ref": {
         "vn_pro": "CẢNH BÁO: Không có nhánh backup hay remote tracking branch để đối chiếu toàn vẹn code!",
-        "vn_joke": ["Liều quá sếp, không có backup lấy gì mà so sánh check code bị rớt hay không?", "Chịu chết, không có nhánh gốc lấy gì mà verify sếp ơi."],
-        "vn_toxic": ["Đéo tạo backup thì lấy cái cc gì ra để đối chiếu xem có rớt code không? Ngu thì chịu!", "Chịu! Đéo có backup thì tự cầu nguyện là không rớt code đi."],
+        "vn_joke": [
+            "Liều quá sếp, không có backup lấy gì mà so sánh check code bị rớt hay không?",
+            "Chịu chết, không có nhánh gốc lấy gì mà verify sếp ơi.",
+            "Sếp bóp team rồi, không lưu backup thì tui lấy gì so sánh Patch-ID bây giờ?"
+        ],
+        "vn_toxic": [
+            "Đéo tạo backup thì lấy cái cc gì ra để đối chiếu xem có rớt code không? Ngu thì chịu!",
+            "Chịu! Đéo có backup thì tự cầu nguyện là không rớt code đi.",
+            "Mù à? Bảo tạo backup đéo tạo, giờ lấy máu ra mà đối chiếu code à?"
+        ],
         "en_pro": "WARNING: No backup branch or remote tracking branch to verify code integrity against!"
     },
     "verify_diff_cmd": {
         "vn_pro": "Gõ lệnh này để kiểm tra tay sự khác biệt:",
-        "vn_joke": "Copy paste lệnh này xem code chênh lệch ở đâu nè:",
-        "vn_toxic": "Cóp lệnh l` này ném vào terminal mà soi:",
+        "vn_joke": ["Copy paste lệnh này xem code chênh lệch ở đâu nè:", "Quăng cái lệnh này vô terminal soi cho lòi mắt ra:"],
+        "vn_toxic": ["Cóp lệnh l` này ném vào terminal mà soi:", "Tự chạy lệnh này mà đi tìm rác mày bỏ quên:"],
         "en_pro": "Run this command to check differences manually:"
     },
     "verify_push_q": {
         "vn_pro": "Xác minh (Verify) bị cảnh báo. BẠN CÓ MUỐN BỎ QUA VÀ TIẾP TỤC PUSH FORCE KHÔNG?",
-        "vn_joke": ["Cảnh báo đỏ lòm kìa sếp, vẫn nhắm mắt nhắm mũi Push Force lên luôn chứ?", "Verify xịt rồi, liều mạng Push đè lên server không?"],
-        "vn_toxic": ["ĐM đang báo lỗi rớt code kìa, CÓ ĐUI MÙ MUỐN CỐ TÌNH PUSH FORCE GHI ĐÈ LÊN SERVER KHÔNG?", "Cảnh báo rõ to rành rành đấy, MÀY VẪN MUỐN PUSH À?"],
+        "vn_joke": [
+            "Cảnh báo đỏ lòm kìa sếp, vẫn nhắm mắt nhắm mũi Push Force lên luôn chứ?",
+            "Verify xịt rồi, liều mạng Push đè lên server không?",
+            "Đã thấy lỗi rồi mà sếp vẫn máu khô máu push lên server à?"
+        ],
+        "vn_toxic": [
+            "ĐM đang báo lỗi rớt code kìa, CÓ ĐUI MÙ MUỐN CỐ TÌNH PUSH FORCE GHI ĐÈ LÊN SERVER KHÔNG?",
+            "Cảnh báo rõ to rành rành đấy, MÀY VẪN MUỐN PUSH À?",
+            "Mất code đến nơi rồi mà vẫn cố chấp đè lên server? Chốt đẩy không thằng ngáo?"
+        ],
         "en_pro": "Verification raised warnings. DO YOU STILL WANT TO PROCEED WITH FORCE PUSH?"
     },
 
@@ -291,204 +447,568 @@
         "vn_pro": "(Không có thay đổi local)", "vn_joke": "(Gọn gàng sạch sẽ không tì vết)", "vn_toxic": "(Đéo có file nào bị sửa)", "en_pro": "(No local changes)"
     },
     "wt_dirty_warn": {
-        "vn_pro": "Phát hiện working tree đang có thay đổi chưa commit.", "vn_joke": "Ối sếp ơi, code đang gõ dở chưa commit kìa, vội thế?", "vn_toxic": "Đm sửa code xong vứt đấy đéo commit hả? Rác đầy working tree kìa!", "en_pro": "Detected uncommitted changes in the working tree."
+        "vn_pro": "Phát hiện working tree đang có thay đổi chưa commit.",
+        "vn_joke": [
+            "Ối sếp ơi, code đang gõ dở chưa commit kìa, vội thế?",
+            "Khoan đã! Còn mấy file rác sếp bỏ dở dang kìa.",
+            "Ủa ủa, repo đang bẩn nha, có file sửa rồi mà quên dọn nè sếp."
+        ],
+        "vn_toxic": [
+            "Đm sửa code xong vứt đấy đéo commit hả? Rác đầy working tree kìa!",
+            "Lác à? File sửa rồi thì commit mẹ đi, vứt bừa bãi thế đéo nào chạy được?",
+            "Working tree đang bẩn tưởi vãi l**! Tính làm mẹ gì với đống rác kia?"
+        ],
+        "en_pro": "Detected uncommitted changes in the working tree."
     },
     "what_do_changes": {
-        "vn_pro": "Bạn muốn làm gì với các thay đổi local này?", "vn_joke": "Giờ tính sao với đống code dở dang này?", "vn_toxic": "Tính làm cái quái gì với đống rác này?", "en_pro": "What do you want to do with these local changes?"
+        "vn_pro": "Bạn muốn làm gì với các thay đổi local này?",
+        "vn_joke": ["Giờ tính sao với đống code dở dang này?", "Thế dọn đống rác này kiểu gì đây sếp?"],
+        "vn_toxic": ["Tính làm cái quái gì với đống rác này?", "Chốt đi, dọn cái bãi rác này kiểu l*n gì?"],
+        "en_pro": "What do you want to do with these local changes?"
     },
-    "opt_stash": {
-        "vn_pro": "Auto stash rồi chạy tiếp (khuyến nghị)", "vn_joke": "Giấu code cẩn thận (stash) rồi quẩy tiếp", "vn_toxic": "Stash mẹ đống code lại rồi chạy tiếp", "en_pro": "Auto stash and continue (recommended)"
-    },
-    "opt_no_stash": {
-        "vn_pro": "Vẫn chạy tiếp, không stash", "vn_joke": "Kệ nó, chơi khô máu luôn (không stash)", "vn_toxic": "Đéo cần stash, liều thì ăn nhiều", "en_pro": "Continue without stashing"
-    },
-    "opt_cancel": {
-        "vn_pro": "Hủy và quay về", "vn_joke": "Quay xe sếp ơi", "vn_toxic": "Cút về chỗ cũ", "en_pro": "Cancel and return"
-    },
+    "opt_stash": {"vn_pro": "Auto stash rồi chạy tiếp (khuyến nghị)", "vn_joke": "Giấu code cẩn thận (stash) rồi quẩy tiếp", "vn_toxic": "Stash mẹ đống code lại rồi chạy tiếp", "en_pro": "Auto stash and continue (recommended)"},
+    "opt_no_stash": {"vn_pro": "Vẫn chạy tiếp, không stash", "vn_joke": "Kệ nó, chơi khô máu luôn (không stash)", "vn_toxic": "Đéo cần stash, liều thì ăn nhiều", "en_pro": "Continue without stashing"},
+    "opt_cancel": {"vn_pro": "Hủy và quay về", "vn_joke": "Quay xe sếp ơi", "vn_toxic": "Cút về chỗ cũ", "en_pro": "Cancel and return"},
     "stashed_ok": {
-        "vn_pro": "Đã stash local changes.", "vn_joke": "Giấu code xong rồi nha, yên tâm.", "vn_toxic": "Đã stash cái đống rác của mày lại rồi.", "en_pro": "Stashed local changes successfully."
+        "vn_pro": "Đã stash local changes.",
+        "vn_joke": ["Giấu code xong rồi nha, yên tâm.", "Đã nhét code vào sọt rác bí mật (stash).", "Stash êm xuôi ròi sếp."],
+        "vn_toxic": ["Đã stash cái đống rác của mày lại rồi.", "Cất rác đi cmnr, làm gì làm tiếp đi.", "Stash xong cmnr!"],
+        "en_pro": "Stashed local changes successfully."
     },
     "warn_no_stash": {
-        "vn_pro": "Cẩn thận: local changes có thể bị gom vào commit cuối hoặc gây conflict khó hiểu.", "vn_joke": "Tới công chuyện nha, tí lỗi ráng chịu à.", "vn_toxic": "Cảnh báo cmn luôn: đéo stash tí conflict ráng mà tự gỡ ngu người nhé!", "en_pro": "Warning: changes might be included in final commit or cause obscure conflicts."
+        "vn_pro": "Cẩn thận: local changes có thể bị gom vào commit cuối hoặc gây conflict khó hiểu.",
+        "vn_joke": [
+            "Tới công chuyện nha, tí lỗi ráng chịu à.",
+            "Cứng đầu không stash là tí nó gộp nhầm hay bung bét conflict ráng chịu nha sếp.",
+            "Lì đòn vãi, tí dính conflict ẩn thì đừng khóc lóc gọi em."
+        ],
+        "vn_toxic": [
+            "Cảnh báo cmn luôn: đéo stash tí conflict ráng mà tự gỡ ngu người nhé!",
+            "Lì vừa thôi! Đéo stash xong tí dính lỗi bậy bạ tự ôm show đi!",
+            "ĐM chơi liều đéo stash thì tí nó nổ tung cái repo ráng chịu con mẹ mày!"
+        ],
+        "en_pro": "Warning: changes might be included in final commit or cause obscure conflicts."
     },
     "sure_no_stash": {
-        "vn_pro": "Bạn chắc chắn muốn tiếp tục mà không stash?", "vn_joke": "Chắc kèo là không giấu code (stash) không?", "vn_toxic": "Vẫn cố chấp đéo stash đúng không?", "en_pro": "Are you sure you want to continue without stashing?"
+        "vn_pro": "Bạn chắc chắn muốn tiếp tục mà không stash?",
+        "vn_joke": ["Chắc kèo là không giấu code (stash) không?", "Nhắm mắt đưa chân, lờ đi không stash thiệt á?"],
+        "vn_toxic": ["Vẫn cố chấp đéo stash đúng không?", "Hỏi lại lần cuối, đéo stash đúng không thằng liều?"],
+        "en_pro": "Are you sure you want to continue without stashing?"
     },
     "canceled_return": {
         "vn_pro": "Đã hủy thao tác hiện tại.",
-        "vn_joke": ["Đã quay xe thành công.", "Hủy lệnh! Sếp lật mặt nhanh quá.", "Đã thắng gấp hất văng mọi thao tác."],
-        "vn_toxic": ["Hủy cmnr.", "Lắm trò vãi, đã hủy!", "Chơi hệ lật lọng à? Hủy rồi đấy!"],
+        "vn_joke": [
+            "Đã quay xe thành công.",
+            "Hủy lệnh! Sếp lật mặt nhanh quá.",
+            "Đã thắng gấp hất văng mọi thao tác.",
+            "De xe lùi lại! Không làm gì cả."
+        ],
+        "vn_toxic": [
+            "Hủy cmnr.",
+            "Lắm trò vãi, đã hủy!",
+            "Chơi hệ lật lọng à? Hủy rồi đấy!",
+            "Mệt mỏi ghê, hủy mẹ đi cho rảnh nợ."
+        ],
         "en_pro": "Operation canceled."
     },
     "restore_stash_q": {
-        "vn_pro": "Có restore lại local changes từ stash không?", "vn_joke": "Xong xuôi, có bứng code từ stash ra lại không?", "vn_toxic": "Có muốn pop lại đống stash ban nãy ra không?", "en_pro": "Restore local changes from stash?"
+        "vn_pro": "Có restore lại local changes từ stash không?",
+        "vn_joke": ["Xong xuôi, có bứng code từ stash ra lại không?", "Có muốn khui thùng stash lấy lại đống rác hồi nãy không sếp?"],
+        "vn_toxic": ["Có muốn pop lại đống stash ban nãy ra không?", "Trả lại cái bãi rác trong stash cho mày nhé?"],
+        "en_pro": "Restore local changes from stash?"
     },
     "kept_stash": {
-        "vn_pro": "Đã giữ stash lại, chưa restore.", "vn_joke": "Code vẫn giấu trong stash nhe sếp.", "vn_toxic": "Vẫn vứt trong stash đấy, đéo pop đâu.", "en_pro": "Kept stash, not restored."
+        "vn_pro": "Đã giữ stash lại, chưa restore.",
+        "vn_joke": ["Code vẫn giấu trong stash nhe sếp.", "Vẫn giấu kĩ trong sọt rác stash nhé, an tâm."],
+        "vn_toxic": ["Vẫn vứt trong stash đấy, đéo pop đâu.", "Tao cất mẹ trong stash rồi, đéo trả ra đâu."],
+        "en_pro": "Kept stash, not restored."
     },
     "restored_stash": {
-        "vn_pro": "Đã restore local changes từ stash.", "vn_joke": "Đã trả lại code nguyên vẹn từ stash cho sếp.", "vn_toxic": "Đã nhả đống rác từ stash ra lại rồi đấy.", "en_pro": "Restored local changes from stash successfully."
+        "vn_pro": "Đã restore local changes từ stash.",
+        "vn_joke": ["Đã trả lại code nguyên vẹn từ stash cho sếp.", "Khui stash thành công, trả lại sếp nè."],
+        "vn_toxic": ["Đã nhả đống rác từ stash ra lại rồi đấy.", "Phun mẹ cái đống rác trong stash ra trả mày rồi đấy."],
+        "en_pro": "Restored local changes from stash successfully."
     },
 
     "rebase_paused_1": {
-        "vn_pro": "Rebase đang tạm dừng. Có thể do conflict hoặc cần bạn hoàn tất bước hiện tại.", "vn_joke": "Đang rebase thì kẹt xe sếp ạ. Chắc conflict ở đâu đó.", "vn_toxic": "Rebase đang nghẽn cmnr. Chắc do mày gõ conflict ngu học nào đó.", "en_pro": "Rebase is paused. Possibly due to conflicts or an incomplete step."
+        "vn_pro": "Rebase đang tạm dừng. Có thể do conflict hoặc cần bạn hoàn tất bước hiện tại.",
+        "vn_joke": [
+            "Đang rebase thì kẹt xe sếp ạ. Chắc conflict ở đâu đó.",
+            "Trạm dừng chân bất đắc dĩ! Tool kẹt cứng cmnr, sếp check lại coi.",
+            "Rebase đang đình công rồi, chắc dính conflict sưng phổi."
+        ],
+        "vn_toxic": [
+            "Rebase đang nghẽn cmnr. Chắc do mày gõ conflict ngu học nào đó.",
+            "ĐM nghẽn cống! Rebase tạm dừng, tự mở mắt ra xem báo lỗi gì!",
+            "Chạy rebase mà kẹt mẹ rồi! Chắc code mày nát quá tool nó đéo tự chạy được."
+        ],
+        "en_pro": "Rebase is paused. Possibly due to conflicts or an incomplete step."
     },
     "rebase_paused_2": {
-        "vn_pro": "Hãy resolve conflict trong file, rồi git add các file đã sửa.", "vn_joke": "Xử lý đống file đỏ chót kia đi, rồi git add tụi nó nha.", "vn_toxic": "Tự đi mà gỡ conflict trong file, xong thì git add mẹ nó vào.", "en_pro": "Please resolve conflicts, then git add the fixed files."
+        "vn_pro": "Hãy resolve conflict trong file, rồi git add các file đã sửa.",
+        "vn_joke": [
+            "Xử lý đống file đỏ chót kia đi, rồi git add tụi nó nha.",
+            "Sếp tự thân vận động vô file gỡ rối (resolve) rồi git add lại em xem.",
+            "Fix đống lùm xùm trong code đi sếp, fix xong nhớ git add nhe."
+        ],
+        "vn_toxic": [
+            "Tự đi mà gỡ conflict trong file, xong thì git add mẹ nó vào.",
+            "Mở IDE lên tự dọn rác conflict đi, dọn xong nhớ git add đàng hoàng!",
+            "Code nát thì tự đi mà fix! Fix xong đéo nhớ git add thì đấm cho lòi mắt!"
+        ],
+        "en_pro": "Please resolve conflicts, then git add the fixed files."
     },
     "rebase_paused_3": {
-        "vn_pro": "Sau đó chọn Continue để tiếp tục, hoặc Abort để hủy rebase.", "vn_joke": "Xong xuôi thì chọn Continue đi tiếp, lười thì Abort bỏ ngang.", "vn_toxic": "Xong thì Continue, còn hoảng quá thì Abort mẹ đi cho lành.", "en_pro": "Then select Continue to proceed, or Abort to cancel rebase."
+        "vn_pro": "Sau đó chọn Continue để tiếp tục, hoặc Abort để hủy rebase.",
+        "vn_joke": [
+            "Xong xuôi thì chọn Continue đi tiếp, lười thì Abort bỏ ngang.",
+            "Gỡ xong thì ấn Continue, còn nếu thấy tuyệt vọng quá thì Abort luôn.",
+            "Xong thủ tục thì Continue nhé sếp, hoặc hất cùn thì Abort cmnl."
+        ],
+        "vn_toxic": [
+            "Xong thì Continue, còn hoảng quá thì Abort mẹ đi cho lành.",
+            "Sửa xong thì ấn Continue tao chạy tiếp. Nát quá thì Abort đi, lèo nhèo mệt!",
+            "Continue để đi tiếp, hoặc Abort để vứt sọt rác mẹ luôn!"
+        ],
+        "en_pro": "Then select Continue to proceed, or Abort to cancel rebase."
     },
     "rebase_paused_4": {
         "vn_pro": "Số file conflict hiện tại: {count}", "vn_joke": "Số file đang choảng nhau: {count}", "vn_toxic": "Có {count} cái file đang nát bét conflict:", "en_pro": "Current conflict files count: {count}"
     },
     "rebase_ext_success": {
         "vn_pro": "Phát hiện rebase đã hoàn tất (có thể bạn đã xử lý qua IDE).",
-        "vn_joke": "Ủa sếp tự xử rebase trên IDE xong rồi à? Hay quá ta, đi tiếp thôi!",
-        "vn_toxic": "Mày tự bấm rebase xong trên IDE rồi chứ gì? Đỡ tốn công tao, đi tiếp!",
+        "vn_joke": [
+            "Ủa sếp tự xử rebase trên IDE xong rồi à? Hay quá ta, đi tiếp thôi!",
+            "Tool thấy rebase trót lọt ở đâu đó rồi kìa, ảo ma canada, lướt tiếp thôi.",
+            "Hình như ai đó xài phép thuật gỡ rebase thành công rồi, qua bài nào."
+        ],
+        "vn_toxic": [
+            "Mày tự bấm rebase xong trên IDE rồi chứ gì? Đỡ tốn công tao, đi tiếp!",
+            "Nhận diện rebase xong cmnr ở IDE rồi kìa! Được, tự biết điều thì tao đi tiếp.",
+            "Thấy tự fix rebase xong mẹ rồi! Mất thời gian vcl, chạy tiếp!"
+        ],
         "en_pro": "Detected rebase has been completed externally (e.g., via IDE)."
     },
     "rebase_skip_q": {
         "vn_pro": "Working tree đang sạch nhưng chưa xong. (Có thể bạn đã commit thủ công). Chạy 'git rebase --skip' để đi tiếp?",
-        "vn_joke": "Sếp lỡ tay commit thủ công rồi đúng không? Kẹt xe rồi kìa, có muốn Skip qua luôn không?",
-        "vn_toxic": "Sửa file xong tự tay commit đúng không thằng ngu? Giờ kẹt cmnr, bấm Skip lẹ đi để t đi tiếp!",
+        "vn_joke": [
+            "Sếp lỡ tay commit thủ công rồi đúng không? Kẹt xe rồi kìa, có muốn Skip qua luôn không?",
+            "Thư mục sạch bóng mà rebase vẫn nghẽn? Nhấn Skip để lướt qua cái ải này nhé?",
+            "Trường hợp này chắc sếp quen tay bấm commit cmnr. Chạy 'rebase skip' để vứt nó lại phía sau không?"
+        ],
+        "vn_toxic": [
+            "Sửa file xong tự tay commit đúng không thằng ngu? Giờ kẹt cmnr, bấm Skip lẹ đi để t đi tiếp!",
+            "Mày phá luồng bằng cách tự commit đúng không? Giờ kẹt cứng mẹ nó rồi, gõ Skip thì tao cho qua!",
+            "Ngu học vcl, tự commit làm gãy mẹ rebase! Có skip mẹ cái commit lỗi lòi này đi không?"
+        ],
         "en_pro": "Working tree is clean but rebase stuck (Manual commit?). Run 'git rebase --skip' to bypass?"
     },
-    "choose_action": {
-        "vn_pro": "Chọn hành động", "vn_joke": "Sếp mún sao", "vn_toxic": "Tính làm đéo gì bây giờ", "en_pro": "Choose action"
-    },
-    "opt_show_status": {
-        "vn_pro": "Show git status", "vn_joke": "Coi thử git status xem sao", "vn_toxic": "Xem git status", "en_pro": "Show git status"
-    },
-    "opt_show_conflict": {
-        "vn_pro": "Show conflicted files", "vn_joke": "Liếc danh sách file conflict", "vn_toxic": "Xem mấy file nát conflict", "en_pro": "Show conflicted files"
-    },
-    "opt_continue": {
-        "vn_pro": "Continue rebase", "vn_joke": "Continue thôi (đi tiếp)", "vn_toxic": "Continue rebase luôn sợ đéo gì", "en_pro": "Continue rebase"
-    },
-    "opt_abort": {
-        "vn_pro": "Abort rebase", "vn_joke": "Abort (hủy kéo lại từ đầu)", "vn_toxic": "Abort mẹ đi cho rảnh nợ", "en_pro": "Abort rebase"
-    },
-    "opt_return": {
-        "vn_pro": "Return to main menu", "vn_joke": "Tạm cất đó, về menu", "vn_toxic": "Tạm về menu chính", "en_pro": "Return to main menu"
-    },
+    "choose_action": {"vn_pro": "Chọn hành động", "vn_joke": "Sếp mún sao", "vn_toxic": "Tính làm đéo gì bây giờ", "en_pro": "Choose action"},
+    "opt_show_status": {"vn_pro": "Show git status", "vn_joke": "Coi thử git status xem sao", "vn_toxic": "Xem git status", "en_pro": "Show git status"},
+    "opt_show_conflict": {"vn_pro": "Show conflicted files", "vn_joke": "Liếc danh sách file conflict", "vn_toxic": "Xem mấy file nát conflict", "en_pro": "Show conflicted files"},
+    "opt_continue": {"vn_pro": "Continue rebase", "vn_joke": "Continue thôi (đi tiếp)", "vn_toxic": "Continue rebase luôn sợ đéo gì", "en_pro": "Continue rebase"},
+    "opt_abort": {"vn_pro": "Abort rebase", "vn_joke": "Abort (hủy kéo lại từ đầu)", "vn_toxic": "Abort mẹ đi cho rảnh nợ", "en_pro": "Abort rebase"},
+    "opt_return": {"vn_pro": "Return to main menu", "vn_joke": "Tạm cất đó, về menu", "vn_toxic": "Tạm về menu chính", "en_pro": "Return to main menu"},
     "rebase_not_done": {
-        "vn_pro": "Rebase vẫn chưa xong. Có thể còn conflict hoặc bạn chưa git add đủ file.", "vn_joke": "Chưa xong sếp ơi, check kĩ xem gỡ hết conflict chưa, nhớ git add nữa.", "vn_toxic": "Rebase đéo xong! Gỡ conflict ngu chưa git add à?", "en_pro": "Rebase is not done. Conflicts might remain or you missed git add."
+        "vn_pro": "Rebase vẫn chưa xong. Có thể còn conflict hoặc bạn chưa git add đủ file.",
+        "vn_joke": [
+            "Chưa xong sếp ơi, check kĩ xem gỡ hết conflict chưa, nhớ git add nữa.",
+            "Đứng im đó! Rebase chưa xong đâu, sếp quên xài skill 'git add' đúng không?",
+            "Ủa ủa, còn đầy file bệnh hoạn chưa resolve kìa sếp, kiểm tra lại đi."
+        ],
+        "vn_toxic": [
+            "Rebase đéo xong! Gỡ conflict ngu chưa git add à?",
+            "Xong cái đéo mà xong! Nhìn lại xem gỡ conflict xong chưa, quên git add à thằng đần?",
+            "Mở mắt ra mà nhìn, rebase vẫn kẹt lòi họng kia kìa! Git add vào!"
+        ],
+        "en_pro": "Rebase is not done. Conflicts might remain or you missed git add."
     },
     "rebase_success": {
         "vn_pro": "Rebase completed successfully.",
-        "vn_joke": ["Tuyệt vời, rebase mượt mà như Sunsilk.", "Ngon lành cành đào, không vấp miếng conflict nào luôn.", "Đỉnh chóp, rebase cái một xong luôn."],
-        "vn_toxic": ["Rebase xong cmnr, may đéo conflict.", "Xong rồi đấy, phúc tổ 70 đời đéo bị lỗi.", "Êm xui cmnr."],
+        "vn_joke": [
+            "Tuyệt vời, rebase mượt mà như Sunsilk.",
+            "Ngon lành cành đào, không vấp miếng conflict nào luôn.",
+            "Đỉnh chóp, rebase cái một xong luôn.",
+            "Xong rồi nha sếp, rebase chạy bon bon đéo trượt phát nào."
+        ],
+        "vn_toxic": [
+            "Rebase xong cmnr, may đéo conflict.",
+            "Xong rồi đấy, phúc tổ 70 đời đéo bị lỗi.",
+            "Êm xui cmnr.",
+            "Cuối cùng cũng xong cái mớ rebase giẻ rách này!"
+        ],
         "en_pro": "Rebase completed successfully."
     },
 
     "opt_abort_confirm": {
         "vn_pro": "Bạn có chắc chắn muốn hủy (abort) rebase không?",
-        "vn_joke": "Sếp lật bàn hủy rebase ngang hông thật á?",
-        "vn_toxic": "Mày có chắc là muốn hủy bỏ rebase vứt hết không?",
+        "vn_joke": [
+            "Sếp lật bàn hủy rebase ngang hông thật á?",
+            "Chắc kèo là dẹp mẹ cái rebase này luôn không sếp?",
+            "Buông xuôi hả sếp? Abort nát bét rebase này nhé?"
+        ],
+        "vn_toxic": [
+            "Mày có chắc là muốn hủy bỏ rebase vứt hết không?",
+            "Bỏ cuộc sớm thế? Hủy cmn cái rebase này đi hả?",
+            "Hỏi lần cuối, có dám hủy mẹ cái đống rebase này không?"
+        ],
         "en_pro": "Are you sure you want to abort rebase?"
     },
     "abort_success": {
         "vn_pro": "Đã hủy rebase thành công.",
-        "vn_joke": "Đã sút văng ca rebase này vào sọt rác.",
-        "vn_toxic": "Hủy cmn rebase rồi đấy.",
+        "vn_joke": [
+            "Đã sút văng ca rebase này vào sọt rác.",
+            "Hủy rebase êm đẹp, coi như chưa có cuộc chia ly.",
+            "Vứt mẹ nó rebase rồi, sếp thoát nạn."
+        ],
+        "vn_toxic": [
+            "Hủy cmn rebase rồi đấy.",
+            "Tao sút mẹ cái đống rebase nát bươm đó đi rồi.",
+            "Đã dẹp cái mớ rebase rác rưởi của mày!"
+        ],
         "en_pro": "Aborted rebase successfully."
     },
     "abort_fail": {
         "vn_pro": "Không thể hủy rebase. Có lỗi xảy ra.",
-        "vn_joke": "Hủy không được sếp ơi, kẹt cứng rồi.",
-        "vn_toxic": "Đéo hủy được! Lỗi tùm lum rồi.",
+        "vn_joke": [
+            "Hủy không được sếp ơi, kẹt cứng rồi.",
+            "Tool bất lực, đéo hủy được rebase ca này.",
+            "Bó tay bó chân, rebase này lì đòn quá hủy không nổi."
+        ],
+        "vn_toxic": [
+            "Đéo hủy được! Lỗi tùm lum rồi.",
+            "Hủy cái đéo gì mà lỗi tung tóe thế này? Tự đi mà gỡ đi!",
+            "Máy cùi bắp! Đéo thể abort được, kẹt mẹ trong rebase rồi!"
+        ],
         "en_pro": "Cannot abort rebase. An error occurred."
     },
     "continue_fail": {
         "vn_pro": "Không thể tiếp tục rebase. Vui lòng kiểm tra lại trạng thái.",
-        "vn_joke": "Vấp ổ gà rồi, không đi tiếp được sếp ạ.",
-        "vn_toxic": "Tiếp tục cái đéo gì? Đang lòi ra đống lỗi kia kìa!",
+        "vn_joke": [
+            "Vấp ổ gà rồi, không đi tiếp được sếp ạ.",
+            "Xe lủng lốp, rebase đéo thể chọt tới nữa rồi.",
+            "Ngỏm củ tỏi, tool không thể bấm Continue giùm sếp được."
+        ],
+        "vn_toxic": [
+            "Tiếp tục cái đéo gì? Đang lòi ra đống lỗi kia kìa!",
+            "Chạy tiếp đéo nổi! Check lại đống rác của mày xem kẹt ở đâu!",
+            "Bấm continue mà lỗi tóe khói. Ngu thì tự check git status đi!"
+        ],
         "en_pro": "Cannot continue rebase. Please check git status."
     },
     "rebase_still_running": {
         "vn_pro": "Rebase vẫn đang chạy, có thể cần thao tác thêm do có nhiều commit.",
-        "vn_joke": "Vẫn chưa xong đâu sếp, đi qua được 1 trạm thôi, còn trạm nữa kìa.",
-        "vn_toxic": "Rebase đéo xong ngay được đâu, gỡ tiếp cái mớ conflict bùng nhùng kia đi!",
+        "vn_joke": [
+            "Vẫn chưa xong đâu sếp, đi qua được 1 trạm thôi, còn trạm nữa kìa.",
+            "Trận chiến vẫn còn dài, rebase còn lê lết lướt tiếp qua commit sau nha.",
+            "Tool vẫn đang hì hục rebase, sếp chưa rảnh tay được đâu."
+        ],
+        "vn_toxic": [
+            "Rebase đéo xong ngay được đâu, gỡ tiếp cái mớ conflict bùng nhùng kia đi!",
+            "Vẫn đang kẹt ở cục nợ khác! Giải quyết cho lòi bản họng ra đi cưng!",
+            "Rebase lỳ lợm vl, vẫn còn đang chạy, ngồi mà canh đi!"
+        ],
         "en_pro": "Rebase still running, more steps might be needed."
     },
     "rebase_keep_state": {
         "vn_pro": "Giữ nguyên trạng thái rebase hiện tại. Đang về menu chính.",
-        "vn_joke": "Lưu game tạm ở đây nhé, cho sếp về menu ngắm cảnh.",
-        "vn_toxic": "Kệ mẹ đống nát này ở đây đấy, về menu!",
+        "vn_joke": [
+            "Lưu game tạm ở đây nhé, cho sếp về menu ngắm cảnh.",
+            "Đóng băng thời gian, cứ để yên cục rebase này ở đó, quay về Menu.",
+            "Treo máy tí nha sếp, dắt tay sếp ra Menu hóng gió."
+        ],
+        "vn_toxic": [
+            "Kệ mẹ đống nát này ở đây đấy, về menu!",
+            "Tao vứt cái đống bầy hầy này ở đây, về lại menu, rảnh thì quay lại sửa!",
+            "Tạm vứt đó. Về menu chính để mày suy nghĩ lại cuộc đời!"
+        ],
         "en_pro": "Keeping current rebase state. Returning to main menu."
     },
     "err_no_base_point": {
         "vn_pro": "Không tìm thấy commit gốc (base point) để thực hiện squash.",
-        "vn_joke": "Mù đường cmnr, chả thấy cái base point nào để squash cả.",
-        "vn_toxic": "Đéo đào ra được cái gốc để squash, nhánh mày như cái tổ quạ ấy!",
+        "vn_joke": [
+            "Mù đường cmnr, chả thấy cái base point nào để squash cả.",
+            "Tìm không ra cội nguồn sếp ơi, không biết cắt từ đâu để squash.",
+            "Lịch sử chi chít cành lá quá, em mò không ra chỗ chặt nhánh (base point)."
+        ],
+        "vn_toxic": [
+            "Đéo đào ra được cái gốc để squash, nhánh mày như cái tổ quạ ấy!",
+            "Lịch sử như bãi rác, đéo tìm ra được cái base point để gom commit!",
+            "Code nát như tương, base point đéo có thì tao squash bằng niềm tin à?"
+        ],
         "en_pro": "Cannot find base point to squash."
     },
     "warn_complex_history": {
         "vn_pro": "Lịch sử branch quá phức tạp, hãy dùng git log kiểm tra tay.",
-        "vn_joke": "Lịch sử nhánh này nát như tương bần, sếp tự check bằng tay giùm con.",
-        "vn_toxic": "Lịch sử rác vcl tool đéo thèm dò, tự mở git log ra mà lác mắt!",
+        "vn_joke": [
+            "Lịch sử nhánh này nát như tương bần, sếp tự check bằng tay giùm con.",
+            "Quá rườm rà rắc rối, sếp vô xem gia phả (git log) bằng tay cho rồi.",
+            "Nhánh đẻ từa lưa như ma trận, tool xin hàng, sếp tự check nhé."
+        ],
+        "vn_toxic": [
+            "Lịch sử rác vcl tool đéo thèm dò, tự mở git log ra mà lác mắt!",
+            "Mày nhào lộn cái đéo gì trong history mà nát thế? Tự mở log ra mà xem!",
+            "Nhánh nát bét! Tự soi bằng tay đi, tool lạy mày 3 lạy!"
+        ],
         "en_pro": "Branch history is complex, please check git log manually."
     },
     "warn_cancel_auto_push": {
         "vn_pro": "Đã hủy bước Auto Push đè lên server theo yêu cầu của bạn.",
-        "vn_joke": "Thắng gấp! Đã chặn không cho push lên server theo ý sếp.",
-        "vn_toxic": "Sợ rớt code thì tao hủy push cmnr đấy, tự thân vận động đi!",
+        "vn_joke": [
+            "Thắng gấp! Đã chặn không cho push lên server theo ý sếp.",
+            "May quá bóp thắng kịp, chưa văng code dơ lên server nha.",
+            "Bảo toàn tính mạng thành công! Đã chốt là KHÔNG push."
+        ],
+        "vn_toxic": [
+            "Sợ rớt code thì tao hủy push cmnr đấy, tự thân vận động đi!",
+            "Đéo dám push thì thôi! Đã hủy tự động đè lên server!",
+            "Rén à? Hủy push rồi đấy, lo mà kiểm tra lại đống code l` kia đi!"
+        ],
         "en_pro": "Canceled Auto Push step as requested."
     },
     "flow_stopped": {
         "vn_pro": "Thao tác đã dừng. Quay về màn hình chờ.",
-        "vn_joke": "Đứng hình chững lại. Quay về bến đỗ thôi sếp.",
-        "vn_toxic": "Cút về chỗ cũ. Thao tác đứt gánh rồi.",
+        "vn_joke": [
+            "Đứng hình chững lại. Quay về bến đỗ thôi sếp.",
+            "Thắt dây an toàn vô, phanh gấp rồi, quay xe về sảnh chính.",
+            "Mọi chuyện coi như chưa bắt đầu, de xe về menu nào."
+        ],
+        "vn_toxic": [
+            "Cút về chỗ cũ. Thao tác đứt gánh rồi.",
+            "Gãy mẹ rồi. Dừng ngay tại đây, về màn hình chính!",
+            "Dẹp dẹp dẹp! Về màn hình chờ đi, hết phim!"
+        ],
         "en_pro": "Operation stopped. Returning to idle."
     },
     "flow_error": {
         "vn_pro": "Gặp lỗi không xác định trong luồng thực thi:",
-        "vn_joke": "Ủa cái quái gì vừa xảy ra vậy? Bug lạ quá:",
-        "vn_toxic": "ĐM phát sinh lỗi củ lìn gì đây:",
+        "vn_joke": [
+            "Ủa cái quái gì vừa xảy ra vậy? Bug lạ quá:",
+            "Ối ối, có ma sếp ơi, lỗi khùng lỗi điên gì nè:",
+            "Cái tool này tạch vì quả lỗi lãng xẹt này sếp ơi:"
+        ],
+        "vn_toxic": [
+            "ĐM phát sinh lỗi củ lìn gì đây:",
+            "Lỗi vãi l** rồi! Ngó xem cái mẹ gì vừa xảy ra đây:",
+            "Vỡ mồm! Code báo quả lỗi rác rưởi vcl:"
+        ],
         "en_pro": "Unexpected error in flow:"
-    },
-    "smart_git_fail": {
-        "vn_pro": "Lệnh Git thất bại (Mã lỗi: {code}). Hãy đọc kỹ thông báo lỗi của Git ở khung phía trên.",
-        "vn_joke": "Xịt rồi sếp ơi (Mã: {code}). Đọc cái đống chữ Git nó chửi ở trên kìa.",
-        "vn_toxic": "Lệnh chạy thất bại (Lỗi {code})! Tự mở mắt ra mà đọc xem Git nó chửi cái đéo gì ở trên!",
-        "en_pro": "Git command failed (Exit code: {code}). Please check the Git error output above."
     },
 
     "rollback_q": {
         "vn_pro": "Phát hiện lỗi hoặc thao tác bị dừng. Bạn có muốn ROLLBACK nhánh về trạng thái ban đầu không?",
-        "vn_joke": "Toang rồi sếp! Có muốn xài cỗ máy thời gian ROLLBACK lại như chưa có gì xảy ra không?",
-        "vn_toxic": "Lỗi cmnr. Có muốn ROLLBACK cái nhánh về nguyên trạng để giữ mạng không?",
+        "vn_joke": [
+            "Toang rồi sếp! Có muốn xài cỗ máy thời gian ROLLBACK lại như chưa có gì xảy ra không?",
+            "Tới công chuyện cmnr, lùi lại 1 bước ROLLBACK để bảo toàn tính mạng không sếp?",
+            "Gãy quá gãy, bấm 'y' để ROLLBACK lại xóa sạch ký ức đen tối này nha?"
+        ],
+        "vn_toxic": [
+            "Lỗi cmnr. Có muốn ROLLBACK cái nhánh về nguyên trạng để giữ mạng không?",
+            "Nát bét rồi! Có mún ROLLBACK cứu rỗi cái nhánh l*n này không thì bảo?",
+            "Nhìn cái lỗi kìa! Bấm 'y' để ROLLBACK ngay trước khi ăn đòn của team đi!"
+        ],
         "en_pro": "Errors detected or operation stopped. Do you want to ROLLBACK the branch to its original state?"
     },
     "rollback_in_progress": {
         "vn_pro": "Đang khôi phục nhánh về nguyên trạng...",
-        "vn_joke": "Đang vận nội công de xe lại...",
-        "vn_toxic": "Đang vác xác cái nhánh về lại chỗ cũ...",
+        "vn_joke": [
+            "Đang vận nội công de xe lại...",
+            "Đang nổ máy cỗ máy thời gian lùi lại quá khứ...",
+            "Rẹt rẹt rẹt... Đang reset mọi lỗi lầm của sếp..."
+        ],
+        "vn_toxic": [
+            "Đang vác xác cái nhánh về lại chỗ cũ...",
+            "Đang lôi cổ cái bãi rác này về nguyên trạng, đợi xíu!",
+            "Đang ROLLBACK! Im mồm và chờ tao dọn bãi chiến trường này!"
+        ],
         "en_pro": "Rolling back branch to original state..."
     },
     "rollback_success": {
         "vn_pro": "Đã ROLLBACK thành công! Nhánh của bạn an toàn.",
-        "vn_joke": "De xe thành công! Mọi thứ y xì đúc như cũ nha.",
-        "vn_toxic": "Rollback xong cmnr, nhánh vẫn còn sống. Lần sau làm cho cẩn thận!",
+        "vn_joke": [
+            "De xe thành công! Mọi thứ y xì đúc như cũ nha.",
+            "Xong! Phép thuật Winx đã hô biến repo sếp về y như cũ.",
+            "Hạ cánh an toàn. Đã Rollback mướt rượt, coi như nãy giờ mình bị ảo giác."
+        ],
+        "vn_toxic": [
+            "Rollback xong cmnr, nhánh vẫn còn sống. Lần sau làm cho cẩn thận!",
+            "Cứu xong mẹ nó nhánh của mày rồi đấy! Gà thì đừng múa nhiều!",
+            "Rollback êm xuôi! Nhánh đéo nát nhưng nhân phẩm mày nát cmnr!"
+        ],
         "en_pro": "ROLLBACK successful! Your branch is safe."
     },
     "rollback_abort": {
         "vn_pro": "Đã bỏ qua ROLLBACK. Nhánh giữ nguyên trạng thái hiện tại.",
-        "vn_joke": "Chơi khô máu, không thèm lùi bước! Trạng thái giữ nguyên.",
-        "vn_toxic": "Đéo thèm rollback. Tự ôm đống nát này mà giải quyết nhé!",
+        "vn_joke": [
+            "Chơi khô máu, không thèm lùi bước! Trạng thái giữ nguyên.",
+            "Lì đòn thiệt! Không thèm Rollback luôn, để yên hiện trường đấy nhé.",
+            "Quay xe từ chối Rollback. Chúc sếp thượng lộ bình an với cục tạ này."
+        ],
+        "vn_toxic": [
+            "Đéo thèm rollback. Tự ôm đống nát này mà giải quyết nhé!",
+            "Lì thì chịu! Đéo rollback, vứt cmn đống lỗi ở đấy cho mày tự xử!",
+            "Từ chối Rollback à? Chúc mày dọn rác ngập mồm con nhé!"
+        ],
         "en_pro": "ROLLBACK skipped. Branch state kept as is."
     },
     "jit_warning": {
         "vn_pro": "CẢNH BÁO JIT: Phát hiện repo vừa bị thay đổi ngầm từ bên ngoài (IDE/Tool khác).",
-        "vn_joke": "Ối dồi ôi! Vừa có ai (hay app nào) chọc ngoáy vào file trong repo kìa sếp!",
-        "vn_toxic": "ĐM CẢNH BÁO! Thằng l*n nào vừa sửa file sau lưng tao? Repo bị bẩn rồiii!",
+        "vn_joke": [
+            "Ối dồi ôi! Vừa có ai (hay app nào) chọc ngoáy vào file trong repo kìa sếp!",
+            "Tình báo bắt được sóng: Có thằng nào đó lén sửa file sau lưng tụi mình rồi.",
+            "Khoan đã dừng khoảng chừng là 2 giây! Repo vừa nảy sinh biến ở bên ngoài sếp ạ."
+        ],
+        "vn_toxic": [
+            "ĐM CẢNH BÁO! Thằng l*n nào vừa sửa file sau lưng tao? Repo bị bẩn rồiii!",
+            "Báo động đỏ! Có cái app củ l` nào đó vừa đẻ thêm file rác vào lúc tao chuẩn bị chạy!",
+            "Kìa kìa, thằng đéo nào vừa format code sửa file đúng lúc này? Nát mẹ luồng rồi!"
+        ],
         "en_pro": "JIT WARNING: Detected external background changes to the repo (IDE/Other Tools)."
     },
     "jit_abort": {
         "vn_pro": "Để đảm bảo an toàn, luồng thao tác đã bị hủy. Hãy kiểm tra lại Repo.",
-        "vn_joke": "Tool rén rồi, tự động hủy luồng bảo toàn tính mạng nha sếp.",
-        "vn_toxic": "Dẹp dẹp dẹp! Hủy luồng! Tự ra mà dọn rác đi rồi chạy lại!",
+        "vn_joke": [
+            "Tool rén rồi, tự động hủy luồng bảo toàn tính mạng nha sếp.",
+            "Có biến là em chuồn trước, hủy thao tác cho nó lành sếp ạ.",
+            "Quá nguy hiểm, tự động thắng gấp hủy mọi thứ. Sếp ra kia xem ai phá bĩnh đi."
+        ],
+        "vn_toxic": [
+            "Dẹp dẹp dẹp! Hủy luồng! Tự ra mà dọn rác đi rồi chạy lại!",
+            "Tao đéo chạy nữa! Tự hủy để đéo ôm quả bom rác của thằng khác!",
+            "Biến cố thế này tao đéo nhận! Hủy luồng! Ra mà gõ đầu cái thằng IDE tự format ấy!"
+        ],
         "en_pro": "For safety, the flow has been aborted. Please check your Repo."
+    },
+
+    "err_network": {
+        "vn_pro": "Lỗi mạng hoặc xác thực.",
+        "vn_joke": ["Mạng mẽo chán quá sếp ơi, hoặc sai pass rồi.", "Xịt mạng, cá mập lại cắn cáp à sếp?", "Tạch Wifi hay rớt Pass rồi á, em bó chiếu."],
+        "vn_toxic": ["Rớt cmn mạng hoặc sai pass rồi! Kiểm tra lại đi!", "Mạng cùi bắp đéo kết nối được với server! Check lại!", "Đéo có mạng đòi kéo git! Mù chữ à?"],
+        "en_pro": "Network or authentication error."
+    },
+    "err_conflict": {
+        "vn_pro": "Xảy ra xung đột code (Conflict).",
+        "vn_joke": ["Code choảng nhau rồi (Conflict).", "Toang! Code đá nhau ầm ầm (Conflict) kìa.", "Hai dòng code đánh lộn rồi sếp ơi, Conflict đùng đùng."],
+        "vn_toxic": ["Conflict đỏ lòm rồi kìa!", "Viết code rác rưởi đá nhau chan chát! Dọn conflict đi!", "ĐM conflict ngập mồm! Tự mở file ra mà fix!"],
+        "en_pro": "Code conflict occurred."
+    },
+    "err_overwrite": {
+        "vn_pro": "Lỗi ghi đè file. Hãy commit hoặc stash trước.",
+        "vn_joke": ["Vướng file chưa commit sếp ơi, giấu đi (stash) mới chạy được.", "Git không cho ghi đè đâu, dọn gọn gàng stash lại mới lướt được.", "Tụi file đang bốc mùi, stash tụi nó lại rùi tính tiếp sếp ạ."],
+        "vn_toxic": ["Code rác đầy ra đéo chịu commit, Git nó đéo cho ghi đè kìa!", "Lười đéo commit mà đòi chạy! Lác mắt dòm file rác chưa dọn đi kìa!", "Chưa commit đéo cho chạy tiếp! Bẩn thỉu vcl!"],
+        "en_pro": "Overwrite error. Commit or stash changes first."
+    },
+    "err_push_rejected": {
+        "vn_pro": "Push bị từ chối do non-fast-forward. Cần Pull trước.",
+        "vn_joke": ["Server nó chê code mình sếp ạ, phải kéo (pull) code mới về đã.", "Bị server sút vào mồm rồi, có ông nào vượt mặt sếp đẩy code lên trước kìa.", "Khóc thét, server bảo code sếp bị outmeta. Phải pull về update xíu."],
+        "vn_toxic": ["Push ngu bị server chửi rồi! Thằng khác vừa push code lên, kéo về gộp giải conflict ngay!", "Bị đá văng cmnr! Server nó có code mới, m đéo có. Cút về pull ngay!", "Ăn đòn non-fast-forward rồi! Chưa kéo code mới đã đòi đè lên server à?"],
+        "en_pro": "Push rejected (non-fast-forward). Pull first."
+    },
+    "err_unknown": {
+        "vn_pro": "Lỗi Git không xác định.",
+        "vn_joke": ["Lỗi lạ quắc, tui thua.", "Lỗi gì đây chòi oi, em đầu hàng nha sếp.", "Ma giáo! Lỗi này từ hành tinh khác rớt xuống."],
+        "vn_toxic": ["Lỗi cái đéo gì lạ hoắc thế này?", "Lỗi xàm l*n gì đéo biết tên? Nghỉ!", "Git nó chửi cái đéo gì bằng tiếng mọi kìa tao đéo hiểu!"],
+        "en_pro": "Unknown Git error."
+    },
+    "list_branches": {"vn_pro": "Danh sách các nhánh (Branches):", "vn_joke": "Sổ đỏ các nhánh đang có:", "vn_toxic": "Đống nhánh rác trong repo:", "en_pro": "List of branches:"},
+    "choose_branch_checkout": {"vn_pro": "Nhập tên nhánh, số thứ tự, tìm kiếm, hoặc 'f' để Fetch origin:", "vn_joke": "Gõ số, tên nhánh, tìm kiếm, hoặc gõ 'f' để lấy code mới:", "vn_toxic": "Nhập số, tìm nhánh hoặc gõ 'f' để fetch mẹ đi:", "en_pro": "Enter branch name, number, search, or 'f' to fetch:"},
+    "fetching_remote": {"vn_pro": "Đang tải danh sách nhánh mới nhất từ server...", "vn_joke": "Đang chạy cò ra server lấy danh sách mới...", "vn_toxic": "Đang kéo list nhánh trên server về, đợi tí!", "en_pro": "Fetching latest branches from remote..."},
+    "branch_not_found": {
+        "vn_pro": "Không tìm thấy nhánh nào khớp.",
+        "vn_joke": ["Tìm đỏ mắt không ra nhánh nào giống vậy.", "Bấm lộn rồi sếp, làm qué gì có cái nhánh này.", "Tìm bằng niềm tin à sếp? Nhánh ma cmnr."],
+        "vn_toxic": ["Đéo có nhánh nào tên như thế! Lác à?", "Mù mắt rồi đéo thấy nhánh đó ở đâu hết!", "Bịa ra cái tên nhánh cho cố vô! Đéo có nhé!"],
+        "en_pro": "No matching branch found."
+    },
+    "branch_search_single": {"vn_pro": "Tìm thấy 1 nhánh duy nhất: {target}. Đang chuyển...", "vn_joke": "Bắt được 1 nhánh duy nhất: {target}. Bay sang luôn nha!", "vn_toxic": "Có đúng 1 nhánh {target}. Cút sang đấy luôn!", "en_pro": "Found 1 matching branch: {target}. Switching..."},
+    "branch_search_found": {"vn_pro": "Tìm thấy {count} nhánh chứa '{kw}':", "vn_joke": "Mò được {count} nhánh có chữ '{kw}':", "vn_toxic": "Lòi ra {count} nhánh rác chứa '{kw}':", "en_pro": "Found {count} branches containing '{kw}':"},
+    "checkout_success": {
+        "vn_pro": "Đã chuyển sang nhánh: {branch}",
+        "vn_joke": ["Hạ cánh an toàn tại nhánh: {branch}", "Nhập cảnh hợp pháp sang cõi {branch}", "Di dời hộ khẩu sang nhánh {branch} thành công!"],
+        "vn_toxic": ["Đã cút sang nhánh {branch} thành công.", "Đã bế mày ném sang nhánh {branch} rồi đấy.", "Xong! Nằm mẹ ở nhánh {branch} đi, đừng có quậy phá nữa!"],
+        "en_pro": "Switched to branch: {branch}"
+    },
+    "checkout_fail": {
+        "vn_pro": "Không thể đổi nhánh. Có thay đổi chưa commit gây xung đột?",
+        "vn_joke": ["Chuyển nhánh xịt rồi, chắc vướng code dở dang.", "Bị chặn ở cửa khẩu! Hình như sếp quên dọn rác trước khi chuồn đi.", "Sập! Đổi nhánh đéo được, sếp check lại xem có vấp file rác nào không."],
+        "vn_toxic": ["Chuyển đéo được! Cất mẹ đống code rác (stash) đi rồi mới chuyển được!", "Ngu! Đổi nhánh đéo thành công. Sửa file tùm lum đéo cất đi ai cho đổi?", "Thất bại thảm hại! Code mày bẩn thế chó nó cho chuyển nhánh!"],
+        "en_pro": "Failed to switch branch. Uncommitted changes?"
+    },
+    "branch_count_many": {
+        "vn_pro": "Phát hiện {count} nhánh. Khuyên dùng chức năng tìm kiếm.",
+        "vn_joke": ["Ối dồi ôi {count} cái nhánh, gõ tìm kiếm cho lẹ nha sếp.", "Một nùi {count} nhánh, khuyên sếp tìm kiếm chứ trượt lòi mắt ráng chịu.", "Trời ơi bão táp {count} cái nhánh, search lẹ lẹ đi ní ơi."],
+        "vn_toxic": ["Đẻ ra tận {count} nhánh? Gõ mẹ tên ra tìm đi mù mắt bây giờ!", "Tận {count} cái nhánh lồn, súc vật mới ngồi rà tay, gõ từ khóa vô mà tìm!", "Làm đéo gì mà {count} nhánh như bãi rác vậy? Tìm bằng chữ đi cho nhanh!"],
+        "en_pro": "Detected {count} branches. Searching is recommended."
+    },
+    "branch_count_few": {"vn_pro": "Tìm thấy {count} nhánh khả dụng.", "vn_joke": "Có {count} nhánh còm cõi thôi.", "vn_toxic": "Có mỗi {count} cái nhánh rách.", "en_pro": "Found {count} available branches."},
+    "on_base_branch": {
+        "vn_pro": "Bạn đang đứng ở nhánh gốc ({base}).",
+        "vn_joke": ["Đang đứng ở gốc cây {base} rồi sếp.", "Vị trí hiện tại của sếp là bản doanh {base}.", "Sếp ơi lộn chỗ gòi, đang ở nhánh mẹ {base} nhe."],
+        "vn_toxic": ["Đang đứng mẹ nó ở nhánh gốc {base} rồi!", "Cái chỗ đang đứng là nhánh {base} cmnr! Tính làm đéo gì?", "Mù hay điếc? Đang ở cmn nhánh {base} rồi rờ mó gì nữa!"],
+        "en_pro": "You are on the base branch ({base})."
+    },
+    "checkout_feature_first": {
+        "vn_pro": "Hãy checkout sang nhánh feature muốn thao tác trước.",
+        "vn_joke": ["Phải bay sang cái nhánh nào cần dọn dẹp trước chứ.", "Sếp vui lòng bay sang cái nhánh rác mún dọn trước nhen.", "Đổi qua nhánh feature trước đi đã ní ơi."],
+        "vn_toxic": ["Cút sang cái nhánh cần dọn rác trước đi!", "Vác mặt qua cái nhánh tính rebase trước đi, đéo tự nhận diện được đâu!", "Checkout qua cái nhánh con rác rưởi của mày trước lẹ lên!"],
+        "en_pro": "Please checkout the feature branch first."
+    },
+    "base_branch_name": {
+        "vn_pro": "Nhập tên nhánh gốc (base branch):",
+        "vn_joke": ["Tên nhánh gốc là gì sếp (thường là main/develop)?", "Khai báo cội nguồn nhánh gốc vô đây sếp ơi:", "Gõ nhẹ cái tên nhánh cụ tổ vào nào:"],
+        "vn_toxic": ["Nhập cái tên nhánh gốc vào đây:", "Nhánh mày tách ra từ thằng l*n nào? Gõ tên nó vào!", "Tên nhánh base là cái đéo gì? Gõ đi!"],
+        "en_pro": "Enter base branch name:"
+    },
+    "fetch_origin_q": {"vn_pro": "Tải (Fetch) cập nhật mới nhất từ origin?", "vn_joke": "Kéo code mới từ server về luôn cho nóng không sếp?", "vn_toxic": "Có muốn fetch code mới trên server về không?", "en_pro": "Fetch latest updates from origin?"},
+    "merged_reason": {"vn_pro": "Lý do: Đã có {count} lần merge từ {base}.", "vn_joke": "Mò thấy có {count} lần sếp merge code chéo từ {base}.", "vn_toxic": "Thấy mày merge lăng nhăng từ {base} tận {count} lần.", "en_pro": "Reason: Detected {count} merges from {base}."},
+    "clean_reason": {"vn_pro": "Lý do: Không phát hiện merge commit chéo từ {base}.", "vn_joke": "Nhánh sạch sẽ, không đi nhầm đường.", "vn_toxic": "Đéo thấy merge bậy bạ từ {base}.", "en_pro": "Reason: No cross-merges from {base} detected."},
+    "use_detected_history_q": {"vn_pro": "Sử dụng chiến lược Rebase '{type}' đã phát hiện?", "vn_joke": "Tool ngửi thấy mùi '{type}', quất chiến lược này luôn không?", "vn_toxic": "Thấy repo nên xài kiểu '{type}', chốt không?", "en_pro": "Use detected Rebase strategy '{type}'?"},
+    "choose_history_type": {"vn_pro": "Chọn loại lịch sử nhánh:", "vn_joke": "Chọn độ nát của nhánh:", "vn_toxic": "Nhánh của mày đang ở hệ đéo nào?", "en_pro": "Choose branch history type:"},
+    "opt_hist_clean": {"vn_pro": "Sạch (Chưa từng merge từ base)", "vn_joke": "Nhánh trinh trắng (Chưa merge từ gốc)", "vn_toxic": "Sạch (Đéo merge linh tinh)", "en_pro": "Clean (Never merged from base)"},
+    "opt_hist_merged": {"vn_pro": "Hỗn hợp (Đã từng pull/merge từ base)", "vn_joke": "Hổ lốn (Đã lỡ merge từ gốc rồi)", "vn_toxic": "Rác rưởi (Merge nát bét từ gốc)", "en_pro": "Mixed (Has merged/pulled from base)"},
+    "no_commits_to_squash": {
+        "vn_pro": "Không có commit nào để thao tác (Nhánh ngang bằng gốc).",
+        "vn_joke": ["Nhánh chả có cái vẹo gì mới so với gốc cả.", "Trắng tinh không tì vết, chả có commit mọe nào để rebase.", "Đã gõ được dòng code nào đâu mà bày đặt rebase hả sếp?"],
+        "vn_toxic": ["Đéo có code mẹ gì mới để làm! Nhánh trống trơn!", "Đéo có tí commit l*n nào để làm! Xạo chó hả?", "Ngáo à? Nhánh đéo có gì khác nhánh base luôn mà đòi làm màu!"],
+        "en_pro": "No commits to squash (Branch is even with base)."
+    },
+    "create_backup_q": {"vn_pro": "Tạo nhánh backup phòng hờ trước khi thao tác?", "vn_joke": "Mua cái bảo hiểm (backup nhánh) cho chắc cú nha?", "vn_toxic": "Có tạo backup không hay thích chơi liều mạng?", "en_pro": "Create a backup branch before operation?"},
+    "created_backup": {"vn_pro": "Đã tạo backup:", "vn_joke": "Bảo hiểm nhân thọ đã kích hoạt tại:", "vn_toxic": "Đã sao lưu ra cái nhánh:", "en_pro": "Created backup:"},
+    "final_commit_msg": {
+        "vn_pro": "Nhập lời nhắn cho commit chung (sau khi gộp):",
+        "vn_joke": ["Gõ lời trăng trối cho commit gộp đi sếp:", "Bỏ vài chữ miêu tả cục cưng này vô nha sếp:", "Tóm tắt cái đống hỗn độn sếp vừa làm bằng vài chữ đi:"],
+        "vn_toxic": ["Nhập mẹ cái commit msg vào đây:", "Gõ cmn cái commit msg cuối cùng đi, lề mề!", "Chốt cái lời nhắn commit cho đàng hoàng tao xem!"],
+        "en_pro": "Enter message for the final squashed commit:"
+    },
+    "auto_push_q": {"vn_pro": "Tự động Force Push lên server nếu thành công?", "vn_joke": "Rebase êm xui thì auto quăng lên server luôn nha?", "vn_toxic": "Xong xuôi thì có tự động đè code lên server không?", "en_pro": "Automatically Force Push to server if successful?"},
+    "continue_steps_q": {
+        "vn_pro": "Bạn đã sẵn sàng thực thi các lệnh trên chưa?",
+        "vn_joke": ["Dòm kỹ danh sách lệnh chưa sếp? Bóp cò nhé?", "Sút luôn nha sếp? Sẵn sàng chưa?", "Check lệnh trên đi sếp, ổn rùi thì triển thui!"],
+        "vn_toxic": ["Nhìn list lệnh kia kìa, chốt chạy chưa?", "Mở mắt ra dòm đống lệnh trên đi, dám chạy không?", "Chạy luôn hay lại muốn hủy như thằng hèn?"],
+        "en_pro": "Are you ready to execute the above commands?"
+    },
+    "flow_done": {
+        "vn_pro": "Luồng thao tác đã hoàn thành toàn bộ!",
+        "vn_joke": ["Chúc mừng! Mọi thứ êm xui trót lọt!", "Phê chữ ê kéo dài. Mượt rượt luôn!", "Xong rồi đó sếp, sạch sẽ bóng loáng luôn."],
+        "vn_toxic": ["Xong cmnr. Repo đã sạch sẽ mướt mượt!", "Đã xong, cút về làm chuyện chính đi!", "Giờ thì dẹp được rồi đó. Xong hết việc rồi!"],
+        "en_pro": "Flow completed successfully!"
+    },
+    "goodbye": {"vn_pro": "Tạm biệt!", "vn_joke": ["Pai pai sếp! 😏", "Cút... nhầm, See you again!", "Nghỉ ngơi thôi sếp!"], "vn_toxic": ["Cút đi làm việc tiếp đi!", "Nghỉ phẻ, biến!", "Bấm nút lượn!"], "en_pro": "Goodbye!"},
+    "ee_spam_commit": {
+        "vn_pro": "Lưu ý: Nhánh này có tới {count} commit. Rebase có thể sẽ mất thời gian.",
+        "vn_joke": ["Ối dồi ôi, {count} commit! Sếp spam phím à?", "Kỷ lục Guiness: {count} commit cho 1 nhánh. Sếp tính viết tiểu thuyết à?", "Mù mắt với {count} cái commit của sếp, ráng kiên nhẫn đợi rebase nha."],
+        "vn_toxic": ["Tận {count} cái commit rác! Làm trò con bò gì mà đẻ lắm thế?", "Đm tận {count} commit! Rảnh háng hay sao mà spam lắm thế?", "Code như l** mà gõ lắm thế? Tận {count} cái commit khốn khiếp!"],
+        "en_pro": "Notice: This branch has {count} commits. Rebase might take a while."
+    },
+    "ee_rage_quit": {
+        "vn_pro": "Luồng thao tác đã bị hủy ở bước cuối cùng theo yêu cầu.",
+        "vn_joke": ["Ủa quay xe phút 90 à sếp? Hủy luồng nha.", "Tới chốt chặn cuối mà hất bàn thì cũng chịu sếp. Hủy luôn!", "Tool đã khóc! Chạy cho cố rồi bước cuối bảo hủy."],
+        "vn_toxic": ["Đến đoạn chốt thì lại rén à? Đã hủy cmnr!", "Rén đúng phút cuối! ĐM công cốc nãy giờ, hủy cmn đi!", "Phút cuối sợ cmnr? Yếu bóng vía thì từ đầu đừng chạy, hủy!"],
+        "en_pro": "Flow canceled by user at the final step."
+    },
+    "ee_night_owl": {
+        "vn_pro": "Đã khuya rồi, thao tác cẩn thận nhé.",
+        "vn_joke": ["Đêm hôm khuya khoắt vẫn OT à sếp? Giữ gìn sức khỏe nhé!", "Cú đêm à sếp, coi chừng gõ phím lộn đâm bug banh xác.", "Khuya lắc lơ ròi, cẩn thận gõ code gãy tay đó sếp."],
+        "vn_toxic": ["Đêm cmn rồi đéo ngủ đi còn ngồi code lằng nhằng, nát repo ráng chịu!", "Giờ này đéo ngủ mà thức cày bug à? Cẩn thận nát mẹ repo!", "Buồn ngủ thì cút mẹ đi ngủ đi, code ngu giờ này đổ nợ nữa!"],
+        "en_pro": "It's late. Please be careful with your git operations."
     }
 }
