@@ -318,6 +318,7 @@ def check_potential_conflict(repo_dir: str, base_branch: str) -> Tuple[bool, Lis
     except Exception:
         return False, [], False
 
+
 # ============================================================
 # Smart Git Command Interceptor
 # ============================================================
@@ -336,17 +337,35 @@ def handle_smart_git_command(command: str, repo_dir: str) -> bool:
 
     ans = input(f"\n{THEME.info('?')} {_t('smart_git_confirm')} {THEME.ok('[Y/n]')}: ").strip().lower()
     if ans in ('', 'y', 'yes'):
-        print(f"\n{THEME.branch(BOX['tl'] + BOX['h']*80)}")
+        print(f"\n{THEME.branch(BOX['tl'] + BOX['h'] * 80)}")
         try:
-            subprocess.run(command, shell=True, cwd=repo_dir)
+            # FIX LOGIC: Dùng cờ -C của Git để ép buộc thư mục gốc, bất chấp môi trường Windows
+            # Ví dụ: command là 'git commit -m "abc"' -> args là 'commit -m "abc"'
+            args = command[3:].strip()
+            safe_repo = quote_arg(repo_dir)
+
+            # Lệnh thực tế sẽ chạy: git -C "D:\Đường dẫn\Repo" commit -m "abc"
+            exact_command = f"git -C {safe_repo} {args}"
+
+            # Vẫn giữ cwd=repo_dir để phòng hờ các lệnh bash script con bên trong hook
+            result = subprocess.run(exact_command, shell=True, cwd=repo_dir)
+            print(f"{THEME.branch(BOX['bl'] + BOX['h'] * 80)}")
+
+            if result.returncode == 0:
+                print(THEME.ok(_t('smart_git_done')))
+            else:
+                # Bắt luôn lỗi Exit code của đợt fix trước
+                print(THEME.err(_t('smart_git_fail', code=result.returncode)))
+
         except Exception as e:
-            print(THEME.err(f"Lỗi khi thực thi: {e}"))
-        print(f"{THEME.branch(BOX['bl'] + BOX['h']*80)}")
-        print(THEME.ok(_t('smart_git_done')))
+            print(f"{THEME.branch(BOX['bl'] + BOX['h'] * 80)}")
+            print(THEME.err(f"Lỗi hệ thống khi thực thi: {e}"))
+
         pause_continue()
         return True
     else:
-        ans2 = input(f"{THEME.info('?')} Có muốn dùng cụm '{command}' như câu trả lời bình thường thay vì lệnh Git không? [y/N]: ").strip().lower()
+        ans2 = input(
+            f"{THEME.info('?')} Có muốn dùng cụm '{command}' như câu trả lời bình thường thay vì lệnh Git không? [y/N]: ").strip().lower()
         if ans2 in ('y', 'yes'):
             return False
         else:
@@ -421,6 +440,7 @@ def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0
         clear_screen()
         print(THEME.warn(_t("invalid_choice")))
 
+
 # ============================================================
 # Repo detection helpers
 # ============================================================
@@ -428,11 +448,13 @@ def is_git_repo(path: str) -> bool:
     result = subprocess.run("git rev-parse --is-inside-work-tree", shell=True, text=True, capture_output=True, cwd=path)
     return result.returncode == 0
 
+
 def find_git_repo_upwards(start_path: str) -> Optional[str]:
     current = Path(start_path).resolve()
     for candidate in [current] + list(current.parents):
         if (candidate / ".git").exists(): return str(candidate)
     return None
+
 
 def ask_repo_path() -> str:
     while True:
@@ -440,6 +462,10 @@ def ask_repo_path() -> str:
         if not repo_path:
             print(THEME.warn(_t("not_empty")))
             continue
+
+        # FIX LOGIC: Ép thành đường dẫn tuyệt đối (Absolute Path)
+        repo_path = os.path.abspath(repo_path)
+
         if not os.path.isdir(repo_path):
             print(THEME.err(_t("repo_not_exist")))
             continue
@@ -448,8 +474,10 @@ def ask_repo_path() -> str:
             continue
         return repo_path
 
+
 def resolve_repo_dir() -> str:
-    cwd = os.getcwd()
+    # FIX LOGIC: Ép cwd thành tuyệt đối
+    cwd = os.path.abspath(os.getcwd())
     if is_git_repo(cwd): return cwd
     guessed = find_git_repo_upwards(cwd)
     if guessed:

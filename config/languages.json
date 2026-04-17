@@ -448,6 +448,12 @@
         "vn_toxic": "ĐM phát sinh lỗi củ lìn gì đây:",
         "en_pro": "Unexpected error in flow:"
     },
+    "smart_git_fail": {
+        "vn_pro": "Lệnh Git thất bại (Mã lỗi: {code}). Hãy đọc kỹ thông báo lỗi của Git ở khung phía trên.",
+        "vn_joke": "Xịt rồi sếp ơi (Mã: {code}). Đọc cái đống chữ Git nó chửi ở trên kìa.",
+        "vn_toxic": "Lệnh chạy thất bại (Lỗi {code})! Tự mở mắt ra mà đọc xem Git nó chửi cái đéo gì ở trên!",
+        "en_pro": "Git command failed (Exit code: {code}). Please check the Git error output above."
+    },
 
     "rollback_q": {
         "vn_pro": "Phát hiện lỗi hoặc thao tác bị dừng. Bạn có muốn ROLLBACK nhánh về trạng thái ban đầu không?",
