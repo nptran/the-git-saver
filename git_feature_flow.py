@@ -20,24 +20,16 @@ EMOJI_MODE = False
 
 
 def load_json_config(filename: str) -> dict:
-    """
-    Load cấu hình với thứ tự ưu tiên:
-    1. Thư mục 'config' nằm ngang hàng với file .exe (User override)
-    2. Thư mục 'config' được nhúng ngầm bên trong .exe (sys._MEIPASS)
-    """
     if getattr(sys, 'frozen', False):
-        # Môi trường đã build ra .exe bằng PyInstaller
         external_base = os.path.dirname(sys.executable)
         internal_base = sys._MEIPASS
     else:
-        # Môi trường chạy code .py bình thường
         external_base = os.path.dirname(os.path.abspath(__file__))
         internal_base = external_base
 
     external_path = os.path.join(external_base, 'config', filename)
     internal_path = os.path.join(internal_base, 'config', filename)
 
-    # Ưu tiên 1: Đọc file bên ngoài (Nếu user tự tạo để Override)
     if os.path.exists(external_path):
         try:
             with open(external_path, 'r', encoding='utf-8') as f:
@@ -45,7 +37,6 @@ def load_json_config(filename: str) -> dict:
         except Exception as e:
             print(f"[Cảnh báo] File custom {filename} bị lỗi cú pháp JSON: {e}")
 
-    # Ưu tiên 2: Đọc file mặc định nhúng sẵn trong ruột .exe
     if os.path.exists(internal_path):
         try:
             with open(internal_path, 'r', encoding='utf-8') as f:
@@ -57,36 +48,28 @@ def load_json_config(filename: str) -> dict:
     return {}
 
 
-# Tự động load khi chạy script
 EMOJI_MAP = load_json_config('emoji_map.json')
 LANGUAGES = load_json_config('languages.json')
 
 
-# ============================================================
-# Hàm Translate thông minh (Vẫn giữ nguyên logic Fallback)
-# ============================================================
 def _t(key: str, **kwargs) -> str:
     lang_dict = LANGUAGES.get(key, {})
 
-    # Smart Fallback: Rơi tự do từ CURRENT_LANG -> vn_pro -> en_pro -> trả về đúng cái key
     msg_data = lang_dict.get(CURRENT_LANG)
     if not msg_data:
         msg_data = lang_dict.get("vn_pro", lang_dict.get("en_pro", key))
 
-    # Xử lý random nếu data là list
     if isinstance(msg_data, list):
         msg = random.choice(msg_data)
     else:
         msg = msg_data
 
-    # Format chuỗi an toàn
     if kwargs:
         try:
             msg = msg.format(**kwargs)
         except Exception:
             pass
 
-    # Thêm Emoji nếu đang bật
     if EMOJI_MODE and key in EMOJI_MAP:
         msg = f"{msg} {EMOJI_MAP.get(key, '')}"
 
@@ -97,15 +80,10 @@ def _t(key: str, **kwargs) -> str:
 # Quoting Helper (Xử lý chuỗi an toàn cho Windows CMD & Unix)
 # ============================================================
 def quote_arg(arg: str) -> str:
-    """
-    Sử dụng hàm này thay cho shlex.quote() vì shlex sinh ra dấu nháy đơn ('...')
-    Windows CMD không hiểu dấu nháy đơn để nhóm chuỗi có khoảng trắng,
-    điều này sẽ gây lỗi văng lệnh khi git commit.
-    """
     if os.name == "nt":
-        # Escape nháy kép bên trong và bọc toàn bộ bằng nháy kép
         return '"' + arg.replace('"', '\\"') + '"'
     return shlex.quote(arg)
+
 
 # ============================================================
 # Optional Windows color support via colorama
@@ -118,6 +96,7 @@ def try_init_colorama() -> bool:
     except Exception:
         return False
 
+
 # ============================================================
 # Exit / pause helpers
 # ============================================================
@@ -128,6 +107,7 @@ def should_pause_on_exit() -> bool:
     stdout_tty = hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
     return not (stdin_tty and stdout_tty)
 
+
 def pause_exit(code: int = 0) -> None:
     if should_pause_on_exit():
         try:
@@ -136,14 +116,17 @@ def pause_exit(code: int = 0) -> None:
             pass
     sys.exit(code)
 
+
 def pause_continue() -> None:
     try:
         input(f"\n{THEME.dim(_t('press_continue'))}")
     except Exception:
         pass
 
+
 def clear_screen() -> None:
     os.system("cls" if os.name == "nt" else "clear")
+
 
 # ============================================================
 # Terminal / color capability
@@ -161,9 +144,11 @@ def supports_color(stream) -> bool:
         return True
     return True
 
+
 def supports_unicode_box(stream) -> bool:
     encoding = (getattr(stream, "encoding", None) or "").lower()
     return "utf" in encoding or "65001" in encoding
+
 
 # ============================================================
 # Theme / rendering
@@ -193,39 +178,62 @@ class Theme:
     def s(self, text: str, *styles: str) -> str:
         if not self.use_color: return text
         return "".join(styles) + text + self.RESET
+
     def bold(self, text: str) -> str: return self.s(text, self.BOLD)
+
     def dim(self, text: str) -> str: return self.s(text, self.DIM)
+
     def info(self, text: str) -> str: return self.s(text, self.BRIGHT_CYAN, self.BOLD)
+
     def ok(self, text: str) -> str: return self.s(text, self.BRIGHT_GREEN, self.BOLD)
+
     def warn(self, text: str) -> str: return self.s(text, self.BRIGHT_YELLOW, self.BOLD)
+
     def err(self, text: str) -> str: return self.s(text, self.BRIGHT_RED, self.BOLD)
+
     def branch(self, text: str) -> str: return self.s(text, self.BRIGHT_BLUE, self.BOLD)
+
     def commit(self, text: str) -> str: return self.s(text, self.BRIGHT_MAGENTA, self.BOLD)
+
     def count(self, text: str) -> str: return self.s(text, self.BRIGHT_YELLOW, self.BOLD)
+
     def cmd(self, text: str) -> str: return self.s(text, self.GREEN, self.BOLD)
+
     def choice(self, text: str) -> str: return self.s(text, self.CYAN, self.BOLD)
+
     def key(self, text: str) -> str: return self.s(text, self.BRIGHT_CYAN, self.BOLD)
+
     def tag_feat(self, text: str) -> str: return self.s(text, self.BRIGHT_GREEN, self.BOLD)
+
     def tag_fix(self, text: str) -> str: return self.s(text, self.BRIGHT_YELLOW, self.BOLD)
+
     def tag_refactor(self, text: str) -> str: return self.s(text, self.BRIGHT_MAGENTA, self.BOLD)
+
     def tag_other(self, text: str) -> str: return self.s(text, self.BRIGHT_CYAN, self.BOLD)
+
 
 THEME = Theme(
     use_color=supports_color(sys.stdout),
     use_unicode_box=supports_unicode_box(sys.stdout),
 )
 
+
 def box_chars():
     if THEME.use_unicode_box:
         return {"tl": "╔", "tr": "╗", "bl": "╚", "br": "╝", "h": "═", "v": "║", "lt": "╠", "rt": "╣"}
     return {"tl": "+", "tr": "+", "bl": "+", "br": "+", "h": "-", "v": "|", "lt": "+", "rt": "+"}
+
+
 BOX = box_chars()
+
 
 def strip_ansi(text: str) -> str:
     return re.sub(r"\x1b\[[0-9;]*m", "", text)
 
+
 def visible_len(text: str) -> int:
     return len(strip_ansi(text))
+
 
 def print_box(title: str, lines: List[str]) -> None:
     width = max([len(title)] + [visible_len(line) for line in lines]) + 2
@@ -241,6 +249,7 @@ def print_box(title: str, lines: List[str]) -> None:
         padding = width - visible_len(line)
         print(THEME.branch(f"{BOX['v']} ") + line + (" " * padding) + THEME.branch(f" {BOX['v']}"))
     print(THEME.branch(bottom))
+
 
 # ============================================================
 # Git Error Decoder
@@ -258,6 +267,7 @@ def get_friendly_git_error(stderr_str: str) -> str:
         return _t("err_push_rejected")
 
     return _t("err_unknown")
+
 
 # ============================================================
 # Shell / Git helpers
@@ -282,17 +292,19 @@ def run(cmd: str, cwd: Optional[str] = None, check: bool = True, capture: bool =
             print(THEME.warn(f"Working directory: {cwd}"))
 
         friendly_msg = get_friendly_git_error(stderr_val)
-        print(f"\n{THEME.branch(BOX['tl'] + BOX['h']*50)}")
+        print(f"\n{THEME.branch(BOX['tl'] + BOX['h'] * 50)}")
         print(f"{THEME.branch(BOX['v'])} {THEME.info('💡 GIẢI MÃ LỖI / ERROR DECODER:')}")
         print(f"{THEME.branch(BOX['v'])} {friendly_msg}")
-        print(f"{THEME.branch(BOX['bl'] + BOX['h']*50)}\n")
+        print(f"{THEME.branch(BOX['bl'] + BOX['h'] * 50)}\n")
 
         raise RuntimeError(f"Command failed: {cmd}")
 
     return stdout_val.strip()
 
+
 def git_output(cmd: str, cwd: Optional[str] = None, check: bool = True) -> str:
     return run(cmd, cwd=cwd, check=check, capture=True)
+
 
 def ensure_git_installed() -> None:
     result = subprocess.run("git --version", shell=True, text=True, capture_output=True)
@@ -300,6 +312,7 @@ def ensure_git_installed() -> None:
         print(THEME.err(_t("no_git_err")))
         print(THEME.warn(_t("no_git_warn")))
         pause_exit(1)
+
 
 # ============================================================
 # Smart Git Command Interceptor (Thiết Quân Luật -C & Check Code)
@@ -321,22 +334,16 @@ def handle_smart_git_command(command: str, repo_dir: str) -> bool:
     if ans in ('', 'y', 'yes'):
         print(f"\n{THEME.branch(BOX['tl'] + BOX['h'] * 80)}")
         try:
-            # FIX LOGIC: Dùng cờ -C của Git để ép buộc thư mục gốc, bất chấp môi trường Windows
-            # Ví dụ: command là 'git commit -m "abc"' -> args là 'commit -m "abc"'
             args = command[3:].strip()
             safe_repo = quote_arg(repo_dir)
-
-            # Lệnh thực tế sẽ chạy: git -C "D:\Đường dẫn\Repo" commit -m "abc"
             exact_command = f"git -C {safe_repo} {args}"
 
-            # Vẫn giữ cwd=repo_dir để phòng hờ các lệnh bash script con bên trong hook
             result = subprocess.run(exact_command, shell=True, cwd=repo_dir)
             print(f"{THEME.branch(BOX['bl'] + BOX['h'] * 80)}")
 
             if result.returncode == 0:
                 print(THEME.ok(_t('smart_git_done')))
             else:
-                # Bắt luôn lỗi Exit code của đợt fix trước
                 print(THEME.err(_t('smart_git_fail', code=result.returncode)))
 
         except Exception as e:
@@ -354,10 +361,12 @@ def handle_smart_git_command(command: str, repo_dir: str) -> bool:
             print(THEME.warn(_t('smart_git_cancel')))
             return True
 
+
 # ============================================================
 # Prompt helpers (Hỗ trợ <REFRESH> và <GIT_RUN>)
 # ============================================================
-def ask_yes_no(question_key: str, default: bool = True, allow_back: bool = False, repo_dir: Optional[str] = None, **kwargs) -> Any:
+def ask_yes_no(question_key: str, default: bool = True, allow_back: bool = False, repo_dir: Optional[str] = None,
+               **kwargs) -> Any:
     suffix = THEME.ok("[Y/n]") if default else THEME.warn("[y/N]")
     back_hint = THEME.dim(_t("type_back")) if allow_back else ""
     refresh_hint = THEME.dim(" (r: Refresh)")
@@ -387,7 +396,8 @@ def ask_non_empty(question_key: str, default: Optional[str] = None, allow_back: 
         if default is None:
             answer = input(f"{THEME.info('?')} {_t(question_key)}{back_hint}{refresh_hint}: ").strip()
         else:
-            answer = input(f"{THEME.info('?')} {_t(question_key)} {THEME.dim('[' + default + ']')}{back_hint}{refresh_hint}: ").strip()
+            answer = input(
+                f"{THEME.info('?')} {_t(question_key)} {THEME.dim('[' + default + ']')}{back_hint}{refresh_hint}: ").strip()
 
         if answer.lower() == 'r': return "<REFRESH>"
 
@@ -436,7 +446,7 @@ def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0
 
 
 # ============================================================
-# Repo detection helpers
+# Repo detection helpers (Đường dẫn tuyệt đối)
 # ============================================================
 def is_git_repo(path: str) -> bool:
     result = subprocess.run("git rev-parse --is-inside-work-tree", shell=True, text=True, capture_output=True, cwd=path)
@@ -457,7 +467,6 @@ def ask_repo_path() -> str:
             print(THEME.warn(_t("not_empty")))
             continue
 
-        # FIX LOGIC: Ép thành đường dẫn tuyệt đối (Absolute Path)
         repo_path = os.path.abspath(repo_path)
 
         if not os.path.isdir(repo_path):
@@ -470,7 +479,6 @@ def ask_repo_path() -> str:
 
 
 def resolve_repo_dir() -> str:
-    # FIX LOGIC: Ép cwd thành tuyệt đối
     cwd = os.path.abspath(os.getcwd())
     if is_git_repo(cwd): return cwd
     guessed = find_git_repo_upwards(cwd)
@@ -481,12 +489,14 @@ def resolve_repo_dir() -> str:
     print(THEME.warn(_t("pls_choose_repo")))
     return ask_repo_path()
 
+
 # ============================================================
 # Working tree helpers (Tự làm mới vòng lặp)
 # ============================================================
 def get_worktree_status(repo_dir: str) -> List[str]:
     output = git_output("git status --porcelain", cwd=repo_dir)
     return output.splitlines() if output else []
+
 
 def show_worktree_changes(changes: List[str]) -> None:
     lines = changes[:20] if changes else [THEME.dim(_t("no_local_changes"))]
@@ -495,16 +505,17 @@ def show_worktree_changes(changes: List[str]) -> None:
         lines.append(THEME.dim("(Truncated)"))
     print_box("Working Tree Changes", lines)
 
+
 def handle_dirty_worktree(repo_dir: str) -> Optional[bool]:
     while True:
-        # Cập nhật liên tục trạng thái thư mục
         changes = get_worktree_status(repo_dir)
         if not changes: return False
 
         print(THEME.warn(_t("wt_dirty_warn")))
         show_worktree_changes(changes)
 
-        choice = ask_choice("what_do_changes", ["opt_stash", "opt_no_stash", "opt_cancel"], default_index=0, repo_dir=repo_dir)
+        choice = ask_choice("what_do_changes", ["opt_stash", "opt_no_stash", "opt_cancel"], default_index=0,
+                            repo_dir=repo_dir)
 
         if choice in ("<GIT_RUN>", "<REFRESH>"):
             clear_screen()
@@ -526,24 +537,26 @@ def handle_dirty_worktree(repo_dir: str) -> Optional[bool]:
             print(THEME.warn(_t("canceled_return")))
             return None
 
-        # opt_cancel hoặc <BACK>
         print(THEME.warn(_t("canceled_return")))
         return None
+
 
 def maybe_restore_auto_stash(repo_dir: str, auto_stashed: bool) -> None:
     if not auto_stashed: return
     restore = ask_yes_no("restore_stash_q", True, repo_dir=repo_dir)
     if restore is True:
-    run("git stash pop", cwd=repo_dir)
-    print(THEME.ok(_t("restored_stash")))
+        run("git stash pop", cwd=repo_dir)
+        print(THEME.ok(_t("restored_stash")))
     else:
         print(THEME.warn(_t("kept_stash")))
+
 
 # ============================================================
 # Git branch logic & Checkout
 # ============================================================
 def current_branch(repo_dir: str) -> str:
     return git_output("git rev-parse --abbrev-ref HEAD", cwd=repo_dir)
+
 
 def ensure_not_on_base(base_branch: str, current: str) -> bool:
     if current == base_branch or current == f"origin/{base_branch}":
@@ -552,19 +565,20 @@ def ensure_not_on_base(base_branch: str, current: str) -> bool:
         return False
     return True
 
+
 def clean_branch_name(b: str) -> str:
     return b.strip().strip("'").strip('"')
 
+
 def highlight_b(b_name: str, kw: str, is_loc: bool) -> str:
-    if not THEME.use_color:
-        return b_name
+    if not THEME.use_color: return b_name
     base_ansi = (THEME.BRIGHT_BLUE + THEME.BOLD) if is_loc else THEME.DIM
-    if not kw:
-        return base_ansi + b_name + THEME.RESET
+    if not kw: return base_ansi + b_name + THEME.RESET
     hl_ansi = THEME.BG_YELLOW + THEME.BLACK + THEME.BOLD
     pattern = re.compile(re.escape(kw), re.IGNORECASE)
     colored = pattern.sub(lambda m: hl_ansi + m.group(0) + THEME.RESET + base_ansi, b_name)
     return base_ansi + colored + THEME.RESET
+
 
 def handle_checkout(repo_dir: str) -> bool:
     local_branches_str = git_output("git branch --format=%(refname:short)", cwd=repo_dir)
@@ -591,8 +605,10 @@ def handle_checkout(repo_dir: str) -> bool:
     alert_msg = ""
 
     total_count = len(all_branches)
-    if total_count >= 50: alert_msg = THEME.warn(_t("branch_count_many", count=total_count))
-    elif total_count <= 5: alert_msg = THEME.ok(_t("branch_count_few", count=total_count))
+    if total_count >= 50:
+        alert_msg = THEME.warn(_t("branch_count_many", count=total_count))
+    elif total_count <= 5:
+        alert_msg = THEME.ok(_t("branch_count_few", count=total_count))
 
     while True:
         clear_screen()
@@ -659,6 +675,7 @@ def handle_checkout(repo_dir: str) -> bool:
                 print(THEME.err(_t("checkout_fail")))
                 return False
 
+
 # ============================================================
 # Rebase state & VERIFICATION helpers
 # ============================================================
@@ -668,13 +685,16 @@ def get_git_dir(repo_dir: str) -> Path:
     if not git_path.is_absolute(): git_path = Path(repo_dir) / git_path
     return git_path
 
+
 def is_rebase_in_progress(repo_dir: str) -> bool:
     git_dir = get_git_dir(repo_dir)
     return (git_dir / "rebase-merge").exists() or (git_dir / "rebase-apply").exists()
 
+
 def get_conflicted_files(repo_dir: str) -> List[str]:
     output = git_output("git diff --name-only --diff-filter=U", cwd=repo_dir, check=False)
     return output.splitlines() if output else []
+
 
 def show_git_status_box(repo_dir: str) -> None:
     output = git_output("git status --short", cwd=repo_dir, check=False)
@@ -682,6 +702,7 @@ def show_git_status_box(repo_dir: str) -> None:
     if len(lines) > 30:
         lines = lines[:30] + [THEME.dim("..."), THEME.dim("(Truncated)")]
     print_box("Git Status", lines)
+
 
 def show_conflicted_files_box(repo_dir: str) -> None:
     files = get_conflicted_files(repo_dir)
@@ -691,6 +712,7 @@ def show_conflicted_files_box(repo_dir: str) -> None:
         lines = [f"• {f}" for f in files[:30]]
         if len(files) > 30: lines += [THEME.dim("..."), THEME.dim("(Truncated)")]
     print_box("Conflicted Files", lines)
+
 
 def handle_rebase_recovery(repo_dir: str) -> str:
     while True:
@@ -705,7 +727,9 @@ def handle_rebase_recovery(repo_dir: str) -> str:
         ]
         print_box("Rebase Recovery", lines)
 
-        choice = ask_choice("choose_action", ["opt_show_status", "opt_show_conflict", "opt_continue", "opt_abort", "opt_return"], 0, repo_dir=repo_dir)
+        choice = ask_choice("choose_action",
+                            ["opt_show_status", "opt_show_conflict", "opt_continue", "opt_abort", "opt_return"], 0,
+                            repo_dir=repo_dir)
 
         if choice in ("<GIT_RUN>", "<REFRESH>"):
             clear_screen()
@@ -767,6 +791,7 @@ def handle_rebase_recovery(repo_dir: str) -> str:
             print(THEME.warn(_t("rebase_keep_state")))
             return "menu"
 
+
 def check_potential_conflict(repo_dir: str, base_branch: str) -> Tuple[bool, List[str], bool]:
     cmd = f"git merge-tree --write-tree origin/{base_branch} HEAD"
     try:
@@ -781,11 +806,13 @@ def check_potential_conflict(repo_dir: str, base_branch: str) -> Tuple[bool, Lis
     except Exception:
         return False, [], False
 
+
 def create_backup(repo_dir: str, branch: str) -> str:
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     backup_branch = f"backup/{branch.replace('/', '-')}-{ts}"
     run(f"git branch {quote_arg(backup_branch)}", cwd=repo_dir)
     return backup_branch
+
 
 def get_effective_base_point(repo_dir: str, base_branch: str, history_type: str) -> Optional[str]:
     cmd = f"git merge-base HEAD origin/{base_branch}" if history_type == "clean" else f"git merge-base --fork-point origin/{base_branch} HEAD"
@@ -796,8 +823,10 @@ def get_effective_base_point(repo_dir: str, base_branch: str, history_type: str)
         return None
     return base_point
 
+
 def commit_count_since(repo_dir: str, base_point: str) -> int:
     return int(git_output(f"git rev-list --count {base_point}..HEAD", cwd=repo_dir))
+
 
 def detect_history_type(repo_dir: str, base_branch: str) -> Tuple[str, str]:
     merge_base = git_output(f"git merge-base HEAD origin/{base_branch}", cwd=repo_dir)
@@ -807,20 +836,20 @@ def detect_history_type(repo_dir: str, base_branch: str) -> Tuple[str, str]:
         return "merged", _t("merged_reason", count=merge_commit_count, base=merge_base)
     return "clean", _t("clean_reason", base=merge_base)
 
+
 def get_commit_preview(repo_dir: str, base_point: str, limit: int = 50) -> List[str]:
     output = git_output(f"git log --oneline --no-decorate {base_point}..HEAD -n {limit}", cwd=repo_dir)
     return output.splitlines() if output else []
 
-# ============================================================
-# Post-Rebase Verification Engine (Sử dụng git patch-id)
-# ============================================================
+
 def get_diff_patch_id(repo_dir: str, base_ref: str, target_ref: str) -> str:
     diff_output = git_output(f"git diff {base_ref}...{target_ref}", cwd=repo_dir, check=False)
     if not diff_output.strip():
         return "empty"
 
     try:
-        p = subprocess.Popen(["git", "patch-id", "--stable"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=repo_dir)
+        p = subprocess.Popen(["git", "patch-id", "--stable"], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, cwd=repo_dir)
         out, err = p.communicate(input=diff_output.encode('utf-8'))
         if p.returncode == 0 and out:
             return out.decode('utf-8').split()[0]
@@ -831,8 +860,10 @@ def get_diff_patch_id(repo_dir: str, base_ref: str, target_ref: str) -> str:
     cleaned = re.sub(r'\s+', '', cleaned)
     return cleaned
 
-def run_verification(repo_dir: str, state: dict, branch: str, backup_branch: Optional[str], conflict_occurred: bool) -> bool:
-    print(f"\n{THEME.branch(BOX['tl'] + BOX['h']*80)}")
+
+def run_verification(repo_dir: str, state: dict, branch: str, backup_branch: Optional[str],
+                     conflict_occurred: bool) -> bool:
+    print(f"\n{THEME.branch(BOX['tl'] + BOX['h'] * 80)}")
     print(f"{THEME.branch(BOX['v'])} {THEME.info(_t('verify_title'))}")
 
     passed = True
@@ -844,7 +875,8 @@ def run_verification(repo_dir: str, state: dict, branch: str, backup_branch: Opt
         rev_count = git_output(f"git rev-list --left-right --count origin/{state['base_branch']}...HEAD", cwd=repo_dir)
         behind, ahead = map(int, rev_count.split())
         if behind > 0:
-            print(f"{THEME.branch(BOX['v'])} {THEME.err(_t('verify_ahead_fail', base=state['base_branch'], behind=behind))}")
+            print(
+                f"{THEME.branch(BOX['v'])} {THEME.err(_t('verify_ahead_fail', base=state['base_branch'], behind=behind))}")
             passed = False
         else:
             print(f"{THEME.branch(BOX['v'])} {THEME.ok(_t('verify_ahead_ok', base=state['base_branch'], ahead=ahead))}")
@@ -874,8 +906,9 @@ def run_verification(repo_dir: str, state: dict, branch: str, backup_branch: Opt
             diff_cmd = f"git diff {reference_ref} HEAD"
             print(f"{THEME.branch(BOX['v'])} {THEME.info(_t('verify_diff_cmd'))} {THEME.cmd(diff_cmd)}")
 
-    print(f"{THEME.branch(BOX['bl'] + BOX['h']*80)}\n")
+    print(f"{THEME.branch(BOX['bl'] + BOX['h'] * 80)}\n")
     return passed
+
 
 # ============================================================
 # Rollback Engine
@@ -887,25 +920,33 @@ def perform_rollback(repo_dir: str, original_commit: str) -> None:
     run(f"git reset --hard {original_commit}", cwd=repo_dir)
     print(THEME.ok(_t('rollback_success')))
 
+
 # ============================================================
 # Commit line formatting
 # ============================================================
 COMMIT_TYPE_RE = re.compile(r"^(feat|fix|refactor|chore|docs|test)(\(.+?\))?:", re.IGNORECASE)
 
+
 def highlight_commit_message(message: str) -> str:
     match = COMMIT_TYPE_RE.match(message)
     if not match: return message
     commit_type, prefix = match.group(1).lower(), match.group(0)
-    if commit_type == "feat": colored_prefix = THEME.tag_feat(prefix)
-    elif commit_type == "fix": colored_prefix = THEME.tag_fix(prefix)
-    elif commit_type == "refactor": colored_prefix = THEME.tag_refactor(prefix)
-    else: colored_prefix = THEME.tag_other(prefix)
+    if commit_type == "feat":
+        colored_prefix = THEME.tag_feat(prefix)
+    elif commit_type == "fix":
+        colored_prefix = THEME.tag_fix(prefix)
+    elif commit_type == "refactor":
+        colored_prefix = THEME.tag_refactor(prefix)
+    else:
+        colored_prefix = THEME.tag_other(prefix)
     return colored_prefix + message[len(prefix):]
+
 
 def format_commit_line(line: str) -> str:
     parts = line.split(" ", 1)
     if len(parts) == 1: return f"• {THEME.commit(parts[0])}"
     return f"• {THEME.commit(parts[0])} {highlight_commit_message(parts[1])}"
+
 
 # ============================================================
 # UI blocks - WIZARD DASHBOARD
@@ -925,6 +966,7 @@ def show_startup(repo_dir: str) -> None:
         f"{THEME.key('Rebase')}   : {rebase_state}",
     ]
     print_box("Feature Branch Squash + Rebase Assistant", lines)
+
 
 def show_wizard_dashboard(state: dict, current_step: int) -> None:
     def check(step_idx: int) -> str:
@@ -972,7 +1014,9 @@ def show_wizard_dashboard(state: dict, current_step: int) -> None:
     if current_step > 2 and state.get('commit_total', 0) >= 20:
         print(f"  {THEME.warn(_t('ee_spam_commit', count=state['commit_total']))}")
 
-def show_action_plan(base_point: str, final_message: str, base_branch: str, feature_branch: str, commit_count: int, auto_push: bool) -> None:
+
+def show_action_plan(base_point: str, final_message: str, base_branch: str, feature_branch: str, commit_count: int,
+                     auto_push: bool) -> None:
     pad_base = base_branch.ljust(15)
     pad_feat = feature_branch.ljust(15)
 
@@ -996,6 +1040,7 @@ def show_action_plan(base_point: str, final_message: str, base_branch: str, feat
     ]
     if auto_push: lines.append(THEME.cmd("4. git push --force-with-lease"))
     print_box("Commands to execute", lines)
+
 
 # ============================================================
 # Core flow (STATE MACHINE WIZARD)
@@ -1085,14 +1130,18 @@ def run_feature_flow(repo_dir: str) -> None:
         elif step == 2:
             print(f"\n{THEME.info('--- Auto Detect ---')}")
             print(f"{state['detected_reason']}")
-            ans = ask_yes_no("use_detected_history_q", default=True, allow_back=True, repo_dir=repo_dir, type=state["detected_type"])
+            ans = ask_yes_no("use_detected_history_q", default=True, allow_back=True, repo_dir=repo_dir,
+                             type=state["detected_type"])
             if ans in ("<GIT_RUN>", "<REFRESH>"): continue
             if ans == "<BACK>":
                 step -= 1
                 continue
-            if ans is True: state["history_type"] = state["detected_type"]
+            if ans is True:
+                state["history_type"] = state["detected_type"]
             else:
-                h_ans = ask_choice("choose_history_type", ["opt_hist_clean", "opt_hist_merged"], default_index=0 if state["detected_type"] == "clean" else 1, allow_back=True, repo_dir=repo_dir)
+                h_ans = ask_choice("choose_history_type", ["opt_hist_clean", "opt_hist_merged"],
+                                   default_index=0 if state["detected_type"] == "clean" else 1, allow_back=True,
+                                   repo_dir=repo_dir)
                 if h_ans in ("<GIT_RUN>", "<REFRESH>"): continue
                 if h_ans == "<BACK>": continue
                 state["history_type"] = "clean" if h_ans == "opt_hist_clean" else "merged"
@@ -1142,7 +1191,8 @@ def run_feature_flow(repo_dir: str) -> None:
             step += 1
 
         elif step == 6:
-            show_action_plan(state["base_point"], state["final_msg"], state["base_branch"], branch, state["commit_total"], state["auto_push"])
+            show_action_plan(state["base_point"], state["final_msg"], state["base_branch"], branch,
+                             state["commit_total"], state["auto_push"])
             ans = ask_yes_no("continue_steps_q", default=True, allow_back=True, repo_dir=repo_dir)
             if ans in ("<GIT_RUN>", "<REFRESH>"): continue
             if ans == "<BACK>":
@@ -1154,7 +1204,7 @@ def run_feature_flow(repo_dir: str) -> None:
                 return
             break
 
-        # --- BẮT ĐẦU CHẠY GIT ---
+    # --- BẮT ĐẦU CHẠY GIT ---
 
     # Just-In-Time (JIT) Check: Quét chặn phút chót tránh xung đột IDE
     current_changes = get_worktree_status(repo_dir)
@@ -1164,78 +1214,77 @@ def run_feature_flow(repo_dir: str) -> None:
         pause_continue()
         return
 
-        # LƯU TRẠNG THÁI GỐC ĐỂ ROLLBACK
-        original_commit = git_output("git rev-parse HEAD", cwd=repo_dir)
+    # LƯU TRẠNG THÁI GỐC ĐỂ ROLLBACK
+    original_commit = git_output("git rev-parse HEAD", cwd=repo_dir)
 
-        backup_branch_name = None
-        if state["do_backup"]:
-            backup_branch_name = create_backup(repo_dir, branch)
-            print(f"\n{THEME.ok(_t('created_backup'))} {THEME.branch(backup_branch_name)}")
+    backup_branch_name = None
+    if state["do_backup"]:
+        backup_branch_name = create_backup(repo_dir, branch)
+        print(f"\n{THEME.ok(_t('created_backup'))} {THEME.branch(backup_branch_name)}")
 
-        run(f"git reset --soft {state['base_point']}", cwd=repo_dir)
-        run(f"git commit -m {quote_arg(state['final_msg'])}", cwd=repo_dir)
+    run(f"git reset --soft {state['base_point']}", cwd=repo_dir)
+    run(f"git commit -m {quote_arg(state['final_msg'])}", cwd=repo_dir)
 
-        conflict_occurred = False
-        try:
-            run(f"git rebase origin/{state['base_branch']}", cwd=repo_dir)
-        except RuntimeError:
-            if is_rebase_in_progress(repo_dir):
-                print(THEME.warn("Rebase stopped. Switching to recovery mode."))
-                result = handle_rebase_recovery(repo_dir)
-                if result == "completed":
-                    conflict_occurred = True
-                elif result in ("aborted", "menu"):
+    conflict_occurred = False
+    try:
+        run(f"git rebase origin/{state['base_branch']}", cwd=repo_dir)
+    except RuntimeError:
+        if is_rebase_in_progress(repo_dir):
+            print(THEME.warn("Rebase stopped. Switching to recovery mode."))
+            result = handle_rebase_recovery(repo_dir)
+            if result == "completed":
+                conflict_occurred = True
+            elif result in ("aborted", "menu"):
                 ans = ask_yes_no("rollback_q", default=True, repo_dir=repo_dir)
                 if ans is True or ans in ("<GIT_RUN>", "<REFRESH>"):
-                        perform_rollback(repo_dir, original_commit)
-                    else:
-                        print(THEME.warn(_t("rollback_abort")))
-                    maybe_restore_auto_stash(repo_dir, auto_stashed)
-                    return
-            else:
-            ans = ask_yes_no("rollback_q", default=True, repo_dir=repo_dir)
-            if ans is True or ans in ("<GIT_RUN>", "<REFRESH>"):
                     perform_rollback(repo_dir, original_commit)
                 else:
                     print(THEME.warn(_t("rollback_abort")))
                 maybe_restore_auto_stash(repo_dir, auto_stashed)
                 return
-
-        # --- CHẠY BƯỚC VERIFY POST-REBASE ---
-        verify_passed = run_verification(repo_dir, state, branch, backup_branch_name, conflict_occurred)
-
-        if not verify_passed:
-            # Nếu Verify thất bại và user có bật Auto Push
-            if state["auto_push"]:
-            ans = ask_yes_no("verify_push_q", False, repo_dir=repo_dir)
-            if ans is True: # Force push
-                    try:
-                        run(f"git push --force-with-lease -u origin {quote_arg(branch)}", cwd=repo_dir)
-                    except RuntimeError:
-                        run(f"git push -f -u origin {quote_arg(branch)}", cwd=repo_dir)
-                    maybe_restore_auto_stash(repo_dir, auto_stashed)
-                    print(f"\n{THEME.ok(_t('flow_done'))}")
-                    return
-                else:
-                    print(THEME.warn(_t("warn_cancel_auto_push")))
-
-        rb_ans = ask_yes_no("rollback_q", default=True, repo_dir=repo_dir)
-        if rb_ans is True or rb_ans in ("<GIT_RUN>", "<REFRESH>"):
+        else:
+            ans = ask_yes_no("rollback_q", default=True, repo_dir=repo_dir)
+            if ans is True or ans in ("<GIT_RUN>", "<REFRESH>"):
                 perform_rollback(repo_dir, original_commit)
             else:
                 print(THEME.warn(_t("rollback_abort")))
             maybe_restore_auto_stash(repo_dir, auto_stashed)
             return
-        else:
-            # Verify passed hoàn hảo, tiến hành push (nếu có)
-            if state["auto_push"]:
+
+    # --- CHẠY BƯỚC VERIFY POST-REBASE ---
+    verify_passed = run_verification(repo_dir, state, branch, backup_branch_name, conflict_occurred)
+
+    if not verify_passed:
+        if state["auto_push"]:
+            ans = ask_yes_no("verify_push_q", False, repo_dir=repo_dir)
+            if ans is True:  # Force push
                 try:
                     run(f"git push --force-with-lease -u origin {quote_arg(branch)}", cwd=repo_dir)
                 except RuntimeError:
                     run(f"git push -f -u origin {quote_arg(branch)}", cwd=repo_dir)
+                maybe_restore_auto_stash(repo_dir, auto_stashed)
+                print(f"\n{THEME.ok(_t('flow_done'))}")
+                return
+            else:
+                print(THEME.warn(_t("warn_cancel_auto_push")))
 
+        rb_ans = ask_yes_no("rollback_q", default=True, repo_dir=repo_dir)
+        if rb_ans is True or rb_ans in ("<GIT_RUN>", "<REFRESH>"):
+            perform_rollback(repo_dir, original_commit)
+        else:
+            print(THEME.warn(_t("rollback_abort")))
         maybe_restore_auto_stash(repo_dir, auto_stashed)
-        print(f"\n{THEME.ok(_t('flow_done'))}")
+        return
+    else:
+        if state["auto_push"]:
+            try:
+                run(f"git push --force-with-lease -u origin {quote_arg(branch)}", cwd=repo_dir)
+            except RuntimeError:
+                run(f"git push -f -u origin {quote_arg(branch)}", cwd=repo_dir)
+
+    maybe_restore_auto_stash(repo_dir, auto_stashed)
+    print(f"\n{THEME.ok(_t('flow_done'))}")
+
 
 # ============================================================
 # Main loop
@@ -1259,6 +1308,7 @@ def choose_language() -> None:
         if ans == "4": CURRENT_LANG = "en_pro"; break
         print(THEME.warn("Nhập từ 1 đến 4 đi má / Please enter 1 to 4."))
 
+
 def main() -> None:
     choose_language()
     clear_screen()
@@ -1275,9 +1325,13 @@ def main() -> None:
 
         if is_rebase_in_progress(repo_dir):
             print(THEME.warn("Repo in dirty rebase state."))
-            choice = ask_choice("choose_action", ["m_recover", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0, repo_dir=repo_dir)
+            choice = ask_choice("choose_action",
+                                ["m_recover", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0,
+                                repo_dir=repo_dir)
         else:
-            choice = ask_choice("main_menu", ["m_start", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0, repo_dir=repo_dir)
+            choice = ask_choice("main_menu",
+                                ["m_start", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0,
+                                repo_dir=repo_dir)
 
         if choice in ("<GIT_RUN>", "<REFRESH>", "m_refresh"):
             clear_screen()
@@ -1286,7 +1340,8 @@ def main() -> None:
         if choice == "m_recover":
             clear_screen()
             show_startup(repo_dir)
-            try: handle_rebase_recovery(repo_dir)
+            try:
+                handle_rebase_recovery(repo_dir)
             except Exception:
                 print(THEME.err("Unexpected error in recovery:"))
                 traceback.print_exc()
@@ -1294,7 +1349,8 @@ def main() -> None:
 
         if choice == "m_start":
             clear_screen()
-            try: run_feature_flow(repo_dir)
+            try:
+                run_feature_flow(repo_dir)
             except RuntimeError as e:
                 print(THEME.warn(_t("flow_stopped")))
             except Exception:
@@ -1329,6 +1385,7 @@ def main() -> None:
         if choice == "m_exit":
             print(THEME.ok(_t("goodbye")))
             pause_exit(0)
+
 
 if __name__ == "__main__":
     try:
