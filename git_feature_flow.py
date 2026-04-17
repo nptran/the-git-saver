@@ -930,6 +930,20 @@ def show_action_plan(base_point: str, final_message: str, base_branch: str, feat
     if auto_push: lines.append(THEME.cmd("4. git push --force-with-lease"))
     print_box("Commands to execute", lines)
 
+
+# ============================================================
+# Rollback Engine
+# ============================================================
+def perform_rollback(repo_dir: str, original_commit: str) -> None:
+    print(f"\n{THEME.warn(_t('rollback_in_progress'))}")
+    # Nếu đang dính rebase dở dang, abort nó trước
+    if is_rebase_in_progress(repo_dir):
+        run("git rebase --abort", cwd=repo_dir, check=False)
+    # Hard reset về chính xác commit lúc chưa chạy tool
+    run(f"git reset --hard {original_commit}", cwd=repo_dir)
+    print(THEME.ok(_t('rollback_success')))
+
+
 # ============================================================
 # Core flow (STATE MACHINE WIZARD)
 # ============================================================
@@ -1079,48 +1093,79 @@ def run_feature_flow(repo_dir: str) -> None:
                 return
             break
 
-    # --- BẮT ĐẦU CHẠY GIT ---
-    backup_branch_name = None
-    if state["do_backup"]:
-        backup_branch_name = create_backup(repo_dir, branch)
-        print(f"\n{THEME.ok(_t('created_backup'))} {THEME.branch(backup_branch_name)}")
+        # --- BẮT ĐẦU CHẠY GIT ---
+        # LƯU TRẠNG THÁI GỐC ĐỂ ROLLBACK
+        original_commit = git_output("git rev-parse HEAD", cwd=repo_dir)
 
-    run(f"git reset --soft {state['base_point']}", cwd=repo_dir)
-    # Dùng hàm quote_arg do shlex lỗi trên Windows CMD khi có khoảng trắng
-    run(f"git commit -m {quote_arg(state['final_msg'])}", cwd=repo_dir)
+        backup_branch_name = None
+        if state["do_backup"]:
+            backup_branch_name = create_backup(repo_dir, branch)
+            print(f"\n{THEME.ok(_t('created_backup'))} {THEME.branch(backup_branch_name)}")
 
-    conflict_occurred = False
-    try:
-        run(f"git rebase origin/{state['base_branch']}", cwd=repo_dir)
-    except RuntimeError:
-        if is_rebase_in_progress(repo_dir):
-            print(THEME.warn("Rebase stopped. Switching to recovery mode."))
-            result = handle_rebase_recovery(repo_dir)
-            if result == "completed":
-                conflict_occurred = True
-            if result in ("aborted", "menu"):
-                maybe_restore_auto_stash(repo_dir, auto_stashed)
-                return
-        else:
-            maybe_restore_auto_stash(repo_dir, auto_stashed)
-            raise
+        run(f"git reset --soft {state['base_point']}", cwd=repo_dir)
+        run(f"git commit -m {quote_arg(state['final_msg'])}", cwd=repo_dir)
 
-    # --- CHẠY BƯỚC VERIFY POST-REBASE ---
-    verify_passed = run_verification(repo_dir, state, branch, backup_branch_name, conflict_occurred)
-
-    if state["auto_push"]:
-        if not verify_passed:
-            if not ask_yes_no("verify_push_q", False, repo_dir=repo_dir):
-                print(THEME.warn(_t("warn_cancel_auto_push")))
-                maybe_restore_auto_stash(repo_dir, auto_stashed)
-                return
-
-        # FIX LOGIC GIT: Tự động set upstream an toàn cho nhánh mới
+        conflict_occurred = False
         try:
-            run(f"git push --force-with-lease -u origin {quote_arg(branch)}", cwd=repo_dir)
+            run(f"git rebase origin/{state['base_branch']}", cwd=repo_dir)
         except RuntimeError:
-            # Fallback nếu force-with-lease bị từ chối do remote branch không tồn tại
-            run(f"git push -f -u origin {quote_arg(branch)}", cwd=repo_dir)
+            if is_rebase_in_progress(repo_dir):
+                print(THEME.warn("Rebase stopped. Switching to recovery mode."))
+                result = handle_rebase_recovery(repo_dir)
+                if result == "completed":
+                    conflict_occurred = True
+                elif result in ("aborted", "menu"):
+                    # Gợi ý Rollback nếu user chủ động hủy rebase
+                    if ask_yes_no("rollback_q", default=True, repo_dir=repo_dir):
+                        perform_rollback(repo_dir, original_commit)
+                    else:
+                        print(THEME.warn(_t("rollback_abort")))
+                    maybe_restore_auto_stash(repo_dir, auto_stashed)
+                    return
+            else:
+                # Gợi ý Rollback nếu dính lỗi runtime Git không mong muốn
+                if ask_yes_no("rollback_q", default=True, repo_dir=repo_dir):
+                    perform_rollback(repo_dir, original_commit)
+                else:
+                    print(THEME.warn(_t("rollback_abort")))
+                maybe_restore_auto_stash(repo_dir, auto_stashed)
+                return
+
+        # --- CHẠY BƯỚC VERIFY POST-REBASE ---
+        verify_passed = run_verification(repo_dir, state, branch, backup_branch_name, conflict_occurred)
+
+        if not verify_passed:
+            # Nếu Verify thất bại và user có bật Auto Push
+            if state["auto_push"]:
+                if ask_yes_no("verify_push_q", False, repo_dir=repo_dir):
+                    # User quyết định khô máu Push Force
+                    try:
+                        run(f"git push --force-with-lease -u origin {quote_arg(branch)}", cwd=repo_dir)
+                    except RuntimeError:
+                        run(f"git push -f -u origin {quote_arg(branch)}", cwd=repo_dir)
+                    maybe_restore_auto_stash(repo_dir, auto_stashed)
+                    print(f"\n{THEME.ok(_t('flow_done'))}")
+                    return
+                else:
+                    print(THEME.warn(_t("warn_cancel_auto_push")))
+
+            # Nếu Verify thất bại, hỏi user có muốn Rollback cứu cánh không
+            if ask_yes_no("rollback_q", default=True, repo_dir=repo_dir):
+                perform_rollback(repo_dir, original_commit)
+            else:
+                print(THEME.warn(_t("rollback_abort")))
+            maybe_restore_auto_stash(repo_dir, auto_stashed)
+            return
+        else:
+            # Verify passed hoàn hảo, tiến hành push (nếu có)
+            if state["auto_push"]:
+                try:
+                    run(f"git push --force-with-lease -u origin {quote_arg(branch)}", cwd=repo_dir)
+                except RuntimeError:
+                    run(f"git push -f -u origin {quote_arg(branch)}", cwd=repo_dir)
+
+        maybe_restore_auto_stash(repo_dir, auto_stashed)
+        print(f"\n{THEME.ok(_t('flow_done'))}")
 
 # ============================================================
 # Main loop

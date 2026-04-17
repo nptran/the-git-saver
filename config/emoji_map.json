@@ -31,5 +31,9 @@
     "smart_git_detect": "🧠", "smart_git_confirm": "🕹️", "smart_git_done": "✅", "smart_git_cancel": "🔙",
     "predict_conflict_warn": "🚨", "predict_conflict_clean": "🛣️",
     "dash_predict_clean": "✅", "dash_predict_conflict": "💥",
-    "abort_success": "✅", "continue_fail": "💥", "flow_stopped": "🛑", "flow_error": "👽"
+    "abort_success": "✅", "continue_fail": "💥", "flow_stopped": "🛑", "flow_error": "👽",
+    "rollback_q": "🔙",
+    "rollback_in_progress": "⏳",
+    "rollback_success": "✅",
+    "rollback_abort": "🛑"
 }

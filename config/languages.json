@@ -447,5 +447,30 @@
         "vn_joke": "Ủa cái quái gì vừa xảy ra vậy? Bug lạ quá:",
         "vn_toxic": "ĐM phát sinh lỗi củ lìn gì đây:",
         "en_pro": "Unexpected error in flow:"
+    },
+
+    "rollback_q": {
+        "vn_pro": "Phát hiện lỗi hoặc thao tác bị dừng. Bạn có muốn ROLLBACK nhánh về trạng thái ban đầu không?",
+        "vn_joke": "Toang rồi sếp! Có muốn xài cỗ máy thời gian ROLLBACK lại như chưa có gì xảy ra không?",
+        "vn_toxic": "Lỗi cmnr. Có muốn ROLLBACK cái nhánh về nguyên trạng để giữ mạng không?",
+        "en_pro": "Errors detected or operation stopped. Do you want to ROLLBACK the branch to its original state?"
+    },
+    "rollback_in_progress": {
+        "vn_pro": "Đang khôi phục nhánh về nguyên trạng...",
+        "vn_joke": "Đang vận nội công de xe lại...",
+        "vn_toxic": "Đang vác xác cái nhánh về lại chỗ cũ...",
+        "en_pro": "Rolling back branch to original state..."
+    },
+    "rollback_success": {
+        "vn_pro": "Đã ROLLBACK thành công! Nhánh của bạn an toàn.",
+        "vn_joke": "De xe thành công! Mọi thứ y xì đúc như cũ nha.",
+        "vn_toxic": "Rollback xong cmnr, nhánh vẫn còn sống. Lần sau làm cho cẩn thận!",
+        "en_pro": "ROLLBACK successful! Your branch is safe."
+    },
+    "rollback_abort": {
+        "vn_pro": "Đã bỏ qua ROLLBACK. Nhánh giữ nguyên trạng thái hiện tại.",
+        "vn_joke": "Chơi khô máu, không thèm lùi bước! Trạng thái giữ nguyên.",
+        "vn_toxic": "Đéo thèm rollback. Tự ôm đống nát này mà giải quyết nhé!",
+        "en_pro": "ROLLBACK skipped. Branch state kept as is."
     }
 }
