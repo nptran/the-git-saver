@@ -56,28 +56,35 @@ LANGUAGES = load_json_config('languages.json')
 # CƠ CHẾ LƯU TRỮ CHỈ SỐ (STATS MEMORY)
 # ============================================================
 def get_stats_path() -> str:
-    # 1. Xác định thư mục chứa file đang chạy (.py hoặc .exe)
     if getattr(sys, 'frozen', False):
-        # Đường dẫn tới file .exe
         current_dir = os.path.dirname(sys.executable)
     else:
-        # Đường dẫn tới file .py
         current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # 2. Logic "Vị trí thông minh" theo yêu cầu của ông:
-    # Nếu exe nằm trong thư mục 'dist', đưa 'data' ra ngoài.
-    # Nếu không, để 'data' ngay cạnh exe.
-    parent_dir = os.path.dirname(current_dir)
+    # Logic vị trí thông minh
     if os.path.basename(current_dir).lower() == "dist":
-        base_path = parent_dir
+        base_path = os.path.dirname(current_dir)
     else:
         base_path = current_dir
 
-    # 3. Trả về đường dẫn tuyệt đối tới file stats.json
     return os.path.join(base_path, 'data', 'stats.json')
 
 
+def ensure_data_dir():
+    """Đảm bảo thư mục data tồn tại ngay lập tức"""
+    path = get_stats_path()
+    data_dir = os.path.dirname(path)
+    if not os.path.exists(data_dir):
+        try:
+            os.makedirs(data_dir, exist_ok=True)
+        except Exception as e:
+            # Nếu không tạo được thư mục, in thông báo để user biết (không dùng _t vì lúc này chưa chắc load xong config)
+            print(f"\n[!] Critical Error: Cannot create data directory at {data_dir}: {e}")
+
+
 def load_stats() -> dict:
+    # Luôn đảm bảo thư mục tồn tại trước khi làm bất cứ việc gì liên quan đến file
+    ensure_data_dir()
     path = get_stats_path()
     if os.path.exists(path):
         try:
@@ -88,26 +95,22 @@ def load_stats() -> dict:
     return {"rebase_count": 0, "first_run": datetime.now().strftime("%Y-%m-%d")}
 
 
-def get_stats_path() -> str:
-    # 1. Xác định thư mục chứa file đang chạy (.py hoặc .exe)
-    if getattr(sys, 'frozen', False):
-        # Đường dẫn tới file .exe
-        current_dir = os.path.dirname(sys.executable)
-    else:
-        # Đường dẫn tới file .py
-        current_dir = os.path.dirname(os.path.abspath(__file__))
+def increment_rebase_stat():
+    # Đảm bảo thư mục tồn tại trước khi ghi
+    ensure_data_dir()
 
-    # 2. Logic "Vị trí thông minh" theo yêu cầu của ông:
-    # Nếu exe nằm trong thư mục 'dist', đưa 'data' ra ngoài.
-    # Nếu không, để 'data' ngay cạnh exe.
-    parent_dir = os.path.dirname(current_dir)
-    if os.path.basename(current_dir).lower() == "dist":
-        base_path = parent_dir
-    else:
-        base_path = current_dir
+    path = get_stats_path()
+    stats = load_stats()
+    stats["rebase_count"] = stats.get("rebase_count", 0) + 1
+    stats["last_run"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # 3. Trả về đường dẫn tuyệt đối tới file stats.json
-    return os.path.join(base_path, 'data', 'stats.json')
+    try:
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(stats, f, indent=4)
+    except Exception as e:
+        print(f"\n{THEME.err('! Lỗi ghi file stats.json:')} {e}")
+
+    return stats["rebase_count"]
 
 
 def _t(key: str, **kwargs) -> str:
