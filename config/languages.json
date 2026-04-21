@@ -1042,9 +1042,11 @@
             "Lần thứ {count} dọn rác thành công. Trình code đéo tăng nhưng trình xài tool thì khá đấy!"
         ],
         "vn_toxic_level_3": [
-            "ĐM QUỲ! {count} lần rebase! Mày chính là chúa tể dọn rác, ông hoàng squash commit rồi đấy!",
-            "Thành tích khủng khiếp: {count} lần dọn bãi chiến trường. Mày định phá nát cái stats.json của tao à?",
-            "Lần thứ {count}! Tao lạy mày luôn. Code cẩn thận tí thì chết ai mà để tao phải làm việc {count} lần?"
+            "ĐM QUỲ! Lần thứ {count} rồi! Mày chính là CHÚA TỂ DỌN RÁC, ông hoàng dọn dẹp bãi chiến trường commit!",
+            "Thành tích kinh tởm: {count} lần rebase. Mày định dành cả đời để squash rác do mày đẻ ra à?",
+            "Lần thứ {count}! Tao lạy mày luôn. Code cẩn thận tí thì chết ai mà để tao phải hầu hạ mày {count} lần?",
+            "Vô đối cmnr! {count} lần dọn dẹp. Mày nên bỏ nghề code đi làm công nhân vệ sinh môi trường thì hợp hơn đấy!",
+            "Huy chương vàng 'Bàn tay vàng trong làng hốt rác' lần thứ {count} trao cho mày. Tự hào vcl chưa?"
         ],
         "en_pro": "Success Milestone: This is your {count}(th) successful rebase. Keep up the clean history!"
     }
