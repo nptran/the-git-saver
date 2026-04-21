@@ -56,14 +56,25 @@ LANGUAGES = load_json_config('languages.json')
 # CƠ CHẾ LƯU TRỮ CHỈ SỐ (STATS MEMORY)
 # ============================================================
 def get_stats_path() -> str:
-    # Lấy đường dẫn gốc của tool (dù là chạy file .py hay file .exe)
+    # 1. Xác định thư mục chứa file đang chạy (.py hoặc .exe)
     if getattr(sys, 'frozen', False):
-        base = os.path.dirname(sys.executable)
+        # Đường dẫn tới file .exe
+        current_dir = os.path.dirname(sys.executable)
     else:
-        base = os.path.dirname(os.path.abspath(__file__))
+        # Đường dẫn tới file .py
+        current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # [UPDATE] Chuyển từ config/ sang data/
-    return os.path.join(base, 'data', 'stats.json')
+    # 2. Logic "Vị trí thông minh" theo yêu cầu của ông:
+    # Nếu exe nằm trong thư mục 'dist', đưa 'data' ra ngoài.
+    # Nếu không, để 'data' ngay cạnh exe.
+    parent_dir = os.path.dirname(current_dir)
+    if os.path.basename(current_dir).lower() == "dist":
+        base_path = parent_dir
+    else:
+        base_path = current_dir
+
+    # 3. Trả về đường dẫn tuyệt đối tới file stats.json
+    return os.path.join(base_path, 'data', 'stats.json')
 
 
 def load_stats() -> dict:
@@ -77,21 +88,26 @@ def load_stats() -> dict:
     return {"rebase_count": 0, "first_run": datetime.now().strftime("%Y-%m-%d")}
 
 
-def increment_rebase_stat():
-    stats = load_stats()
-    stats["rebase_count"] = stats.get("rebase_count", 0) + 1
-    stats["last_run"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+def get_stats_path() -> str:
+    # 1. Xác định thư mục chứa file đang chạy (.py hoặc .exe)
+    if getattr(sys, 'frozen', False):
+        # Đường dẫn tới file .exe
+        current_dir = os.path.dirname(sys.executable)
+    else:
+        # Đường dẫn tới file .py
+        current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    path = get_stats_path()
-    try:
-        # [NEW] Đảm bảo thư mục data luôn tồn tại
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(stats, f, indent=4)
-    except Exception as e:
-        # Im lặng nếu không ghi được, không làm gián đoạn luồng chính
-        pass
-    return stats["rebase_count"]
+    # 2. Logic "Vị trí thông minh" theo yêu cầu của ông:
+    # Nếu exe nằm trong thư mục 'dist', đưa 'data' ra ngoài.
+    # Nếu không, để 'data' ngay cạnh exe.
+    parent_dir = os.path.dirname(current_dir)
+    if os.path.basename(current_dir).lower() == "dist":
+        base_path = parent_dir
+    else:
+        base_path = current_dir
+
+    # 3. Trả về đường dẫn tuyệt đối tới file stats.json
+    return os.path.join(base_path, 'data', 'stats.json')
 
 
 def _t(key: str, **kwargs) -> str:
