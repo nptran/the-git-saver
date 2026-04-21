@@ -1022,5 +1022,30 @@
         "vn_joke": ["Đêm hôm khuya khoắt vẫn OT à sếp? Giữ gìn sức khỏe nhé!", "Cú đêm à sếp, coi chừng gõ phím lộn đâm bug banh xác.", "Khuya lắc lơ ròi, cẩn thận gõ code gãy tay đó sếp."],
         "vn_toxic": ["Đêm cmn rồi đéo ngủ đi còn ngồi code lằng nhằng, nát repo ráng chịu!", "Giờ này đéo ngủ mà thức cày bug à? Cẩn thận nát mẹ repo!", "Buồn ngủ thì cút mẹ đi ngủ đi, code ngu giờ này đổ nợ nữa!"],
         "en_pro": "It's late. Please be careful with your git operations."
+    },
+    "ee_rebase_milestone": {
+        "vn_pro": "Hệ thống ghi nhận: Đây là lần thứ {count} bạn thực hiện rebase thành công.",
+        "vn_joke": [
+            "Uầy, lần thứ {count} rồi đó sếp! Tay nghề dọn rác ngày càng thượng thừa.",
+            "Lần thứ {count} 'thông nòng' repo thành công. Sếp là chiến thần rebase cmnr!",
+            "Kỷ lục mới: {count} lần rebase không tì vết. Đỉnh chóp sếp ơi!",
+            "Chúc mừng sếp đạt mốc {count} lần dọn dẹp. Huy chương vàng ngành vệ sinh repo thuộc về sếp!"
+        ],
+        "vn_toxic_level_1": [
+            "Lần thứ {count} rồi đấy. Code ngu cho lắm vào rồi ngồi squash mệt nghỉ nhé con!",
+            "Lần thứ {count} mày phải dùng tool để dọn rác do chính mày đẻ ra. Tự hào đéo gì?",
+            "Lại thành công lần nữa à? Chắc là chó ngáp phải ruồi thôi. (Lần thứ {count})"
+        ],
+        "vn_toxic_level_2": [
+            "Vãi l**, tận {count} lần thành công? Mày định dành cả thanh xuân để squash commit à?",
+            "Chúc mừng thằng nghiện squash lần thứ {count}! Bớt đẻ commit rác lại cho thiên hạ nhờ.",
+            "Lần thứ {count} dọn rác thành công. Trình code đéo tăng nhưng trình xài tool thì khá đấy!"
+        ],
+        "vn_toxic_level_3": [
+            "ĐM QUỲ! {count} lần rebase! Mày chính là chúa tể dọn rác, ông hoàng squash commit rồi đấy!",
+            "Thành tích khủng khiếp: {count} lần dọn bãi chiến trường. Mày định phá nát cái stats.json của tao à?",
+            "Lần thứ {count}! Tao lạy mày luôn. Code cẩn thận tí thì chết ai mà để tao phải làm việc {count} lần?"
+        ],
+        "en_pro": "Success Milestone: This is your {count}(th) successful rebase. Keep up the clean history!"
     }
 }

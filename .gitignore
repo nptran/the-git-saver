@@ -297,3 +297,6 @@ fabric.properties
 !.idea/codeStyles
 !.idea/runConfigurations
 
+################################ TOOL SPECIFIC GITIGNORES ################################
+# User data
+data/

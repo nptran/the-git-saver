@@ -52,6 +52,48 @@ EMOJI_MAP = load_json_config('emoji_map.json')
 LANGUAGES = load_json_config('languages.json')
 
 
+# ============================================================
+# CƠ CHẾ LƯU TRỮ CHỈ SỐ (STATS MEMORY)
+# ============================================================
+def get_stats_path() -> str:
+    # Lấy đường dẫn gốc của tool (dù là chạy file .py hay file .exe)
+    if getattr(sys, 'frozen', False):
+        base = os.path.dirname(sys.executable)
+    else:
+        base = os.path.dirname(os.path.abspath(__file__))
+
+    # [UPDATE] Chuyển từ config/ sang data/
+    return os.path.join(base, 'data', 'stats.json')
+
+
+def load_stats() -> dict:
+    path = get_stats_path()
+    if os.path.exists(path):
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            pass
+    return {"rebase_count": 0, "first_run": datetime.now().strftime("%Y-%m-%d")}
+
+
+def increment_rebase_stat():
+    stats = load_stats()
+    stats["rebase_count"] = stats.get("rebase_count", 0) + 1
+    stats["last_run"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    path = get_stats_path()
+    try:
+        # [NEW] Đảm bảo thư mục data luôn tồn tại
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(stats, f, indent=4)
+    except Exception as e:
+        # Im lặng nếu không ghi được, không làm gián đoạn luồng chính
+        pass
+    return stats["rebase_count"]
+
+
 def _t(key: str, **kwargs) -> str:
     lang_dict = LANGUAGES.get(key, {})
 
@@ -962,11 +1004,31 @@ def show_startup(repo_dir: str) -> None:
 
     rebase_state = THEME.warn('🚧 IN PROGRESS') if is_rebase_in_progress(repo_dir) else THEME.ok('idle')
 
+    stats = load_stats()
+    total = stats.get("rebase_count", 0)
+
+    # Xác định danh hiệu (Rank)
+    rank = "Newbie"
+    if total >= 30:
+        rank = "Grandmaster Trash Cleaner 👑"
+    elif total >= 15:
+        rank = "Senior Garbage Man 🧹"
+    elif total > 0:
+        rank = "Junior Sweeper 🧺"
+
+    # Nếu là mode toxic, đổi tên danh hiệu cho bựa
+    if CURRENT_LANG == "vn_toxic":
+        if total >= 30:
+            rank = "CHÚA TỂ DỌN RÁC 💀"
+        elif total >= 15:
+            rank = "THẰNG NGHIỆN SQUASH 💉"
+        elif total > 0:
+            rank = "KẺ HỐT RÁC THUÊ 🚮"
+
     lines = [
-        f"{THEME.key('Platform')} : {os.name}",
         f"{THEME.key('Repo')}     : {repo_dir}",
         f"{THEME.key('Branch')}   : {THEME.branch(branch)}",
-        f"{THEME.key('Rebase')}   : {rebase_state}",
+        f"{THEME.key('Success')}  : {THEME.count(str(total))} times ({THEME.warn(rank)})",
     ]
     print_box("Feature Branch Squash + Rebase Assistant", lines)
 
@@ -1314,6 +1376,24 @@ def run_feature_flow(repo_dir: str) -> None:
                 run(f"git push -f -u origin {quote_arg(branch)}", cwd=repo_dir)
 
     maybe_restore_auto_stash(repo_dir, auto_stashed)
+
+    # KÍCH HOẠT STATS & EASTER EGG
+    total_success = increment_rebase_stat()
+
+    # LOGIC CHỌN CÂU THOẠI EASTER EGG
+    ee_key = "ee_rebase_milestone"
+    if CURRENT_LANG == "vn_toxic":
+        if total_success >= 30:
+            ee_key = "vn_toxic_level_3"
+        elif total_success >= 15:
+            ee_key = "vn_toxic_level_2"
+        else:
+            ee_key = "vn_toxic_level_1"
+
+    # Hiển thị Easter Egg ở các mốc chia hết cho 5 hoặc lần đầu tiên
+    if total_success % 5 == 0 or total_success == 1:
+        print(f"\n{THEME.info('⭐ ' + _t(ee_key, count=total_success))}")
+
     print(f"\n{THEME.ok(_t('flow_done'))}")
 
 
