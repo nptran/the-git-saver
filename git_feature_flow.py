@@ -651,6 +651,9 @@ def handle_checkout(repo_dir: str) -> bool:
             matches = [b for b in all_branches if ans.lower() in b.lower()]
             if not matches:
                 alert_msg = THEME.warn(_t("branch_not_found"))
+                # Reset lại danh sách hiển thị về toàn bộ nhánh khi search xịt
+                current_list = all_branches
+                search_kw = ""
                 continue
             elif len(matches) == 1:
                 target = matches[0]
@@ -1108,9 +1111,42 @@ def run_feature_flow(repo_dir: str) -> None:
                 step -= 1
                 continue
             state["do_fetch"] = ans
-            if ans: run("git fetch origin", cwd=repo_dir)
+            if ans:
+                # Dùng refspec để ép fetch tất cả branches từ remote về origin/*
+                # Điều này đảm bảo origin/base_branch luôn tồn tại và mới nhất
+                print(THEME.info(_t("fetching_remote")))
+                # Fetch toàn diện
+                run("git fetch origin \"+refs/heads/*:refs/remotes/origin/*\" --prune", cwd=repo_dir)
 
-            # Sau khi fetch, tính toán lại dự đoán conflict
+                # [NEW LOGIC] Kiểm tra xem local có bị chậm hơn origin/feature không
+                try:
+                    # Lấy commit ID của local và server để so sánh
+                    local_head = git_output("git rev-parse HEAD", cwd=repo_dir)
+                    remote_ref = f"origin/{branch}"
+
+                    # Kiểm tra xem origin branch có tồn tại không
+                    if git_output(f"git rev-parse --verify {remote_ref}", cwd=repo_dir, check=False):
+                        remote_head = git_output(f"git rev-parse {remote_ref}", cwd=repo_dir)
+
+                        if local_head != remote_head:
+                            # Kiểm tra xem có phải là Fast-forward được không (local là tổ tiên của remote)
+                            is_ancestor = subprocess.run(f"git merge-base --is-ancestor {local_head} {remote_head}",
+                                                         shell=True, cwd=repo_dir).returncode == 0
+
+                            if is_ancestor:
+                                print(THEME.warn(f" Nhận diện có commit mới trên server ({remote_ref})."))
+                                print(THEME.info(">>> Đang tự động Fast-forward local lên bản mới nhất..."))
+                                run(f"git merge --ff-only {remote_ref}", cwd=repo_dir)
+                            else:
+                                # Trường hợp Diverged (cả local và server đều có commit mới khác nhau)
+                                print(THEME.err("\n🚨 NGUY HIỂM: Nhánh Local và Server đang bị lệch pha (Diverged)!"))
+                                print(THEME.warn("Vui lòng tự tay 'git pull' hoặc xử lý thủ công trước khi dùng tool."))
+                                pause_continue()
+                                return
+                except Exception as e:
+                    print(THEME.dim(f"(Bỏ qua kiểm tra đồng bộ: {e})"))
+
+            # Sau khi đồng bộ xong mới tính toán lịch sử
             dt, dr = detect_history_type(repo_dir, state["base_branch"])
             state["detected_type"] = dt
             state["detected_reason"] = dr

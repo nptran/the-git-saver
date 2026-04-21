@@ -879,6 +879,12 @@
         ],
         "en_pro": "For safety, the flow has been aborted. Please check your Repo."
     },
+    "sync_ff": {
+        "vn_pro": "Phát hiện commit mới trên server. Đã cập nhật local (Fast-forward).",
+        "vn_joke": "Hốt được code mới trên server về rồi sếp, local đã 'lên đời'!",
+        "vn_toxic": "Thấy code mới trên server nên tao bế về local luôn rồi, làm tiếp đi!",
+        "en_pro": "New commits found on server. Local updated (Fast-forward)."
+    },
 
     "err_network": {
         "vn_pro": "Lỗi mạng hoặc xác thực.",
@@ -903,6 +909,12 @@
         "vn_joke": ["Server nó chê code mình sếp ạ, phải kéo (pull) code mới về đã.", "Bị server sút vào mồm rồi, có ông nào vượt mặt sếp đẩy code lên trước kìa.", "Khóc thét, server bảo code sếp bị outmeta. Phải pull về update xíu."],
         "vn_toxic": ["Push ngu bị server chửi rồi! Thằng khác vừa push code lên, kéo về gộp giải conflict ngay!", "Bị đá văng cmnr! Server nó có code mới, m đéo có. Cút về pull ngay!", "Ăn đòn non-fast-forward rồi! Chưa kéo code mới đã đòi đè lên server à?"],
         "en_pro": "Push rejected (non-fast-forward). Pull first."
+    },
+    "err_diverged": {
+        "vn_pro": "Nhánh Local và Server đang bị lệch pha hoàn toàn (Diverged). Hãy xử lý thủ công.",
+        "vn_joke": "Toang! Local một đằng server một nẻo, sếp tự tay 'pull' về giải quyết đi chứ em chịu.",
+        "vn_toxic": "ĐM lệch pha rồi! Local với Server đéo khớp nhau miếng nào, cút ra tự merge đi!",
+        "en_pro": "Local and Remote branches have diverged. Please resolve manually."
     },
     "err_unknown": {
         "vn_pro": "Lỗi Git không xác định.",
