@@ -1050,13 +1050,7 @@ def run_feature_flow(repo_dir: str) -> None:
         print(THEME.warn("Repo is in rebase progress state."))
         if handle_rebase_recovery(repo_dir) in ("completed", "aborted", "menu"): return
 
-    branch = current_branch(repo_dir)
-    print(f"\n{THEME.ok('Current branch:')} {THEME.branch(branch)}")
-
-    auto_stashed_result = handle_dirty_worktree(repo_dir)
-    if auto_stashed_result is None: return
-    auto_stashed = auto_stashed_result
-
+    # Bước khởi tạo state
     state = {
         "base_branch": "develop",
         "do_fetch": True,
@@ -1073,13 +1067,25 @@ def run_feature_flow(repo_dir: str) -> None:
         "conflict_count": 0
     }
 
+    auto_stashed = False
     step = 0
     max_step = 6
 
     while step <= max_step:
+        # FIX CỐT LÕI: Luôn lấy lại tên nhánh hiện tại mỗi khi vòng lặp refresh
+        branch = current_branch(repo_dir)
+
         clear_screen()
         print(f"\n{THEME.ok('Current branch:')} {THEME.branch(branch)}")
         show_wizard_dashboard(state, current_step=step)
+
+        # Check bẩn repo (JIT check cho từng bước)
+        changes = get_worktree_status(repo_dir)
+        if changes and not auto_stashed:
+            res = handle_dirty_worktree(repo_dir)
+            if res is None: return # User chọn Cancel
+            auto_stashed = res
+            continue # Quay lại đầu vòng lặp để cập nhật UI
 
         if step == 0:
             state["conflict_status"] = None
@@ -1103,6 +1109,8 @@ def run_feature_flow(repo_dir: str) -> None:
                 continue
             state["do_fetch"] = ans
             if ans: run("git fetch origin", cwd=repo_dir)
+
+            # Sau khi fetch, tính toán lại dự đoán conflict
             dt, dr = detect_history_type(repo_dir, state["base_branch"])
             state["detected_type"] = dt
             state["detected_reason"] = dr
@@ -1112,19 +1120,8 @@ def run_feature_flow(repo_dir: str) -> None:
                 if has_conflict:
                     state["conflict_status"] = "conflict"
                     state["conflict_count"] = len(c_lines)
-                    print(f"\n{THEME.err(_t('predict_conflict_warn', base=state['base_branch']))}")
-                    for line in c_lines[:5]:
-                        print(f"  {THEME.dim(line)}")
-                    if len(c_lines) > 5:
-                        print(f"  {THEME.dim(f'... ({len(c_lines) - 5} conflicts more)')}")
-                    pause_continue()
                 else:
                     state["conflict_status"] = "clean"
-                    print(f"\n{THEME.ok(_t('predict_conflict_clean', base=state['base_branch']))}")
-                    pause_continue()
-            else:
-                state["conflict_status"] = "unsupported"
-
             step += 1
 
         elif step == 2:
@@ -1139,9 +1136,7 @@ def run_feature_flow(repo_dir: str) -> None:
             if ans is True:
                 state["history_type"] = state["detected_type"]
             else:
-                h_ans = ask_choice("choose_history_type", ["opt_hist_clean", "opt_hist_merged"],
-                                   default_index=0 if state["detected_type"] == "clean" else 1, allow_back=True,
-                                   repo_dir=repo_dir)
+                h_ans = ask_choice("choose_history_type", ["opt_hist_clean", "opt_hist_merged"], default_index=0, allow_back=True, repo_dir=repo_dir)
                 if h_ans in ("<GIT_RUN>", "<REFRESH>"): continue
                 if h_ans == "<BACK>": continue
                 state["history_type"] = "clean" if h_ans == "opt_hist_clean" else "merged"
@@ -1155,7 +1150,7 @@ def run_feature_flow(repo_dir: str) -> None:
             if state["commit_total"] == 0:
                 print(f"\n{THEME.warn(_t('no_commits_to_squash'))}")
                 pause_continue()
-                step -= 1
+                step = 0 # Quay về chọn lại base branch vì nhánh này hiện tại khớp base rồi
                 continue
             step += 1
 
