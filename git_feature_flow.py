@@ -1440,6 +1440,8 @@ def choose_language() -> None:
 
 
 def main() -> None:
+    ensure_data_dir()
+
     choose_language()
     clear_screen()
     ensure_git_installed()
