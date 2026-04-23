@@ -18,6 +18,7 @@ from typing import List, Optional, Tuple, Any, Union
 CURRENT_LANG = "vn_pro"
 EMOJI_MODE = False
 SHOW_CMD_LOG = True  # Mặc định True cho vn_pro, sẽ được set lại trong main()
+CMD_HISTORY_BUFFER = [] # Nơi lưu trữ các lệnh đã chạy trong phiên
 
 
 def load_json_config(filename: str) -> dict:
@@ -334,16 +335,13 @@ def get_friendly_git_error(stderr_str: str) -> str:
 # ============================================================
 # Shell / Git helpers
 # ============================================================
-def run(cmd: str, cwd: Optional[str] = None, check: bool = True, capture: bool = False) -> str:
-    # Render command log panel nếu được bật
-    if SHOW_CMD_LOG:
-        log_lines = [
-            f"{THEME.key('Command')} : {THEME.cmd(cmd)}",
-            f"{THEME.key('Cwd')}     : {THEME.dim(cwd or os.getcwd())}",
-            f"{THEME.key('Time')}    : {THEME.dim(datetime.now().strftime('%H:%M:%S'))}"
-        ]
-        # In thành một box riêng, tách biệt hoàn toàn với text hướng dẫn
-        print_box(_t("cmd_log_title"), log_lines)
+def run(cmd: str, cwd: Optional[str] = None, check: bool = True, capture: bool = False, silent: bool = False, is_user_cmd: bool = False) -> str:
+    # Nếu không silent, đẩy vào bộ nhớ tạm
+    if not silent:
+        prefix = " [USER] " if is_user_cmd else " [AUTO] "
+        timestamp = datetime.now().strftime('%H:%M:%S')
+        # Lưu vào buffer với định dạng đẹp
+        CMD_HISTORY_BUFFER.append(f"{THEME.dim(timestamp)}{THEME.ok(prefix)}{THEME.cmd(cmd)}")
 
     if capture:
         result = subprocess.run(cmd, shell=True, text=True, capture_output=True, cwd=cwd)
@@ -373,7 +371,8 @@ def run(cmd: str, cwd: Optional[str] = None, check: bool = True, capture: bool =
 
 
 def git_output(cmd: str, cwd: Optional[str] = None, check: bool = True) -> str:
-    return run(cmd, cwd=cwd, check=check, capture=True)
+    # Mọi lệnh lấy output (thường là lệnh đọc trạng thái) thì nên im lặng cho đỡ rối UI
+    return run(cmd, cwd=cwd, check=check, capture=True, silent=True)
 
 
 def ensure_git_installed() -> None:
@@ -402,22 +401,27 @@ def handle_smart_git_command(command: str, repo_dir: str) -> bool:
 
     ans = input(f"\n{THEME.info('?')} {_t('smart_git_confirm')} {THEME.ok('[Y/n]')}: ").strip().lower()
     if ans in ('', 'y', 'yes'):
-        print(f"\n{THEME.branch(BOX['tl'] + BOX['h'] * 80)}")
+        # Tách phần tham số sau chữ 'git '
+        args = command[3:].strip()
+        safe_repo = quote_arg(repo_dir)
+
+        # Thiết quân luật cờ -C để đảm bảo chạy đúng repo
+        exact_command = f"git -C {safe_repo} {args}"
+
         try:
-            args = command[3:].strip()
-            safe_repo = quote_arg(repo_dir)
-            exact_command = f"git -C {safe_repo} {args}"
+            # GỌI HÀM RUN CỦA TOOL:
+            # - Không dùng silent vì muốn nó hiện trong Log Panel sau khi refresh
+            # - is_user_cmd=True để đánh dấu prefix [USER] trong buffer
+            run(exact_command, cwd=repo_dir, check=True, is_user_cmd=True)
 
-            result = subprocess.run(exact_command, shell=True, cwd=repo_dir)
-            print(f"{THEME.branch(BOX['bl'] + BOX['h'] * 80)}")
+            # Nếu chạy đến đây tức là returncode = 0 (vì hàm run có check=True)
+            print(THEME.ok(_t('smart_git_done')))
 
-            if result.returncode == 0:
-                print(THEME.ok(_t('smart_git_done')))
-            else:
-                print(THEME.err(_t('smart_git_fail', code=result.returncode)))
-
+        except RuntimeError:
+            # Lỗi lệnh Git (Return code != 0) đã được hàm run() handle in thông báo lỗi
+            pass
         except Exception as e:
-            print(f"{THEME.branch(BOX['bl'] + BOX['h'] * 80)}")
+            # Lỗi hệ thống (Python/Subprocess)
             print(THEME.err(f"Lỗi hệ thống khi thực thi: {e}"))
 
         pause_continue()
@@ -489,9 +493,17 @@ def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0
         for i, opt_key in enumerate(option_keys, start=1):
             marker = f" {THEME.ok(_t('default_marker'))}" if i - 1 == default_index else ""
             display = _t(opt_key)
+
+            # HIỂN THỊ TRẠNG THÁI CHO EMOJI
             if opt_key == "m_emoji":
-                state = "ON 🟢" if EMOJI_MODE else "OFF 🔴"
-                display = f"{display} [{state}]"
+                state_str = "ON 🟢" if EMOJI_MODE else "OFF 🔴"
+                display = f"{display} [{state_str}]"
+
+            # HIỂN THỊ TRẠNG THÁI CHO COMMAND LOG
+            if opt_key == "m_cmd_log":
+                state_str = "ON 🖥️" if SHOW_CMD_LOG else "OFF ❌"
+                display = f"{display} [{state_str}]"
+
             print(f"  {THEME.choice(str(i) + '.')} {display}{marker}")
 
         if allow_back:
@@ -1165,14 +1177,18 @@ def run_feature_flow(repo_dir: str) -> None:
     max_step = 6
 
     while step <= max_step:
-        # FIX CỐT LÕI: Luôn lấy lại tên nhánh hiện tại mỗi khi vòng lặp refresh
+        # Luôn lấy lại tên nhánh để đồng bộ với tác động bên ngoài
         branch = current_branch(repo_dir)
 
         clear_screen()
         print(f"\n{THEME.ok('Current branch:')} {THEME.branch(branch)}")
+
+        # HIỆN LOG PANEL TRONG WIZARD (Gom nhóm các lệnh fetch/sync đã chạy)
+        print_cmd_log_panel()
+
         show_wizard_dashboard(state, current_step=step)
 
-        # Check bẩn repo (JIT check cho từng bước)
+        # JIT Check: Kiểm tra bẩn repo trước mỗi bước nhập liệu
         changes = get_worktree_status(repo_dir)
         if changes and not auto_stashed:
             res = handle_dirty_worktree(repo_dir)
@@ -1202,13 +1218,10 @@ def run_feature_flow(repo_dir: str) -> None:
                 continue
             state["do_fetch"] = ans
             if ans:
-                # Dùng refspec để ép fetch tất cả branches từ remote về origin/*
-                # Điều này đảm bảo origin/base_branch luôn tồn tại và mới nhất
-                print(THEME.info(_t("fetching_remote")))
-                # Fetch toàn diện
+                # Fetch toàn diện (sử dụng hàm run mặc định để đẩy vào buffer)
                 run("git fetch origin \"+refs/heads/*:refs/remotes/origin/*\" --prune", cwd=repo_dir)
 
-                # [NEW LOGIC] Kiểm tra xem local có bị chậm hơn origin/feature không
+                # Đồng bộ hóa Fast-forward nếu có commit mới trên server
                 try:
                     # Lấy commit ID của local và server để so sánh
                     local_head = git_output("git rev-parse HEAD", cwd=repo_dir)
@@ -1221,7 +1234,7 @@ def run_feature_flow(repo_dir: str) -> None:
                         if local_head != remote_head:
                             # Kiểm tra xem có phải là Fast-forward được không (local là tổ tiên của remote)
                             is_ancestor = subprocess.run(f"git merge-base --is-ancestor {local_head} {remote_head}",
-                                                         shell=True, cwd=repo_dir).returncode == 0
+                                                         shell=True, cwd=repo_dir, capture_output=True).returncode == 0
 
                             if is_ancestor:
                                 print(THEME.warn(f" Nhận diện có commit mới trên server ({remote_ref})."))
@@ -1241,13 +1254,11 @@ def run_feature_flow(repo_dir: str) -> None:
             state["detected_type"] = dt
             state["detected_reason"] = dr
 
+            # Dự đoán conflict
             has_conflict, c_lines, supported = check_potential_conflict(repo_dir, state["base_branch"])
             if supported:
-                if has_conflict:
-                    state["conflict_status"] = "conflict"
-                    state["conflict_count"] = len(c_lines)
-                else:
-                    state["conflict_status"] = "clean"
+                state["conflict_status"] = "conflict" if has_conflict else "clean"
+                state["conflict_count"] = len(c_lines) if has_conflict else 0
             step += 1
 
         elif step == 2:
@@ -1325,13 +1336,12 @@ def run_feature_flow(repo_dir: str) -> None:
                 return
             break
 
-    # --- BẮT ĐẦU CHẠY GIT ---
+    # --- BẮT ĐẦU THỰC THI (SQUASH + REBASE) ---
 
     # Just-In-Time (JIT) Check: Quét chặn phút chót tránh xung đột IDE
     current_changes = get_worktree_status(repo_dir)
-    if len(current_changes) > 0 and not auto_stashed:
-        print(f"\n{THEME.err(_t('jit_warning'))}")
-        print(THEME.warn(_t('jit_abort')))
+    if current_changes and not auto_stashed:
+        print(f"\n{THEME.err(_t('jit_warning'))}\n{THEME.warn(_t('jit_abort'))}")
         pause_continue()
         return
 
@@ -1343,9 +1353,11 @@ def run_feature_flow(repo_dir: str) -> None:
         backup_branch_name = create_backup(repo_dir, branch)
         print(f"\n{THEME.ok(_t('created_backup'))} {THEME.branch(backup_branch_name)}")
 
+    # Gom commit
     run(f"git reset --soft {state['base_point']}", cwd=repo_dir)
     run(f"git commit -m {quote_arg(state['final_msg'])}", cwd=repo_dir)
 
+    # Rebase
     conflict_occurred = False
     try:
         run(f"git rebase origin/{state['base_branch']}", cwd=repo_dir)
@@ -1372,13 +1384,12 @@ def run_feature_flow(repo_dir: str) -> None:
             maybe_restore_auto_stash(repo_dir, auto_stashed)
             return
 
-    # --- CHẠY BƯỚC VERIFY POST-REBASE ---
+    # Verify & Push
     verify_passed = run_verification(repo_dir, state, branch, backup_branch_name, conflict_occurred)
 
     if not verify_passed:
         if state["auto_push"]:
-            ans = ask_yes_no("verify_push_q", False, repo_dir=repo_dir)
-            if ans is True:  # Force push
+            if ask_yes_no("verify_push_q", False, repo_dir=repo_dir) is True:
                 try:
                     run(f"git push --force-with-lease -u origin {quote_arg(branch)}", cwd=repo_dir)
                 except RuntimeError:
@@ -1405,10 +1416,8 @@ def run_feature_flow(repo_dir: str) -> None:
 
     maybe_restore_auto_stash(repo_dir, auto_stashed)
 
-    # KÍCH HOẠT STATS & EASTER EGG
+    # Stats & Easter Egg
     total_success = increment_rebase_stat()
-
-    # LOGIC CHỌN CÂU THOẠI EASTER EGG
     ee_key = "ee_rebase_milestone"
     if CURRENT_LANG == "vn_toxic":
         if total_success >= 30:
@@ -1425,30 +1434,63 @@ def run_feature_flow(repo_dir: str) -> None:
     print(f"\n{THEME.ok(_t('flow_done'))}")
 
 
+def print_cmd_log_panel():
+    if not SHOW_CMD_LOG or not CMD_HISTORY_BUFFER:
+        return
+
+    # Giới hạn chỉ hiện 10 lệnh gần nhất để đỡ tràn màn hình
+    display_history = CMD_HISTORY_BUFFER[-10:]
+    if len(CMD_HISTORY_BUFFER) > 10:
+        display_history = [THEME.dim("... (older commands hidden)")] + display_history
+
+    print_box(_t("cmd_log_title"), display_history)
+
+
 # ============================================================
 # Main loop
 # ============================================================
 def choose_language() -> None:
     global CURRENT_LANG, SHOW_CMD_LOG
     clear_screen()
-    print(f"\n{THEME.info('=== CÀI ĐẶT NGÔN NGỮ / TONE ===')}")
-    print(f"  {THEME.choice('1.')} Tiếng Việt (Chuyên nghiệp) - Dành cho dev đứng đắn")
-    print(f"  {THEME.choice('2.')} Tiếng Việt (Cợt nhả) - Thích hợp để troll sếp")
-    print(f"  {THEME.choice('3.')} Tiếng Việt (Chợ búa, toxic) - Cảnh báo: Chửi mạnh, dành cho người lười")
-    print(f"  {THEME.choice('4.')} English (Professional) - Standard dev life")
+    print(f"\n{THEME.warn('=== CÀI ĐẶT NGÔN NGỮ / TONE ===')}")
+    print("  1. Tiếng Việt (Chuyên nghiệp) - Dành cho dev đứng đắn")
+    print("  2. Tiếng Việt (Cợt nhả) - Thích hợp để troll sếp")
+    print("  3. Tiếng Việt (Chợ búa, toxic) - Cảnh báo: Chửi mạnh, dành cho người lười")
+    print("  4. English (Professional) - Standard dev life")
 
     while True:
-        ans = input(f"{THEME.info('?')} Chọn số (1-4) {THEME.dim('[Bỏ qua / Giữ nguyên]')}: ").strip()
+        # Lấy input và xóa khoảng trắng thừa ở 2 đầu
+        ans = input(f"{THEME.key('? Chọn số (1-4) [Bỏ qua / Giữ nguyên]: ')}").strip()
+
+        # Nếu nhấn Enter bỏ qua
         if not ans:
             break
-        if ans == "1": CURRENT_LANG = "vn_pro"; SHOW_CMD_LOG = True
-        if ans == "2": CURRENT_LANG = "vn_joke"; SHOW_CMD_LOG = False  # Mặc định ẩn cho cợt nhả
-        if ans == "3": CURRENT_LANG = "vn_toxic"; SHOW_CMD_LOG = False  # Mặc định ẩn cho toxic
-        if ans == "4": CURRENT_LANG = "en_pro"; SHOW_CMD_LOG = True
-        print(THEME.warn("Nhập từ 1 đến 4 đi má / Please enter 1 to 4."))
+
+        # Kiểm tra điều kiện (So sánh chuỗi để tránh lỗi ép kiểu)
+        if ans == "1":
+            CURRENT_LANG = "vn_pro"
+            SHOW_CMD_LOG = True
+            break
+        elif ans == "2":
+            CURRENT_LANG = "vn_joke"
+            SHOW_CMD_LOG = False
+            break
+        elif ans == "3":
+            CURRENT_LANG = "vn_toxic"
+            SHOW_CMD_LOG = False
+            break
+        elif ans == "4":
+            CURRENT_LANG = "en_pro"
+            SHOW_CMD_LOG = True
+            break
+        else:
+            # Chửi đúng theo vibe toxic nếu nhập sai
+            msg = "Nhập từ 1 đến 4 đi má / Please enter 1 to 4."
+            print(f"{THEME.err(msg)}")
 
 
 def main() -> None:
+    # Đảm bảo thư mục data tồn tại ngay khi bật tool
     ensure_data_dir()
 
     choose_language()
@@ -1462,7 +1504,12 @@ def main() -> None:
         print(f"\n{THEME.warn(_t('ee_night_owl'))}")
 
     while True:
+        # Cập nhật giao diện chính
+        clear_screen()
         show_startup(repo_dir)
+
+        # HIỂN THỊ CONSOLE LOG PANEL (GOM NHÓM LỆNH)
+        print_cmd_log_panel()
 
         if is_rebase_in_progress(repo_dir):
             print(THEME.warn("Repo in dirty rebase state."))
@@ -1474,7 +1521,10 @@ def main() -> None:
                                 ["m_start", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_cmd_log", "m_exit"], 0,
                                 repo_dir=repo_dir)
 
+        # Xử lý các lựa chọn hệ thống
         if choice in ("<GIT_RUN>", "<REFRESH>", "m_refresh"):
+            # Làm sạch buffer log khi chủ động refresh
+            CMD_HISTORY_BUFFER.clear()
             clear_screen()
             continue
 
@@ -1492,7 +1542,7 @@ def main() -> None:
             clear_screen()
             try:
                 run_feature_flow(repo_dir)
-            except RuntimeError as e:
+            except RuntimeError:
                 print(THEME.warn(_t("flow_stopped")))
             except Exception:
                 print(THEME.err(_t("flow_error")))
@@ -1505,6 +1555,8 @@ def main() -> None:
 
         if choice == "m_change":
             clear_screen()
+            # Đổi repo thì nên xóa log của repo cũ
+            CMD_HISTORY_BUFFER.clear()
             show_startup(repo_dir)
             repo_dir = ask_repo_path()
             clear_screen()
@@ -1527,8 +1579,16 @@ def main() -> None:
             global SHOW_CMD_LOG
             SHOW_CMD_LOG = not SHOW_CMD_LOG
             clear_screen()
-            status = "HIỆN lệnh xanh ngầu lòi (👨‍💻 Trẻ trâu đú đởn)" if SHOW_CMD_LOG else "ẨN lệnh xanh rối mắt (🐱‍👤 Hắc-kờ lowkey)"
-            print(THEME.ok(f"Command Log Panel 🖥️: {status}"))
+
+            status = "HIỆN 🖥️" if SHOW_CMD_LOG else "ẨN ❌"
+            if CURRENT_LANG == "vn_toxic":
+                msg = f"Command Log Panel: {status} (Đỡ rác mắt chưa thằng l*n?)"
+            elif CURRENT_LANG == "vn_joke":
+                msg = f"Command Log Panel: {status} (👨‍💻 Trẻ trâu đú đởn mode)"
+            else:
+                msg = f"Command Log Panel: {status}"
+
+            print(THEME.ok(msg))
             continue
 
         if choice == "m_exit":
