@@ -17,6 +17,7 @@ from typing import List, Optional, Tuple, Any, Union
 # ============================================================
 CURRENT_LANG = "vn_pro"
 EMOJI_MODE = False
+SHOW_CMD_LOG = True  # Mặc định True cho vn_pro, sẽ được set lại trong main()
 
 
 def load_json_config(filename: str) -> dict:
@@ -334,7 +335,15 @@ def get_friendly_git_error(stderr_str: str) -> str:
 # Shell / Git helpers
 # ============================================================
 def run(cmd: str, cwd: Optional[str] = None, check: bool = True, capture: bool = False) -> str:
-    print(f"\n{THEME.cmd('> ' + cmd)}")
+    # Render command log panel nếu được bật
+    if SHOW_CMD_LOG:
+        log_lines = [
+            f"{THEME.key('Command')} : {THEME.cmd(cmd)}",
+            f"{THEME.key('Cwd')}     : {THEME.dim(cwd or os.getcwd())}",
+            f"{THEME.key('Time')}    : {THEME.dim(datetime.now().strftime('%H:%M:%S'))}"
+        ]
+        # In thành một box riêng, tách biệt hoàn toàn với text hướng dẫn
+        print_box(_t("cmd_log_title"), log_lines)
 
     if capture:
         result = subprocess.run(cmd, shell=True, text=True, capture_output=True, cwd=cwd)
@@ -1420,7 +1429,7 @@ def run_feature_flow(repo_dir: str) -> None:
 # Main loop
 # ============================================================
 def choose_language() -> None:
-    global CURRENT_LANG
+    global CURRENT_LANG, SHOW_CMD_LOG
     clear_screen()
     print(f"\n{THEME.info('=== CÀI ĐẶT NGÔN NGỮ / TONE ===')}")
     print(f"  {THEME.choice('1.')} Tiếng Việt (Chuyên nghiệp) - Dành cho dev đứng đắn")
@@ -1432,10 +1441,10 @@ def choose_language() -> None:
         ans = input(f"{THEME.info('?')} Chọn số (1-4) {THEME.dim('[Bỏ qua / Giữ nguyên]')}: ").strip()
         if not ans:
             break
-        if ans == "1": CURRENT_LANG = "vn_pro"; break
-        if ans == "2": CURRENT_LANG = "vn_joke"; break
-        if ans == "3": CURRENT_LANG = "vn_toxic"; break
-        if ans == "4": CURRENT_LANG = "en_pro"; break
+        if ans == "1": CURRENT_LANG = "vn_pro"; SHOW_CMD_LOG = True
+        if ans == "2": CURRENT_LANG = "vn_joke"; SHOW_CMD_LOG = False  # Mặc định ẩn cho cợt nhả
+        if ans == "3": CURRENT_LANG = "vn_toxic"; SHOW_CMD_LOG = False  # Mặc định ẩn cho toxic
+        if ans == "4": CURRENT_LANG = "en_pro"; SHOW_CMD_LOG = True
         print(THEME.warn("Nhập từ 1 đến 4 đi má / Please enter 1 to 4."))
 
 
@@ -1458,11 +1467,11 @@ def main() -> None:
         if is_rebase_in_progress(repo_dir):
             print(THEME.warn("Repo in dirty rebase state."))
             choice = ask_choice("choose_action",
-                                ["m_recover", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0,
+                                ["m_recover", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_cmd_log", "m_exit"], 0,
                                 repo_dir=repo_dir)
         else:
             choice = ask_choice("main_menu",
-                                ["m_start", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_exit"], 0,
+                                ["m_start", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_cmd_log", "m_exit"], 0,
                                 repo_dir=repo_dir)
 
         if choice in ("<GIT_RUN>", "<REFRESH>", "m_refresh"):
@@ -1512,6 +1521,14 @@ def main() -> None:
             clear_screen()
             msg = "Đã BẬT Emoji Mode 😏🔥 (Quẩy thôi!)" if EMOJI_MODE else "Đã TẮT Emoji Mode 😶 (Quay về thực tại)"
             print(THEME.ok(msg))
+            continue
+
+        if choice == "m_cmd_log":
+            global SHOW_CMD_LOG
+            SHOW_CMD_LOG = not SHOW_CMD_LOG
+            clear_screen()
+            status = "HIỆN lệnh xanh ngầu lòi (👨‍💻 Trẻ trâu đú đởn)" if SHOW_CMD_LOG else "ẨN lệnh xanh rối mắt (🐱‍👤 Hắc-kờ lowkey)"
+            print(THEME.ok(f"Command Log Panel 🖥️: {status}"))
             continue
 
         if choice == "m_exit":

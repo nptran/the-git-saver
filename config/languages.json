@@ -1005,6 +1005,18 @@
         "en_pro": "Flow completed successfully!"
     },
     "goodbye": {"vn_pro": "Tạm biệt!", "vn_joke": ["Pai pai sếp! 😏", "Cút... nhầm, See you again!", "Nghỉ ngơi thôi sếp!"], "vn_toxic": ["Cút đi làm việc tiếp đi!", "Nghỉ phẻ, biến!", "Bấm nút lượn!"], "en_pro": "Goodbye!"},
+    "m_cmd_log": {
+        "vn_pro": "Bật/Tắt Command Log Panel",
+        "vn_joke": "Hiện/Ẩn bí kíp thực thi ngầm",
+        "vn_toxic": "Bật/Tắt cái log rác rưởi",
+        "en_pro": "Toggle Command Log Panel"
+    },
+    "cmd_log_title": {
+        "vn_pro": "NHẬT KÝ LỆNH HỆ THỐNG (COMMAND LOG)",
+        "vn_joke": "BÍ KÍP VẬN HÀNH NGẦM",
+        "vn_toxic": "ĐỐNG LỆNH RÁC VỪA CHẠY",
+        "en_pro": "SYSTEM COMMAND LOG"
+    },
     "ee_spam_commit": {
         "vn_pro": "Lưu ý: Nhánh này có tới {count} commit. Rebase có thể sẽ mất thời gian.",
         "vn_joke": ["Ối dồi ôi, {count} commit! Sếp spam phím à?", "Kỷ lục Guiness: {count} commit cho 1 nhánh. Sếp tính viết tiểu thuyết à?", "Mù mắt với {count} cái commit của sếp, ráng kiên nhẫn đợi rebase nha."],
