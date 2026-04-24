@@ -1017,6 +1017,44 @@
         "vn_toxic": "ĐỐNG LỆNH RÁC VỪA CHẠY",
         "en_pro": "SYSTEM COMMAND LOG"
     },
+
+    "m_deploy": {
+        "vn_pro": "Luồng Deploy Chuẩn (Dev -> Test -> Main) 🚀",
+        "vn_joke": "Giao hàng (Deploy Chuẩn) 🚀",
+        "vn_toxic": "Deploy code chuẩn (Dev -> Test -> Main) 🚀",
+        "en_pro": "Standard Deploy Flow 🚀"
+    },
+    "m_hotfix": {
+        "vn_pro": "Luồng Backport Hotfix (Main -> Test/Dev) [🧪 THỬ NGHIỆM]",
+        "vn_joke": "Chữa cháy (Backport Hotfix) [🧪 THỬ NGHIỆM]",
+        "vn_toxic": "Bơm code Hotfix ngược về nhánh dưới [🧪 THỬ NGHIỆM]",
+        "en_pro": "Hotfix Backport Flow [🧪 EXPERIMENTAL]"
+    },
+    "no_gh_err": {
+        "vn_pro": "Không tìm thấy GitHub CLI (gh). Vui lòng cài đặt từ https://cli.github.com/",
+        "vn_joke": "Chưa cài GitHub CLI sếp ơi! Google tải 'gh cli' về nha.",
+        "vn_toxic": "Đéo có GitHub CLI (gh) trong máy! Cút ra web tải ngay rồi quay lại!",
+        "en_pro": "GitHub CLI (gh) not found. Please install."
+    },
+    "no_gh_auth_err": {
+        "vn_pro": "GitHub CLI chưa đăng nhập. Hãy mở terminal và chạy 'gh auth login'.",
+        "vn_joke": "Có app nhưng quên login sếp ạ. Chạy 'gh auth login' đi.",
+        "vn_toxic": "Cài gh mà đéo login thì check PR bằng mắt à? Mở terminal gõ 'gh auth login' nhanh!",
+        "en_pro": "GitHub CLI not authenticated. Run 'gh auth login'."
+    },
+    "pr_not_found": {
+        "vn_pro": "LỖI: Không tìm thấy Pull Request Open nào từ {source} vào {target} đúng chuẩn format '{regex}'.",
+        "vn_joke": "Chưa tạo PR hoặc đặt tên sai format '{regex}' rồi sếp ơi. Check lại nha.",
+        "vn_toxic": "Làm đéo có cái PR nào tên chuẩn format '{regex}' đang mở? Bịa ra à?",
+        "en_pro": "ERROR: No open PR found matching format '{regex}'."
+    },
+    "merge_paused": {
+        "vn_pro": "Quá trình Merge đang tạm dừng do CONFLICT. Hãy sửa lỗi, git add và chạy tiếp.",
+        "vn_joke": "Kẹt xe (Conflict) rồi! Tự gỡ bằng tay đi sếp, xong git add nha.",
+        "vn_toxic": "Merge dính conflict đỏ lòm! Mở IDE ra mà gỡ cho sạch, xong git add vào!",
+        "en_pro": "Merge paused due to conflict. Resolve, git add, and continue."
+    },
+
     "ee_spam_commit": {
         "vn_pro": "Lưu ý: Nhánh này có tới {count} commit. Rebase có thể sẽ mất thời gian.",
         "vn_joke": ["Ối dồi ôi, {count} commit! Sếp spam phím à?", "Kỷ lục Guiness: {count} commit cho 1 nhánh. Sếp tính viết tiểu thuyết à?", "Mù mắt với {count} cái commit của sếp, ráng kiên nhẫn đợi rebase nha."],

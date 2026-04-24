@@ -20,6 +20,75 @@ EMOJI_MODE = False
 SHOW_CMD_LOG = True  # Mặc định True cho vn_pro, sẽ được set lại trong main()
 CMD_HISTORY_BUFFER = [] # Nơi lưu trữ các lệnh đã chạy trong phiên
 
+# Biến lưu trạng thái GitHub CLI
+GH_AVAILABLE = False
+GH_ERROR_KEY = ""
+
+# ============================================================
+# GITHUB CLI MODULE
+# ============================================================
+def init_gh_cli() -> None:
+    """Quét ngầm trạng thái GitHub CLI lúc khởi động hoặc refresh"""
+    global GH_AVAILABLE, GH_ERROR_KEY
+    try:
+        # Check xem có cài chưa
+        result = subprocess.run("gh --version", shell=True, text=True, capture_output=True)
+        if result.returncode != 0:
+            GH_AVAILABLE = False
+            GH_ERROR_KEY = "no_gh_err"
+            return
+
+        # Check xem đã login chưa
+        auth = subprocess.run("gh auth status", shell=True, text=True, capture_output=True)
+        if auth.returncode != 0:
+            GH_AVAILABLE = False
+            GH_ERROR_KEY = "no_gh_auth_err"
+            return
+
+        GH_AVAILABLE = True
+        GH_ERROR_KEY = ""
+    except Exception:
+        GH_AVAILABLE = False
+        GH_ERROR_KEY = "no_gh_err"
+
+
+def ensure_gh_installed() -> None:
+    result = subprocess.run("gh --version", shell=True, text=True, capture_output=True)
+    if result.returncode != 0:
+        print(THEME.err(_t("no_gh_err")))
+        pause_continue()
+        return False
+
+    auth = subprocess.run("gh auth status", shell=True, text=True, capture_output=True)
+    if auth.returncode != 0:
+        print(THEME.err(_t("no_gh_auth_err")))
+        pause_continue()
+        return False
+    return True
+
+
+def check_valid_pr(repo_dir: str, source: str, target: str, regex_pattern: str) -> bool:
+    print(THEME.info(f"Đang kiểm tra Pull Request từ {source} -> {target}..."))
+    cmd = f"gh pr list --base {target} --head {source} --state open --json title"
+    output = run(cmd, cwd=repo_dir, capture=True, silent=True)
+
+    try:
+        prs = json.loads(output)
+        for pr in prs:
+            if re.match(regex_pattern, pr["title"]):
+                print(THEME.ok(f"Đã xác nhận PR hợp lệ: {pr['title']}"))
+                return True
+    except Exception as e:
+        print(THEME.err(f"Lỗi parse JSON từ gh cli: {e}"))
+
+    print(THEME.err(_t("pr_not_found", source=source, target=target, regex=regex_pattern)))
+    return False
+
+
+def is_merge_in_progress(repo_dir: str) -> bool:
+    git_dir = get_git_dir(repo_dir)
+    return (git_dir / "MERGE_HEAD").exists()
+
 
 def load_json_config(filename: str) -> dict:
     if getattr(sys, 'frozen', False):
@@ -486,8 +555,8 @@ def ask_non_empty(question_key: str, default: Optional[str] = None, allow_back: 
         print(THEME.warn(_t("not_empty")))
 
 
-def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0, allow_back: bool = False,
-               repo_dir: Optional[str] = None) -> str:
+def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0, allow_back: bool = False, repo_dir: Optional[str] = None, disabled_keys: List[str] = None) -> str:
+    if disabled_keys is None: disabled_keys = []
     while True:
         print(f"\n{THEME.info('?')} {_t(question_key)}")
         for i, opt_key in enumerate(option_keys, start=1):
@@ -504,7 +573,11 @@ def ask_choice(question_key: str, option_keys: List[str], default_index: int = 0
                 state_str = "ON 🖥️" if SHOW_CMD_LOG else "OFF ❌"
                 display = f"{display} [{state_str}]"
 
-            print(f"  {THEME.choice(str(i) + '.')} {display}{marker}")
+            # XỬ LÝ LÀM MỜ NẾU OPTION BỊ DISABLE
+            if opt_key in disabled_keys:
+                print(f"  {THEME.dim(str(i) + '. ' + display + ' 🚫')}")
+            else:
+                print(f"  {THEME.choice(str(i) + '.')} {display}{marker}")
 
         if allow_back:
             print(f"  {THEME.choice('<.')} {_t('opt_back')}")
@@ -1489,9 +1562,125 @@ def choose_language() -> None:
             print(f"{THEME.err(msg)}")
 
 
+# ============================================================
+# PIPELINE DEPLOY CHUẨN
+# ============================================================
+def run_deploy_flow(repo_dir: str) -> None:
+    if not ensure_gh_installed(): return
+
+    clear_screen()
+    print(f"\n{THEME.branch('=== PIPELINE DEPLOY CHUẨN ===')}")
+    choice = ask_choice("Chọn luồng Deploy:", ["1. Develop -> Test", "2. Test -> Main", "3. Hủy"], 0, repo_dir=repo_dir)
+
+    if choice == "3. Hủy" or choice in ("<GIT_RUN>", "<REFRESH>", "<BACK>"): return
+
+    source, target, regex = ("develop", "test", r"^Test \d{4}-\d{2}-\d{2}\.\d+$") if "Develop" in choice else ("test",
+                                                                                                               "main",
+                                                                                                               r"^Release \d{4}-\d{2}-\d{2}\.\d+$")
+
+    # Bước 1: Check PR bằng GitHub CLI
+    if not check_valid_pr(repo_dir, source, target, regex):
+        pause_continue()
+        return
+
+    print(f"\n{THEME.info('>>> Bắt đầu luồng Merge an toàn...')}")
+
+    # Bước 2: Fetch & Checkout
+    run("git fetch origin --prune", cwd=repo_dir)
+    run(f"git checkout {target}", cwd=repo_dir)
+    run(f"git pull origin {target}", cwd=repo_dir)
+
+    # Bước 3: Merge --no-ff
+    try:
+        run(f"git merge origin/{source} --no-ff -m \"chore: merge {source} to {target} for deployment\"", cwd=repo_dir)
+    except RuntimeError:
+        if is_merge_in_progress(repo_dir):
+            print(THEME.err(_t("merge_paused")))
+            print(THEME.warn("Vui lòng xử lý conflict, dùng lệnh 'git add', sau đó 'git commit' thủ công."))
+            pause_continue()
+            return
+        else:
+            print(THEME.err("Merge thất bại không rõ lý do."))
+            pause_continue()
+            return
+
+    # Bước 4: Verify Local (Ahead/Behind local so với source)
+    print(THEME.info("\n>>> Verify Lần 1 (Local)..."))
+    left_right = git_output(f"git rev-list --left-right --count HEAD...origin/{source}", cwd=repo_dir)
+    ahead, behind = map(int, left_right.split())
+    if behind > 0:
+        print(THEME.err(f"FAIL: Local {target} vẫn đang behind {source} {behind} commit! Merge có vấn đề."))
+        pause_continue()
+        return
+    print(THEME.ok("PASS: Local đã update đầy đủ commit từ source."))
+
+    # Bước 5: Push
+    if ask_yes_no(f"Merge xong. Đẩy (Push) lên origin/{target} ngay?", True, repo_dir=repo_dir) is True:
+        run(f"git push origin {target}", cwd=repo_dir)
+
+        # Bước 6: Verify Origin
+        print(THEME.info("\n>>> Verify Lần 2 (Origin)..."))
+        orig_left_right = git_output(f"git rev-list --left-right --count origin/{target}...origin/{source}",
+                                     cwd=repo_dir)
+        o_ahead, o_behind = map(int, orig_left_right.split())
+        if o_behind > 0:
+            print(THEME.err(f"FAIL: Origin {target} vẫn behind origin/{source} {o_behind} commit!"))
+        else:
+            print(THEME.ok(f"PASS: Deploy thành công lên {target}!"))
+
+    pause_continue()
+
+
+# ============================================================
+# PIPELINE BACKPORT HOTFIX (THỬ NGHIỆM)
+# ============================================================
+def run_hotfix_flow(repo_dir: str) -> None:
+    clear_screen()
+    print(f"\n{THEME.err('=== ⚠️ LUỒNG BACKPORT HOTFIX (MAIN -> TEST & DEVELOP) ⚠️ ===')}")
+    print(THEME.warn("Lưu ý: Luồng này sử dụng chiến lược Merge (--no-ff) để đẩy ngược code từ Main."))
+    print(THEME.warn("Tuyệt đối KHÔNG DÙNG REBASE ở luồng này để tránh phá vỡ nhánh dùng chung."))
+
+    if ask_yes_no("Bạn có hiểu và muốn tiếp tục?", False, repo_dir=repo_dir) is False:
+        return
+
+    targets = ["test", "develop"]
+    run("git fetch origin --prune", cwd=repo_dir)
+
+    for target in targets:
+        print(f"\n{THEME.branch(f'--- XỬ LÝ NHÁNH: {target.upper()} ---')}")
+        run(f"git checkout {target}", cwd=repo_dir)
+        run(f"git pull origin {target}", cwd=repo_dir)
+
+        try:
+            run(f"git merge origin/main --no-ff -m \"chore: backport hotfix from main to {target}\"", cwd=repo_dir)
+        except RuntimeError:
+            if is_merge_in_progress(repo_dir):
+                print(THEME.err(f"Bị CONFLICT khi đổ hotfix vào {target}!"))
+                print(THEME.warn("Tool sẽ tạm dừng. Hãy dùng IDE gỡ conflict, 'git add' và 'git commit'."))
+                print(THEME.warn("Sau khi xong, chạy lại tính năng này để xử lý nhánh tiếp theo."))
+                pause_continue()
+                return
+
+        # Verify
+        left_right = git_output(f"git rev-list --left-right --count HEAD...origin/main", cwd=repo_dir)
+        _, behind = map(int, left_right.split())
+        if behind > 0:
+            print(THEME.err(f"FAIL: {target} chưa nhận đủ code từ main!"))
+            pause_continue()
+            return
+
+        run(f"git push origin {target}", cwd=repo_dir)
+        print(THEME.ok(f"✅ Đã backport Hotfix thành công vào {target}."))
+
+    print(f"\n{THEME.ok('🎉 HOÀN TẤT LUỒNG HOTFIX!')}")
+    pause_continue()
+
+
 def main() -> None:
     # Đảm bảo thư mục data tồn tại ngay khi bật tool
     ensure_data_dir()
+    # Quét GitHub CLI ngay khi khởi động
+    init_gh_cli()
 
     choose_language()
     clear_screen()
@@ -1511,20 +1700,37 @@ def main() -> None:
         # HIỂN THỊ CONSOLE LOG PANEL (GOM NHÓM LỆNH)
         print_cmd_log_panel()
 
-        if is_rebase_in_progress(repo_dir):
-            print(THEME.warn("Repo in dirty rebase state."))
+        # Tạo mảng chứa các option bị vô hiệu hóa
+        disabled_opts = []
+        if not GH_AVAILABLE:
+            disabled_opts.extend(["m_deploy", "m_hotfix"])
+
+        if is_rebase_in_progress(repo_dir) or is_merge_in_progress(repo_dir):
+            print(THEME.warn("Repo đang kẹt trong trạng thái Rebase/Merge."))
             choice = ask_choice("choose_action",
                                 ["m_recover", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_cmd_log", "m_exit"], 0,
                                 repo_dir=repo_dir)
         else:
-            choice = ask_choice("main_menu",
-                                ["m_start", "m_checkout", "m_change", "m_refresh", "m_lang", "m_emoji", "m_cmd_log", "m_exit"], 0,
-                                repo_dir=repo_dir)
+            menu_options = [
+                "m_start",  # 1. Squash
+                "m_deploy",  # 2. Deploy
+                "m_hotfix",  # 3. Hotfix
+                "m_checkout",  # 4.
+                "m_change",  # 5.
+                "m_refresh",  # 6.
+                "m_lang",  # 7.
+                "m_emoji",  # 8.
+                "m_cmd_log",  # 9.
+                "m_exit"  # 10.
+            ]
+            # Truyền mảng disabled vào UI
+            choice = ask_choice("main_menu", menu_options, 0, repo_dir=repo_dir, disabled_keys=disabled_opts)
 
         # Xử lý các lựa chọn hệ thống
         if choice in ("<GIT_RUN>", "<REFRESH>", "m_refresh"):
             # Làm sạch buffer log khi chủ động refresh
             CMD_HISTORY_BUFFER.clear()
+            init_gh_cli() # Quét lại nhỡ đâu user vừa cài đặt/login gh xong
             clear_screen()
             continue
 
@@ -1547,6 +1753,22 @@ def main() -> None:
             except Exception:
                 print(THEME.err(_t("flow_error")))
                 traceback.print_exc()
+            continue
+
+        if choice == "m_deploy":
+            if not GH_AVAILABLE:
+                print(f"\n{THEME.err(_t(GH_ERROR_KEY))}")
+                pause_continue()
+                continue
+            run_deploy_flow(repo_dir)
+            continue
+
+        if choice == "m_hotfix":
+            if not GH_AVAILABLE:
+                print(f"\n{THEME.err(_t(GH_ERROR_KEY))}")
+                pause_continue()
+                continue
+            run_hotfix_flow(repo_dir)
             continue
 
         if choice == "m_checkout":
