@@ -8,3 +8,5 @@ python git_feature_flow.py
 
 ## Build exe (Windows)
 build.bat
+
+## CI Integration
