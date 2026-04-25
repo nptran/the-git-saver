@@ -10,7 +10,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Tuple, Any, Union
+from typing import List, Optional, Tuple, Any
 
 # ============================================================
 # CƠ CHẾ LOAD CẤU HÌNH THÔNG MINH (NO-CODE SEPARATION)
@@ -156,7 +156,8 @@ def ensure_data_dir():
         try:
             os.makedirs(data_dir, exist_ok=True)
         except Exception as e:
-            # Nếu không tạo được thư mục, in thông báo để user biết (không dùng _t vì lúc này chưa chắc load xong config)
+            # Nếu không tạo được thư mục, in thông báo để user biết (không dùng _t vì lúc này
+            # chưa chắc load xong config)
             print(
                 f"\n[!] Critical Error: Cannot create data directory at {data_dir}: {e}"
             )
@@ -440,22 +441,22 @@ def get_friendly_git_error(stderr_str: str) -> str:
     stderr_lower = stderr_str.lower()
 
     if (
-        "could not resolve host" in stderr_lower
-        or "authentication failed" in stderr_lower
-        or "permission denied" in stderr_lower
+            "could not resolve host" in stderr_lower
+            or "authentication failed" in stderr_lower
+            or "permission denied" in stderr_lower
     ):
         return _t("err_network")
     if "conflict" in stderr_lower:
         return _t("err_conflict")
     if (
-        "would be overwritten by" in stderr_lower
-        or "please commit your changes or stash them" in stderr_lower
+            "would be overwritten by" in stderr_lower
+            or "please commit your changes or stash them" in stderr_lower
     ):
         return _t("err_overwrite")
     if (
-        "fetch first" in stderr_lower
-        or "non-fast-forward" in stderr_lower
-        or "updates were rejected" in stderr_lower
+            "fetch first" in stderr_lower
+            or "non-fast-forward" in stderr_lower
+            or "updates were rejected" in stderr_lower
     ):
         return _t("err_push_rejected")
 
@@ -466,12 +467,12 @@ def get_friendly_git_error(stderr_str: str) -> str:
 # Shell / Git helpers
 # ============================================================
 def run(
-    cmd: str,
-    cwd: Optional[str] = None,
-    check: bool = True,
-    capture: bool = False,
-    silent: bool = False,
-    is_user_cmd: bool = False,
+        cmd: str,
+        cwd: Optional[str] = None,
+        check: bool = True,
+        capture: bool = False,
+        silent: bool = False,
+        is_user_cmd: bool = False,
 ) -> str:
     # Nếu không silent, đẩy vào bộ nhớ tạm
     if not silent:
@@ -578,7 +579,8 @@ def handle_smart_git_command(command: str, repo_dir: str) -> bool:
     else:
         ans2 = (
             input(
-                f"{THEME.info('?')} Có muốn dùng cụm '{command}' như câu trả lời bình thường thay vì lệnh Git không? [y/N]: "
+                f"{THEME.info('?')} Có muốn dùng cụm '{command}' như câu trả lời bình thường thay "
+                f"vì lệnh Git không? [y/N]: "
             )
             .strip()
             .lower()
@@ -594,11 +596,11 @@ def handle_smart_git_command(command: str, repo_dir: str) -> bool:
 # Prompt helpers (Hỗ trợ <REFRESH> và <GIT_RUN>)
 # ============================================================
 def ask_yes_no(
-    question_key: str,
-    default: bool = True,
-    allow_back: bool = False,
-    repo_dir: Optional[str] = None,
-    **kwargs,
+        question_key: str,
+        default: bool = True,
+        allow_back: bool = False,
+        repo_dir: Optional[str] = None,
+        **kwargs,
 ) -> Any:
     suffix = THEME.ok("[Y/n]") if default else THEME.warn("[y/N]")
     back_hint = THEME.dim(_t("type_back")) if allow_back else ""
@@ -629,10 +631,10 @@ def ask_yes_no(
 
 
 def ask_non_empty(
-    question_key: str,
-    default: Optional[str] = None,
-    allow_back: bool = False,
-    repo_dir: Optional[str] = None,
+        question_key: str,
+        default: Optional[str] = None,
+        allow_back: bool = False,
+        repo_dir: Optional[str] = None,
 ) -> Any:
     back_hint = THEME.dim(_t("type_back")) if allow_back else ""
     refresh_hint = THEME.dim(" (r: Refresh)")
@@ -643,7 +645,8 @@ def ask_non_empty(
             ).strip()
         else:
             answer = input(
-                f"{THEME.info('?')} {_t(question_key)} {THEME.dim('[' + default + ']')}{back_hint}{refresh_hint}: "
+                f"{THEME.info('?')} {_t(question_key)} {THEME.dim('[' + default + ']')}"
+                f"{back_hint}{refresh_hint}: "
             ).strip()
 
         if answer.lower() == "r":
@@ -664,12 +667,12 @@ def ask_non_empty(
 
 
 def ask_choice(
-    question_key: str,
-    option_keys: List[str],
-    default_index: int = 0,
-    allow_back: bool = False,
-    repo_dir: Optional[str] = None,
-    disabled_keys: List[str] = None,
+        question_key: str,
+        option_keys: List[str],
+        default_index: int = 0,
+        allow_back: bool = False,
+        repo_dir: Optional[str] = None,
+        disabled_keys: List[str] = None,
 ) -> str:
     if disabled_keys is None:
         disabled_keys = []
@@ -1130,7 +1133,7 @@ def handle_rebase_recovery(repo_dir: str) -> str:
 
 
 def check_potential_conflict(
-    repo_dir: str, base_branch: str
+        repo_dir: str, base_branch: str
 ) -> Tuple[bool, List[str], bool]:
     cmd = f"git merge-tree --write-tree origin/{base_branch} HEAD"
     try:
@@ -1160,7 +1163,7 @@ def create_backup(repo_dir: str, branch: str) -> str:
 
 
 def get_effective_base_point(
-    repo_dir: str, base_branch: str, history_type: str
+        repo_dir: str, base_branch: str, history_type: str
 ) -> Optional[str]:
     cmd = (
         f"git merge-base HEAD origin/{base_branch}"
@@ -1224,11 +1227,11 @@ def get_diff_patch_id(repo_dir: str, base_ref: str, target_ref: str) -> str:
 
 
 def run_verification(
-    repo_dir: str,
-    state: dict,
-    branch: str,
-    backup_branch: Optional[str],
-    conflict_occurred: bool,
+        repo_dir: str,
+        state: dict,
+        branch: str,
+        backup_branch: Optional[str],
+        conflict_occurred: bool,
 ) -> bool:
     print(f"\n{THEME.branch(BOX['tl'] + BOX['h'] * 80)}")
     print(f"{THEME.branch(BOX['v'])} {THEME.info(_t('verify_title'))}")
@@ -1246,12 +1249,14 @@ def run_verification(
         behind, ahead = map(int, rev_count.split())
         if behind > 0:
             print(
-                f"{THEME.branch(BOX['v'])} {THEME.err(_t('verify_ahead_fail', base=state['base_branch'], behind=behind))}"
+                f"{THEME.branch(BOX['v'])} "
+                f"{THEME.err(_t('verify_ahead_fail', base=state['base_branch'], behind=behind))}"
             )
             passed = False
         else:
             print(
-                f"{THEME.branch(BOX['v'])} {THEME.ok(_t('verify_ahead_ok', base=state['base_branch'], ahead=ahead))}"
+                f"{THEME.branch(BOX['v'])} "
+                f"{THEME.ok(_t('verify_ahead_ok', base=state['base_branch'], ahead=ahead))}"
             )
     except Exception:
         print(
@@ -1260,7 +1265,7 @@ def run_verification(
 
     reference_ref = backup_branch if backup_branch else f"origin/{branch}"
     if not git_output(
-        f"git rev-parse --verify {reference_ref}", cwd=repo_dir, check=False
+            f"git rev-parse --verify {reference_ref}", cwd=repo_dir, check=False
     ):
         reference_ref = None
 
@@ -1288,7 +1293,8 @@ def run_verification(
 
             diff_cmd = f"git diff {reference_ref} HEAD"
             print(
-                f"{THEME.branch(BOX['v'])} {THEME.info(_t('verify_diff_cmd'))} {THEME.cmd(diff_cmd)}"
+                f"{THEME.branch(BOX['v'])} {THEME.info(_t('verify_diff_cmd'))} "
+                f"{THEME.cmd(diff_cmd)}"
             )
 
     print(f"{THEME.branch(BOX['bl'] + BOX['h'] * 80)}\n")
@@ -1327,7 +1333,7 @@ def highlight_commit_message(message: str) -> str:
         colored_prefix = THEME.tag_refactor(prefix)
     else:
         colored_prefix = THEME.tag_other(prefix)
-    return colored_prefix + message[len(prefix) :]
+    return colored_prefix + message[len(prefix):]
 
 
 def format_commit_line(line: str) -> str:
@@ -1435,12 +1441,12 @@ def show_wizard_dashboard(state: dict, current_step: int) -> None:
 
 
 def show_action_plan(
-    base_point: str,
-    final_message: str,
-    base_branch: str,
-    feature_branch: str,
-    commit_count: int,
-    auto_push: bool,
+        base_point: str,
+        final_message: str,
+        base_branch: str,
+        feature_branch: str,
+        commit_count: int,
+        auto_push: bool,
 ) -> None:
     pad_base = base_branch.ljust(15)
     pad_feat = feature_branch.ljust(15)
@@ -1567,24 +1573,25 @@ def run_feature_flow(repo_dir: str) -> None:
 
                     # Kiểm tra xem origin branch có tồn tại không
                     if git_output(
-                        f"git rev-parse --verify {remote_ref}",
-                        cwd=repo_dir,
-                        check=False,
+                            f"git rev-parse --verify {remote_ref}",
+                            cwd=repo_dir,
+                            check=False,
                     ):
                         remote_head = git_output(
                             f"git rev-parse {remote_ref}", cwd=repo_dir
                         )
 
                         if local_head != remote_head:
-                            # Kiểm tra xem có phải là Fast-forward được không (local là tổ tiên của remote)
+                            # Kiểm tra xem có phải là Fast-forward được không (local là tổ tiên
+                            # của remote)
                             is_ancestor = (
-                                subprocess.run(
-                                    f"git merge-base --is-ancestor {local_head} {remote_head}",
-                                    shell=True,
-                                    cwd=repo_dir,
-                                    capture_output=True,
-                                ).returncode
-                                == 0
+                                    subprocess.run(
+                                        f"git merge-base --is-ancestor {local_head} {remote_head}",
+                                        shell=True,
+                                        cwd=repo_dir,
+                                        capture_output=True,
+                                    ).returncode
+                                    == 0
                             )
 
                             if is_ancestor:
@@ -1600,15 +1607,18 @@ def run_feature_flow(repo_dir: str) -> None:
                                 )
                                 run(f"git merge --ff-only {remote_ref}", cwd=repo_dir)
                             else:
-                                # Trường hợp Diverged (cả local và server đều có commit mới khác nhau)
+                                # Trường hợp Diverged (cả local và server đều có commit mới khác
+                                # nhau)
                                 print(
                                     THEME.err(
-                                        "\n🚨 NGUY HIỂM: Nhánh Local và Server đang bị lệch pha (Diverged)!"
+                                        "\n🚨 NGUY HIỂM: Nhánh Local và Server đang bị lệch pha ("
+                                        "Diverged)!"
                                     )
                                 )
                                 print(
                                     THEME.warn(
-                                        "Vui lòng tự tay 'git pull' hoặc xử lý thủ công trước khi dùng tool."
+                                        "Vui lòng tự tay 'git pull' hoặc xử lý thủ công trước khi "
+                                        "dùng tool."
                                     )
                                 )
                                 pause_continue()
@@ -1951,7 +1961,8 @@ def run_deploy_flow(repo_dir: str) -> None:
     # Bước 3: Merge --no-ff
     try:
         run(
-            f'git merge origin/{source} --no-ff -m "chore: merge {source} to {target} for deployment"',
+            f'git merge origin/{source} --no-ff -m "chore: merge {source} to {target} for '
+            f'deployment"',
             cwd=repo_dir,
         )
     except RuntimeError:
@@ -1987,10 +1998,10 @@ def run_deploy_flow(repo_dir: str) -> None:
 
     # Bước 5: Push
     if (
-        ask_yes_no(
-            f"Merge xong. Đẩy (Push) lên origin/{target} ngay?", True, repo_dir=repo_dir
-        )
-        is True
+            ask_yes_no(
+                f"Merge xong. Đẩy (Push) lên origin/{target} ngay?", True, repo_dir=repo_dir
+            )
+            is True
     ):
         run(f"git push origin {target}", cwd=repo_dir)
 
