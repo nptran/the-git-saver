@@ -1352,12 +1352,6 @@ def show_startup(repo_dir: str) -> None:
     except Exception:
         branch = "(unknown / initial)"
 
-    rebase_state = (
-        THEME.warn("🚧 IN PROGRESS")
-        if is_rebase_in_progress(repo_dir)
-        else THEME.ok("idle")
-    )
-
     stats = load_stats()
     total = stats.get("rebase_count", 0)
 
@@ -1454,12 +1448,12 @@ def show_action_plan(
     sketch = [
         f"{THEME.dim('[TRƯỚC / BEFORE]')}",
         f" {THEME.branch(pad_base)} ──○──○──◉──○──○ (origin)",
-        f"                         \\",
+        "                         \\",
         f" {THEME.branch(pad_feat)}          ○──○──○ ({commit_count} commits)",
-        f"",
+        "",
         f"{THEME.dim('[SAU / AFTER]')}",
         f" {THEME.branch(pad_base)} ──○──○──◉──○──○ (origin)",
-        f"                                     \\",
+        "                                     \\",
         f" {THEME.branch(pad_feat)}                      🌟 (1 squashed)",
     ]
     print_box("Rebase Flow Sketch", sketch)
@@ -1983,7 +1977,7 @@ def run_deploy_flow(repo_dir: str) -> None:
     # Bước 4: Verify Local (Ahead/Behind local so với source)
     print(THEME.info("\n>>> Verify Lần 1 (Local)..."))
     left_right = git_output(
-        f"git rev-list --left-right --count HEAD...origin/{source}", cwd=repo_dir
+        "git rev-list --left-right --count HEAD...origin/main", cwd=repo_dir
     )
     ahead, behind = map(int, left_right.split())
     if behind > 0:
@@ -2077,7 +2071,7 @@ def run_hotfix_flow(repo_dir: str) -> None:
 
         # Verify
         left_right = git_output(
-            f"git rev-list --left-right --count HEAD...origin/main", cwd=repo_dir
+            "git rev-list --left-right --count HEAD...origin/main", cwd=repo_dir
         )
         _, behind = map(int, left_right.split())
         if behind > 0:

@@ -1,1 +1,2 @@
 colorama
+flake8
