@@ -23,7 +23,7 @@ jobs:
 
       - run: pip install python-semantic-release
 
-      - name: Semantic Release
+      - name: Run semantic release
+        run: semantic-release -vv version
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release publish
+          GH_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
