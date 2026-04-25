@@ -11,3 +11,4 @@ commit_parser = "conventional"
 
 # Tag format
 tag_format = "v{version}"
+version_variable = ["VERSION"]
