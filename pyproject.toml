@@ -1,0 +1,13 @@
+[tool.semantic_release]
+branch = "main"
+version_source = "tag"
+changelog_file = "CHANGELOG.md"
+
+# Không publish lên PyPI (vì m build exe)
+upload_to_pypi = false
+
+# Commit convention
+commit_parser = "conventional"
+
+# Tag format
+tag_format = "v{version}"
