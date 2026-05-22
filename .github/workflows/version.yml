@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   release:
@@ -30,14 +29,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install python-semantic-release
 
-      - name: Run semantic release
+      - name: Setup Git config
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Run semantic release (no push)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release version
+        run: semantic-release version --no-push
 
-      - name: Push tags to trigger build workflow
+      - name: Manually push tags
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git fetch origin main
-          git push origin --follow-tags
+          git push origin --tags
