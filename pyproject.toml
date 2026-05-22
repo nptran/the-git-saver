@@ -29,3 +29,8 @@ upload_to_pypi = false
 
 [tool.semantic_release.remote]
 name = "origin"
+
+[tool.semantic_release.publish]
+dist_glob_patterns = [
+    "dist/*.exe"
+]

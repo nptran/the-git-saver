@@ -24,29 +24,12 @@ jobs:
           token: ${{ secrets.RELEASE_TOKEN }}
 
       # =========================================================
-      # Fetch tags explicitly
-      # =========================================================
-      - name: Fetch all tags
-        shell: pwsh
-        run: |
-          git fetch --force --tags
-
-      # =========================================================
       # Setup Python
       # =========================================================
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      # =========================================================
-      # Cache pip
-      # =========================================================
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
 
       # =========================================================
       # Install dependencies
@@ -59,55 +42,12 @@ jobs:
           pip install -r requirements.txt
 
           pip install pyinstaller
-          pip install python-semantic-release
+          pip install "python-semantic-release[github]"
 
       # =========================================================
-      # Run semantic release
-      # =========================================================
-      - name: Run semantic release
-        id: semantic_release
-        env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-        shell: pwsh
-        run: |
-          $output = semantic-release version | Out-String
-
-          Write-Host $output
-
-          $version = $null
-
-          $lines = $output -split "`n"
-
-          foreach ($line in $lines) {
-
-            $trimmed = $line.Trim()
-
-            if ($trimmed -match '^[0-9]+\.[0-9]+\.[0-9]+$') {
-              $version = $trimmed
-            }
-          }
-
-          if ($version) {
-
-            echo "released=true" >> $env:GITHUB_OUTPUT
-            echo "version=$version" >> $env:GITHUB_OUTPUT
-            echo "tag=ver$version" >> $env:GITHUB_OUTPUT
-
-            Write-Host "Release version: $version"
-          }
-          else {
-
-            echo "released=false" >> $env:GITHUB_OUTPUT
-
-            Write-Host "No release generated"
-          }
-
-      # =========================================================
-      # Build executable
+      # Build executable BEFORE release
       # =========================================================
       - name: Build executable
-        if: steps.semantic_release.outputs.released == 'true'
         shell: pwsh
         run: |
           pyinstaller `
@@ -119,50 +59,12 @@ jobs:
             git_feature_flow.py
 
       # =========================================================
-      # Rename EXE
+      # Semantic release + upload asset
       # =========================================================
-      - name: Rename executable
-        if: steps.semantic_release.outputs.released == 'true'
-        shell: pwsh
-        run: |
-          $version = "${{ steps.semantic_release.outputs.version }}"
-
-          $newName = "rebase-overlord-$version.exe"
-
-          Rename-Item `
-            -Path "dist\rebase-overlord.exe" `
-            -NewName $newName
-
-          Write-Host "Renamed EXE to: $newName"
-
-      # =========================================================
-      # Upload workflow artifact
-      # =========================================================
-      - name: Upload workflow artifact
-        if: steps.semantic_release.outputs.released == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: rebase-overlord-${{ steps.semantic_release.outputs.version }}
-          path: |
-            dist/rebase-overlord-${{ steps.semantic_release.outputs.version }}.exe
-
-      # =========================================================
-      # Upload EXE to GitHub Release
-      # =========================================================
-      # =========================================================
-      # Upload EXE to GitHub Release
-      # =========================================================
-      - name: Upload EXE to GitHub Release
-        if: steps.semantic_release.outputs.released == 'true'
-        shell: pwsh
+      - name: Run semantic release
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        shell: pwsh
         run: |
-          $version = "${{ steps.semantic_release.outputs.version }}"
-
-          $file = "dist/rebase-overlord-$version.exe"
-
-          gh release upload `
-            "ver$version" `
-            $file `
-            --clobber
+          semantic-release version
