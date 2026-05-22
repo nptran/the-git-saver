@@ -31,7 +31,7 @@ jobs:
 
       - name: Rename exe with version
         run: |
-          $version = "${{ github.ref_name }}".TrimStart("v")
+          $version = "${{ github.ref_name }}".Replace("release-v", "")
           $newName = "rebase-overlord-$version.exe"
           Rename-Item -Path "dist\*.exe" -NewName $newName
         shell: pwsh
