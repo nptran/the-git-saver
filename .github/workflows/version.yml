@@ -36,12 +36,12 @@ jobs:
 
       - name: Run semantic release (no push)
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: semantic-release version --no-push
 
       - name: Manually push tags
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           git fetch origin main
           git push origin --tags
