@@ -14,9 +14,13 @@ commit_parser = "conventional"
 changelog_file = "CHANGELOG.md"
 upload_to_pypi = false
 
-[tool.semantic_release.remote]
-name = "origin"
+[tool.semantic_release]
+branch = "main"
+tag_format = "v{version}"
+commit_parser = "conventional"
+allow_zero_version = true
+changelog_file = "CHANGELOG.md"
 
-version_variable = [
+version_toml = [
     "pyproject.toml:project.version"
 ]
