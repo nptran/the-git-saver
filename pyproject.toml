@@ -9,7 +9,7 @@ version = "0.1.0"
 [tool.semantic_release]
 branch = "main"
 
-tag_format = "release-v{version}"
+tag_format = "ver{version}"
 
 commit_parser = "conventional"
 

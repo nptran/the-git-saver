@@ -89,7 +89,7 @@ jobs:
             exit 1
           }
 
-          $version = $tag.Replace("release-v", "")
+          $version = $tag.Replace("ver", "")
 
           echo "tag=$tag" >> $env:GITHUB_OUTPUT
           echo "version=$version" >> $env:GITHUB_OUTPUT
