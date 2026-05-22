@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install semantic-release
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install python-semantic-release
@@ -33,3 +33,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
         run: semantic-release version
+
+      - name: Push tags to trigger build workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
+        run: |
+          git push origin --follow-tags
