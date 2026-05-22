@@ -32,7 +32,7 @@ def init_gh_cli() -> None:
     """Quét ngầm trạng thái GitHub CLI lúc khởi động hoặc refresh"""
     global GH_AVAILABLE, GH_ERROR_KEY
     try:
-        # Check xem có cài chưa
+        # Check xem có cài Github CLI chưa
         result = subprocess.run(
             "gh --version", shell=True, text=True, capture_output=True
         )
