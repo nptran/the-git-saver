@@ -8,7 +8,7 @@ version = "0.1.3"
 
 [tool.semantic_release]
 branch = "main"
-tag_format = "v{version}"
+tag_format = "release-v{version}"
 commit_parser = "conventional"
 allow_zero_version = true
 changelog_file = "CHANGELOG.md"
