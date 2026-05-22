@@ -71,36 +71,30 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         shell: pwsh
         run: |
-          semantic-release version
+          $output = semantic-release version
 
-      # =========================================================
-      # Get latest release tag
-      # =========================================================
-      - name: Get release version
-        id: version
-        shell: pwsh
-        run: |
-          git fetch --force --tags
+          $output
 
-          $tag = git tag --sort=-creatordate | Select-Object -First 1
+          if ($output -match "The next version is: ([0-9]+\.[0-9]+\.[0-9]+)") {
+            $version = $matches[1]
 
-          if (-not $tag) {
-            Write-Error "No git tags found"
-            exit 1
+            echo "released=true" >> $env:GITHUB_OUTPUT
+            echo "version=$version" >> $env:GITHUB_OUTPUT
+            echo "tag=ver$version" >> $env:GITHUB_OUTPUT
+
+            Write-Host "Release version: $version"
           }
+          else {
+            echo "released=false" >> $env:GITHUB_OUTPUT
 
-          $version = $tag.Replace("ver", "")
-
-          echo "tag=$tag" >> $env:GITHUB_OUTPUT
-          echo "version=$version" >> $env:GITHUB_OUTPUT
-
-          Write-Host "Tag: $tag"
-          Write-Host "Version: $version"
+            Write-Host "No release generated"
+          }
 
       # =========================================================
       # Build executable
       # =========================================================
       - name: Build executable
+        if: steps.semantic_release.outputs.released == 'true'
         shell: pwsh
         run: |
           pyinstaller `
@@ -115,32 +109,42 @@ jobs:
       # Rename EXE
       # =========================================================
       - name: Rename executable
+        if: steps.semantic_release.outputs.released == 'true'
         shell: pwsh
         run: |
-          $newName = "rebase-overlord-${{ steps.version.outputs.version }}.exe"
+          $version = "${{ steps.semantic_release.outputs.version }}"
+
+          $newName = "rebase-overlord-$version.exe"
 
           Rename-Item `
             -Path "dist\rebase-overlord.exe" `
             -NewName $newName
 
+          Write-Host "Renamed EXE to: $newName"
+
       # =========================================================
       # Upload workflow artifact
       # =========================================================
       - name: Upload workflow artifact
+        if: steps.semantic_release.outputs.released == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: rebase-overlord-${{ steps.version.outputs.version }}
+          name: rebase-overlord-${{ steps.semantic_release.outputs.version }}
           path: |
-            dist/rebase-overlord-${{ steps.version.outputs.version }}.exe
+            dist/rebase-overlord-${{ steps.semantic_release.outputs.version }}.exe
 
       # =========================================================
       # Upload EXE to GitHub Release
       # =========================================================
       - name: Upload EXE to GitHub Release
+        if: steps.semantic_release.outputs.released == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.tag }}
+          tag_name: ${{ steps.semantic_release.outputs.tag }}
           files: |
-            dist/rebase-overlord-${{ steps.version.outputs.version }}.exe
+            dist/rebase-overlord-${{ steps.semantic_release.outputs.version }}.exe
+          append_body: false
+          generate_release_notes: false
+          fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
