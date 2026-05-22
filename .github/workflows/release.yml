@@ -149,15 +149,20 @@ jobs:
       # =========================================================
       # Upload EXE to GitHub Release
       # =========================================================
+      # =========================================================
+      # Upload EXE to GitHub Release
+      # =========================================================
       - name: Upload EXE to GitHub Release
         if: steps.semantic_release.outputs.released == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.semantic_release.outputs.tag }}
-          files: |
-            dist/rebase-overlord-${{ steps.semantic_release.outputs.version }}.exe
-          append_body: false
-          generate_release_notes: false
-          fail_on_unmatched_files: true
+        shell: pwsh
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          $version = "${{ steps.semantic_release.outputs.version }}"
+
+          $file = "dist/rebase-overlord-$version.exe"
+
+          gh release upload `
+            "ver$version" `
+            $file `
+            --clobber
