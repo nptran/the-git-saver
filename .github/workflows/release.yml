@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   release:
-    if: "!contains(github.event.head_commit.message, 'chore(release)')"
     runs-on: windows-latest
 
     steps:
@@ -23,6 +22,14 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           token: ${{ secrets.RELEASE_TOKEN }}
+
+      # =========================================================
+      # Fetch tags explicitly
+      # =========================================================
+      - name: Fetch all tags
+        shell: pwsh
+        run: |
+          git fetch --force --tags
 
       # =========================================================
       # Setup Python
@@ -50,11 +57,12 @@ jobs:
           python -m pip install --upgrade pip
 
           pip install -r requirements.txt
+
           pip install pyinstaller
           pip install python-semantic-release
 
       # =========================================================
-      # Semantic release
+      # Run semantic release
       # =========================================================
       - name: Run semantic release
         id: semantic_release
@@ -66,13 +74,21 @@ jobs:
           semantic-release version
 
       # =========================================================
-      # Get version/tag
+      # Get latest release tag
       # =========================================================
       - name: Get release version
         id: version
         shell: pwsh
         run: |
-          $tag = git describe --tags --abbrev=0
+          git fetch --force --tags
+
+          $tag = git tag --sort=-creatordate | Select-Object -First 1
+
+          if (-not $tag) {
+            Write-Error "No git tags found"
+            exit 1
+          }
+
           $version = $tag.Replace("release-v", "")
 
           echo "tag=$tag" >> $env:GITHUB_OUTPUT
@@ -82,7 +98,7 @@ jobs:
           Write-Host "Version: $version"
 
       # =========================================================
-      # Build EXE
+      # Build executable
       # =========================================================
       - name: Build executable
         shell: pwsh
@@ -96,7 +112,7 @@ jobs:
             git_feature_flow.py
 
       # =========================================================
-      # Rename EXE with version
+      # Rename EXE
       # =========================================================
       - name: Rename executable
         shell: pwsh
@@ -118,7 +134,7 @@ jobs:
             dist/rebase-overlord-${{ steps.version.outputs.version }}.exe
 
       # =========================================================
-      # Upload to GitHub Release
+      # Upload EXE to GitHub Release
       # =========================================================
       - name: Upload EXE to GitHub Release
         uses: softprops/action-gh-release@v2
