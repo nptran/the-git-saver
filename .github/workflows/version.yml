@@ -38,4 +38,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
         run: |
+          git fetch origin main
           git push origin --follow-tags
