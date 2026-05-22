@@ -1,0 +1,130 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: "!contains(github.event.head_commit.message, 'chore(release)')"
+    runs-on: windows-latest
+
+    steps:
+      # =========================================================
+      # Checkout
+      # =========================================================
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      # =========================================================
+      # Setup Python
+      # =========================================================
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # =========================================================
+      # Cache pip
+      # =========================================================
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      # =========================================================
+      # Install dependencies
+      # =========================================================
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+
+          pip install -r requirements.txt
+          pip install pyinstaller
+          pip install python-semantic-release
+
+      # =========================================================
+      # Semantic release
+      # =========================================================
+      - name: Run semantic release
+        id: semantic_release
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        shell: pwsh
+        run: |
+          semantic-release version
+
+      # =========================================================
+      # Get version/tag
+      # =========================================================
+      - name: Get release version
+        id: version
+        shell: pwsh
+        run: |
+          $tag = git describe --tags --abbrev=0
+          $version = $tag.Replace("release-v", "")
+
+          echo "tag=$tag" >> $env:GITHUB_OUTPUT
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+
+          Write-Host "Tag: $tag"
+          Write-Host "Version: $version"
+
+      # =========================================================
+      # Build EXE
+      # =========================================================
+      - name: Build executable
+        shell: pwsh
+        run: |
+          pyinstaller `
+            --onefile `
+            --clean `
+            --noconfirm `
+            --add-data "config;config" `
+            --name rebase-overlord `
+            git_feature_flow.py
+
+      # =========================================================
+      # Rename EXE with version
+      # =========================================================
+      - name: Rename executable
+        shell: pwsh
+        run: |
+          $newName = "rebase-overlord-${{ steps.version.outputs.version }}.exe"
+
+          Rename-Item `
+            -Path "dist\rebase-overlord.exe" `
+            -NewName $newName
+
+      # =========================================================
+      # Upload workflow artifact
+      # =========================================================
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rebase-overlord-${{ steps.version.outputs.version }}
+          path: |
+            dist/rebase-overlord-${{ steps.version.outputs.version }}.exe
+
+      # =========================================================
+      # Upload to GitHub Release
+      # =========================================================
+      - name: Upload EXE to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          files: |
+            dist/rebase-overlord-${{ steps.version.outputs.version }}.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
