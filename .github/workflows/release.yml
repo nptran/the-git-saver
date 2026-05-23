@@ -64,6 +64,11 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
           pip install "python-semantic-release[github]"
+          
+      - name: Verify semantic-release version
+        run: |
+          semantic-release --version
+          semantic-release version --help
 
       # =========================================================
       # Detect next version (machine-readable, no regex parsing)
