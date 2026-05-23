@@ -32,5 +32,5 @@ name = "origin"
 
 [tool.semantic_release.publish]
 dist_glob_patterns = [
-    "dist/*.exe"
+    "dist/rebase-overlord.exe"
 ]
