@@ -23,14 +23,18 @@ version_toml = [
 
 commit_message = "chore(release): {version} [skip ci]"
 
+# Build managed externally via PyInstaller in CI
 build_command = ""
 
 upload_to_pypi = false
+
+# Explicit: upload artifact to GitHub Release
+upload_to_vcs_release = true
 
 [tool.semantic_release.remote]
 name = "origin"
 
 [tool.semantic_release.publish]
 dist_glob_patterns = [
-    "dist/rebase-overlord.exe"
+    "dist/*.exe"
 ]
