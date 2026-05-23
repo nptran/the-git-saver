@@ -79,7 +79,7 @@ jobs:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
-          $v = (semantic-release version --noop --print).Trim()
+          $v = (semantic-release --noop version --print).Trim()
 
           if ($v) {
             echo "released=true" >> $env:GITHUB_OUTPUT
