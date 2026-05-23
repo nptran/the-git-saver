@@ -1,6 +1,16 @@
 # CHANGELOG
 
 
+## v0.4.0 (2026-05-23)
+
+### Features
+
+- Update README.md
+  ([`4f397b9`](https://github.com/nptran/the-git-saver/commit/4f397b9f95cb0424148a180434bd9d21ca2b84f5))
+
+This commit is a feature because it's meant to trigger the CI.
+
+
 ## v0.3.5 (2026-05-23)
 
 ### Bug Fixes
